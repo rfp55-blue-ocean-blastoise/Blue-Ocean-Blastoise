@@ -1,0 +1,69 @@
+{
+  "name": "book-brother",
+  "version": "1.0.0",
+  "description": "BookBrother is the premier mobile audio experience to listen to your epub books. Don’t have time to read or need to be somewhere else? No problem, just upload your epub to the app and click play from your library to begin getting knowledge injected into your earbuds.",
+  "main": "index.js",
+  "scripts": {
+    "server": "npx nodemon server/index.js",
+    "test": "jest --coverage",
+    "react-dev": "npx webpack --config webpack.config.js -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoise.git"
+  },
+  "keywords": [
+    "epub",
+    "TTS"
+  ],
+  "author": "Team Blastoise",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoise/issues"
+  },
+  "homepage": "https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoise#readme",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "body-parser": "^1.19.0",
+    "browserify-zlib": "^0.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.11",
+    "path": "^0.12.7",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "terser-webpack-plugin": "^5.2.4",
+    "util": "^0.12.4",
+    "webpack": "^5.52.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-syntax-jsx": "^7.14.5",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@svgr/webpack": "^5.5.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^27.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
+    "babel-jest": "^27.2.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^6.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.25.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^27.2.5",
+    "style-loader": "^3.2.1",
+    "ts-jest": "^27.0.6",
+    "typescript": "^4.4.4",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0"
+  }
+}
