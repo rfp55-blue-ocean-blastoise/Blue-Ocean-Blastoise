@@ -18,17 +18,17 @@ Git workflow
 First, run the development server:
 
 ```bash
-npm run dev
+npm run react-dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Creating a new Feature Branch
 
-1. Clone from [this repo](https://github.com/Team-Burberry/gamut.git)
+1. Clone from [this repo](https://github.com/rfp55-blue-ocean-blastoise/blue-ocean-blastoise.git)
 
     ```bash
-    git clone https://github.com/Team-Burberry/gamut.git
+    git clone https://github.com/rfp55-blue-ocean-blastoise/blue-ocean-blastoise.git
     ```
 
 1. Make sure you are on branch `main` with latest version
