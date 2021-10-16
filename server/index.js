@@ -15,6 +15,9 @@ app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
+app.get('/library', (req, res)=> {
+  console.log(req.body)
+})
 
 app.get('/epub', (req, res) => {
   s3.getObject(req.body, (err, data) => {
@@ -28,4 +31,8 @@ app.get('/epub', (req, res) => {
 
 app.post('/upload', (req, res)=> {
   console.log(req.body)
+  //upload to s3
+  // get link from s3
+  // post link into db where email
+  //
 })
