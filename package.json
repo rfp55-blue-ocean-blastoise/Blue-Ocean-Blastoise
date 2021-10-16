@@ -32,6 +32,10 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-file-reader-input": "^2.0.0",
+    "react-reader": "^0.20.4",
+    "styled-components": "^4.*",
+    "styled-components-breakpoint": "^3.0.0-preview.20",
     "terser-webpack-plugin": "^5.2.4",
     "util": "^0.12.4",
     "webpack": "^5.52.1"
