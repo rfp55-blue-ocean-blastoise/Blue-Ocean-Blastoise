@@ -15,10 +15,6 @@ app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
-const bucketParams = {
-  Key: "accessible_epub_3 (1).epub",
-  Bucket: 'blueocean',
-};
 
 app.get('/epub', (req, res) => {
   s3.getObject(req.body, (err, data) => {
