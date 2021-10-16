@@ -43,16 +43,44 @@
 import React, { useRef, useState } from "react"
 import { ReactReader } from "react-reader"
 
+// Books
+const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
+const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
+const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
+
 const App = () => {
   const [page, setPage] = useState('')
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
+
   const locationChanged = (epubcifi) => {
     if (renditionRef.current && tocRef.current) {
       const { displayed, href } = renditionRef.current.location.start
       const chapter = tocRef.current.find((item) => item.href === href)
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
-      // console.log('current rendition', renditionRef.current)
+
+      // Callback stuff
+      function voiceStartCallback() {
+        console.log("Voice started");
+      }
+
+      function voiceEndCallback() {
+        console.log("Voice ended");
+        var audio = document.getElementById('audio');
+        audio.play();
+        setTimeout(() => { renditionRef.current.next() }, 400);
+      }
+
+      var parameters = {
+        onstart: voiceStartCallback,
+        onend: voiceEndCallback,
+        volume: 1
+      }
+
+      console.log('current rendition', renditionRef.current)
+      console.log('current book', renditionRef.current.book)
+      // console.log('current book "getRange"', renditionRef.current.book.getRange)
+
       // console.log('current location', renditionRef.current.location)
       // console.log('current location start', renditionRef.current.location.start)
       // console.log('current location end', renditionRef.current.location.end)
@@ -62,10 +90,14 @@ const App = () => {
       const locationStartCfi = renditionRef.current.location.start.cfi;
       const locationEndCfi = renditionRef.current.location.end.cfi;
 
+
+      /**************************************************************************************************************
+      NOTE: Need to use a function to find the greatest common base string between the two start/end rage cfi's for the "breakpoint"
+      ***************************************************************************************************************/
       const breakpoint = locationStartCfi.indexOf(']!') + 6;
       const base = locationStartCfi.substring(0, breakpoint);
       const startRange = locationStartCfi.substring(breakpoint, locationStartCfi.length - 1);
-      const endRange = locationEndCfi.substring(breakpoint, locationEndCfi);
+      const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
       console.log('base', base);
@@ -73,15 +105,15 @@ const App = () => {
       console.log('endRange', endRange);
       console.log('cfiRange', cfiRange);
 
-      // book.getRange(cfiRange).then(function (range) {
-      //   console.log('range', range);
-      //   let text = range.toString()
-      //   console.log('text', text);
-      //   // console.log(text === "\n  ")
-      //   if (text && text.length > 0 && text !== "\n  ") {
-      //     responsiveVoice.speak(text, "UK English Female", parameters);
-      //   }
-      // })
+      renditionRef.current.book.getRange(cfiRange).then(function (range) {
+        console.log('range', range);
+        let text = range.toString()
+        console.log('text', text);
+        // console.log(text === "\n  ")
+        if (text && text.length > 0 && text !== "\n  ") {
+          responsiveVoice.speak(text, "UK English Female", parameters);
+        }
+      })
 
     }
   }
@@ -90,12 +122,12 @@ const App = () => {
       <div style={{ height: "100vh" }}>
         <ReactReader
           locationChanged={locationChanged}
-          url="https://gerhardsletten.github.io/react-reader/files/alice.epub"
+          url={alice}
           getRendition={(rendition) => renditionRef.current = rendition}
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', left: '1rem', textAlign: 'center', zIndex: 1}}>
+      <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', left: '1rem', textAlign: 'center', zIndex: 1 }}>
         {page}
       </div>
     </>
