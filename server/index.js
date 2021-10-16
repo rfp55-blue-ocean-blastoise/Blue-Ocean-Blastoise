@@ -3,6 +3,8 @@ const path = require('path');
 const axios = require('axios');
 const { db } = require('../database/index.js');
 const s3 = require('../aws/s3.js');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
 
 const PORT = 3000;
 const app = express();
