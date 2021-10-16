@@ -50,6 +50,7 @@ const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
 
 const App = () => {
   const [page, setPage] = useState('')
+  const [location, setLocation] = useState(null)
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
@@ -58,6 +59,7 @@ const App = () => {
       const { displayed, href } = renditionRef.current.location.start
       const chapter = tocRef.current.find((item) => item.href === href)
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
+      setLocation(epubcifi)
 
       // Callback stuff
       function voiceStartCallback() {
@@ -121,8 +123,9 @@ const App = () => {
     <>
       <div style={{ height: "100vh" }}>
         <ReactReader
+          location={location}
           locationChanged={locationChanged}
-          url={alice}
+          url={moby}
           getRendition={(rendition) => renditionRef.current = rendition}
           tocChanged={toc => tocRef.current = toc}
         />
