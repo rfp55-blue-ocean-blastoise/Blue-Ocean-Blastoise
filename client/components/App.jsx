@@ -48,11 +48,27 @@ const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
 const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
 
+console.log(responsiveVoice.enableEstimationTimeout);
+responsiveVoice.enableEstimationTimeout = false;
+console.log(responsiveVoice.enableEstimationTimeout);
+
 const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
+
+  const handlePause = (e) => {
+    e.preventDefault();
+    responsiveVoice.pause();
+    console.log('clicked to pause');
+  }
+
+  const handleResume = (e) => {
+    e.preventDefault();
+    responsiveVoice.resume();
+    console.log('clicked to resume');
+  }
 
   const locationChanged = (epubcifi) => {
     if (renditionRef.current && tocRef.current) {
@@ -132,6 +148,10 @@ const App = () => {
       </div>
       <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', left: '1rem', textAlign: 'center', zIndex: 1 }}>
         {page}
+        <div id="audio-controls">
+          <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} />
+          <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} />
+        </div>
       </div>
     </>
   )

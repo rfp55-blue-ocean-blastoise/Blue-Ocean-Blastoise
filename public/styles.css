@@ -1,0 +1,17 @@
+/* #audio-controls {
+  position: fixed;
+  width: 100%;
+  bottom: 15%;
+  display: flex;
+  justify-content: center;
+} */
+
+.audio-button {
+  margin: 0.5rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  text-decoration: none;
+  width: 1rem;
+}
