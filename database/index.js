@@ -16,8 +16,8 @@ db.once("open", () => {
 });
 
 let Brothers = mongoose.Schema({
-  Email: String,
-  Books: [{ Link: String, Title: String, CFI: String }]
+  email: String,
+  books: [{ Link: String, Title: String, CFI: String }]
 });
 
 let Brother = mongoose.model('Brother', Brothers);
@@ -32,15 +32,23 @@ let retrieveTheBrother = (email, callback) => {
   .catch( err => callback(err));
 }
 
-// let postTheBrother = (, , callback) => {
- // Upload data to s3
- // get the link from s3
- // update mongodb with link
- // send
-// }
+let postTheBrother = (body, callback) => {
+  const { email, books } = body;
+  Brother.create({ email, books }, (err, data) => {
+    // ({Email: email, Books: books})
+    if (err) {
+      callback(err, null)
+    } else {
+      callback(null, data)
+    }
+  })
+}
 
 // let postEpub = (, , callback) => {
-
+  //  Upload data to s3
+  //  get the link from s3
+  //  update mongodb with link
+  //  send
 // }
 
 // let updateTheBrother = (, , callback) =>  {
@@ -55,4 +63,5 @@ let retrieveTheBrother = (email, callback) => {
 module.exports = {
   db,
   retrieveTheBrother,
+  postTheBrother
 };

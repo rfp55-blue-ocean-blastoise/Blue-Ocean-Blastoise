@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {signUpWithEmail} from "../firebase.js"
 import axios from "axios";
 
 export default function Signup() {
@@ -7,18 +8,20 @@ export default function Signup() {
 
   const createUser = (e) => {
     e.preventDefault();
-    const req = {
-      method: "POST",
-      url: "",
-      data: {
-        email,
-        password,
-      },
-    };
-    console.log({ req });
-    axios(req)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    signUpWithEmail(email, password)
+      .then(({user}) => {
+        axios({
+          method: "POST",
+          url :'/users',
+          data: {
+            email: user.email,
+            books: [],
+          }
+        })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err, 'err from axios'))
+      })
+      .catch((err) => console.log(err, 'err from firebase'))
   };
 
   return (

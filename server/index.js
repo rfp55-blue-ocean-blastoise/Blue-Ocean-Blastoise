@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const axios = require('axios');
-const { db } = require('../database/index.js');
+const { db, postTheBrother, retrieveTheBrother } = require('../database/index.js');
 const s3 = require('../aws/s3.js');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
@@ -16,6 +16,28 @@ app.use(express.urlencoded({ extended: true }));
 app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
+
+app.post('/users', (req, res)=> {
+  console.log(req.body)
+  postTheBrother(req.body, (err, data)=> {
+    if (err) {
+      res.status(418).send(err)
+    } else {
+      res.status(201).send(data)
+    }
+  })
+})
+
+app.get('/users:email', (req, res)=> {
+  console.log(req.params)
+  retrieveTheBrother (req.params, (err, data)=> {
+    if (err) {
+      res.status(418).send(err)
+    } else {
+      res.status(200).send(data)
+    }
+  })
+})
 
 app.get('/library', (req, res)=> {
   console.log(req.body)
