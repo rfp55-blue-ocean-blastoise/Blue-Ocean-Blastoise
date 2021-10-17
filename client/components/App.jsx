@@ -71,6 +71,7 @@ const App = () => {
   }
 
   const locationChanged = (epubcifi) => {
+    responsiveVoice.cancel();
     if (renditionRef.current && tocRef.current) {
       const { displayed, href } = renditionRef.current.location.start
       const chapter = tocRef.current.find((item) => item.href === href)
