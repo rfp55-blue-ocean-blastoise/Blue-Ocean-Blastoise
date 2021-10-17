@@ -40,7 +40,7 @@
 
 // export default App;
 
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { ReactReader } from "react-reader"
 
 // Books
@@ -55,6 +55,8 @@ console.log(responsiveVoice.enableEstimationTimeout);
 const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
+  const [selections, setSelections] = useState([])
+
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
@@ -96,15 +98,16 @@ const App = () => {
         volume: 1
       }
 
-      console.log('current rendition', renditionRef.current)
-      console.log('current book', renditionRef.current.book)
+      // console.log('current rendition', renditionRef.current)
+      // console.log('current book', renditionRef.current.book)
       // console.log('current book "getRange"', renditionRef.current.book.getRange)
 
       // console.log('current location', renditionRef.current.location)
       // console.log('current location start', renditionRef.current.location.start)
       // console.log('current location end', renditionRef.current.location.end)
-      console.log('current location start cfi', renditionRef.current.location.start.cfi)
-      console.log('current location end cfi', renditionRef.current.location.end.cfi)
+
+      // console.log('current location start cfi', renditionRef.current.location.start.cfi)
+      // console.log('current location end cfi', renditionRef.current.location.end.cfi)
 
       const locationStartCfi = renditionRef.current.location.start.cfi;
       const locationEndCfi = renditionRef.current.location.end.cfi;
@@ -119,10 +122,10 @@ const App = () => {
       const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
-      console.log('base', base);
-      console.log('startRange', startRange);
-      console.log('endRange', endRange);
-      console.log('cfiRange', cfiRange);
+      // console.log('base', base);
+      // console.log('startRange', startRange);
+      // console.log('endRange', endRange);
+      // console.log('cfiRange', cfiRange);
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
@@ -133,9 +136,29 @@ const App = () => {
           responsiveVoice.speak(text, "UK English Female", parameters);
         }
       })
-
     }
   }
+
+  useEffect(() => {
+    if (renditionRef.current) {
+      function setRenderSelection(cfiRange, contents) {
+        console.log('cfiRange', cfiRange)
+        console.log('contents', contents)
+        setSelections(selections.concat({
+          text: renditionRef.current.getRange(cfiRange).toString(),
+          cfiRange
+        }))
+        // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
+        renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5"})
+        contents.window.getSelection().removeAllRanges()
+      }
+      renditionRef.current.on("selected", setRenderSelection)
+      return () => {
+        renditionRef.current.off("selected", setRenderSelection)
+      }
+    }
+  }, [setSelections, selections])
+
   return (
     <>
       <div style={{ height: "100vh" }}>
@@ -143,12 +166,34 @@ const App = () => {
           location={location}
           locationChanged={locationChanged}
           url={moby}
-          getRendition={(rendition) => renditionRef.current = rendition}
+          getRendition={(rendition) => {
+            renditionRef.current = rendition
+            renditionRef.current.themes.default({
+              '::selection': {
+                'background': 'orange'
+              }
+            })
+            setSelections([])
+          }}
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
       <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', left: '1rem', textAlign: 'center', zIndex: 1 }}>
         {page}
+        {/* Selection:
+        <ul>
+          {selections.map(({ text, cfiRange }, i) => (
+            <li key={i}>
+              {text} <button onClick={() => {
+                renditionRef.current.display(cfiRange)
+              }}>Show</button>
+              <button onClick={() => {
+                renditionRef.current.annotations.remove(cfiRange, 'highlight')
+                setSelections(selections.filter((item, j) => j !== i))
+              }}>x</button>
+            </li>
+          ))}
+        </ul> */}
         <div id="audio-controls">
           <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} />
           <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} />
