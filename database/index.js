@@ -34,30 +34,24 @@ let retrieveTheBrother = (email, callback) => {
 
 let postTheBrother = (body, callback) => {
   const { email, books } = body;
-  Brother.create({ email, books }, (err, data) => {
-    // ({Email: email, Books: books})
-    if (err) {
-      callback(err, null)
-    } else {
-      callback(null, data)
-    }
-  })
+  Brother.create({ email, books })
+  .then((results) => callback(null, results))
+  .catch( err => callback(err));
 }
 
-// let postEpub = (, , callback) => {
+// let updateTheHomie = (, , callback) =>  {
+
+// }
+
+
+// let postHomie = (, , callback) => {
   //  Upload data to s3
   //  get the link from s3
   //  update mongodb with link
   //  send
 // }
 
-// let updateTheBrother = (, , callback) =>  {
 
-// }
-
-// let removeTheHomie = (condition, callback) => {
-
-// }
 
 
 module.exports = {

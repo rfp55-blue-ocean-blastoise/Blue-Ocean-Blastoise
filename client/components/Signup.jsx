@@ -36,6 +36,9 @@ const Signup = () => {
   return (
     <BrowserRouter>
       <div className="sign-up">
+
+        <h2> Sign up </h2>
+
         <form type="submit" onSubmit={createUser}>
           <label>
             Email:
@@ -48,7 +51,7 @@ const Signup = () => {
           <br />
 
           <label>
-            Password PASSWORD!!! :
+            Password:
             <input
               type="password"
               className="password"
@@ -58,7 +61,7 @@ const Signup = () => {
 
           <br />
 
-          <input type="submit" value="Submit" />
+          <input type="submit" value="Create Account" />
         </form>
 
         <div className="signup-exists">

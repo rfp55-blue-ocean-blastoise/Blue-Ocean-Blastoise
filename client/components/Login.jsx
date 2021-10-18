@@ -24,6 +24,9 @@ const Login = () => {
   return (
 
     <div className="login">
+
+      <h2>Log In </h2>
+
       <form type="submit" onSubmit={loginUser}>
         <label>
           Email:
@@ -46,7 +49,7 @@ const Login = () => {
 
         <br />
 
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Log In" />
       </form>
 
       <div className="need-account">

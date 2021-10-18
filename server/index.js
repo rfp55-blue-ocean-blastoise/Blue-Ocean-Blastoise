@@ -29,19 +29,19 @@ app.post('/users', (req, res)=> {
   })
 })
 
-app.get('/users:email', (req, res)=> {
-  console.log(req.params)
-  retrieveTheBrother (req.params, (err, data)=> {
+
+
+app.get('/library', (req, res)=> {
+  const email = req.query.email
+  console.log('body', req.body)
+  console.log('email', email)
+  retrieveTheBrother(email, (err, data) => {
     if (err) {
       res.status(418).send(err)
     } else {
-      res.status(200).send(data)
+      res.status(200).send(data[0].books)
     }
   })
-})
-
-app.get('/library', (req, res)=> {
-  console.log(req.body)
 })
 
 app.get('/epub', (req, res) => {
@@ -60,4 +60,16 @@ app.post('/upload', (req, res)=> {
   // get link from s3
   // post link into db where email
   //
+})
+
+// testing
+app.get('/users:email', (req, res)=> {
+  console.log(req.params)
+  retrieveTheBrother(req.params, (err, data)=> {
+    if (err) {
+      res.status(418).send(err)
+    } else {
+      res.status(200).send(data)
+    }
+  })
 })
