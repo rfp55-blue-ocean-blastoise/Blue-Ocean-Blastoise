@@ -14,8 +14,8 @@
 import React, { Component } from 'react'
 import { createGlobalStyle } from 'styled-components';
 import FileReaderInput from 'react-file-reader-input';
-import { ReactReader } from './custom-react-reader/modules';
-// import { ReactReader } from 'react-reader';
+// import { ReactReader } from './custom-react-reader/modules';
+import { ReactReader } from 'react-reader';
 
 import {
   Container,
