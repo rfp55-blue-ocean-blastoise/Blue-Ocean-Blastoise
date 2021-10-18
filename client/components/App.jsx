@@ -92,9 +92,19 @@ const App = () => {
         setTimeout(() => { renditionRef.current.next() }, 400);
       }
 
+      function voicePauseCallback() {
+        console.log("Voice paused");
+      }
+
+      function voiceResumeCallback() {
+        console.log("Voice resumed");
+      }
+
       var parameters = {
         onstart: voiceStartCallback,
         onend: voiceEndCallback,
+        onpause: voicePauseCallback,
+        onresume: voiceResumeCallback,
         volume: 1
       }
 
