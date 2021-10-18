@@ -19,6 +19,7 @@ const Upload = () => {
     <div>
       <form onSubmit={post}>
         <input
+          name="epub"
           type="file"
           onChange={(e) => setFiles(e.target.files[0])}
         ></input>

@@ -1,5 +1,8 @@
 const S3 = require("aws-sdk/clients/s3");
 const config = require("../config.js");
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+// const aws = require('aws-sdk');
 
 const secretKey = config.aws_secret_access_key;
 const accessKey = config.aws_access_key_id;
@@ -30,26 +33,34 @@ const getObject = (bucketParams, callback) => {
   });
 }
 //upload object to s3
-const upload = (bucketName) => {
-  multer({
+const upload = multer({
     storage: multerS3({
       s3,
-      bucket: bucketName,
+      bucket,
+      acl: 'public-read',
       metadata: function (req, file, cb) {
+        console.log({file}, ' metadata500')
         cb(null, { fieldName: file.fieldname });
       },
-      key: function (req, file, cb) {
-        cb(null, `epub-${Date.now()}`);
-      },
-    })})
-}
-const uploadObject = (req, res) => {
-  const uploadSingle = upload('blueocean').single('sing-epub');
+      key: function (req, file, cb){
+        console.log({file})
+        cb(null, `epub-${Date.now().toString()}`);
+      }
+    })
+  })
 
 
+const uploadObject = () => {
+  s3.upload.single('epub')
+  next()
 };
 
+// app.post('/upload', upload.array('photos', 3), function(req, res, next) {
+//   res.send('Successfully uploaded ' + req.files.length + ' files!')
+// })
+
+
 module.exports = {
-  uploadObject,
+  upload,
   getObject,
 };

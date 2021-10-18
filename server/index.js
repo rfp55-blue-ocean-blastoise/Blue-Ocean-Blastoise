@@ -2,17 +2,20 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 const { db, postTheBrother, retrieveTheBrother } = require('../database/index.js');
-const s3 = require('../aws/s3.js');
+const { upload } = require('../aws/s3.js');
+const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-// console.log({s3})
+// console.log('single', s3.upload.single)
+// console.log({upload})
 
 const PORT = 3000;
 const app = express();
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
 app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
@@ -29,12 +32,8 @@ app.post('/users', (req, res)=> {
   })
 })
 
-
-
 app.get('/library', (req, res)=> {
   const email = req.query.email
-  console.log('body', req.body)
-  console.log('email', email)
   retrieveTheBrother(email, (err, data) => {
     if (err) {
       res.status(418).send(err)
@@ -54,13 +53,19 @@ app.get('/epub', (req, res) => {
   })
 })
 
-app.post('/upload', (req, res)=> {
-  console.log(req.body)
+app.post('/upload', upload.array('epub'), (req, res)=> {
+  console.log({res})
+  // console.log(req.body)
   //upload to s3
+
   // get link from s3
   // post link into db where email
   //
 })
+
+
+
+
 
 // testing
 app.get('/users:email', (req, res)=> {

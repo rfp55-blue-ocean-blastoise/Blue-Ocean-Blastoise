@@ -39,17 +39,18 @@ let postTheBrother = (body, callback) => {
   .catch( err => callback(err));
 }
 
+// let postTheHomie = (, , callback) => {
+  //  Upload data to s3
+  //  get the link and title from s3
+  //  update mongodb with link, title based on user context
+  //  send
+// }
+
 // let updateTheHomie = (, , callback) =>  {
 
 // }
 
 
-// let postHomie = (, , callback) => {
-  //  Upload data to s3
-  //  get the link from s3
-  //  update mongodb with link
-  //  send
-// }
 
 
 

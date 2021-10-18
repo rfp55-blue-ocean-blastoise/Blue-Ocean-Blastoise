@@ -3,6 +3,7 @@ import { GlobalContext } from "./GlobalContextProvider";
 import { signInWithEmail } from "../firebase.js";
 import axios from "axios";
 import { BrowserRouter, Link, useHistory } from "react-router-dom";
+import Upload from "./Upload";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -56,6 +57,7 @@ const Login = () => {
         Need an account?
         <Link to='/signup'>Sign Up </Link>
       </div>
+      <Upload/>
     </div>
   );
 }
