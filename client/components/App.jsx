@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import Upload from './Upload.jsx'
-import Signup from './Signup.jsx';
+import React, { useState } from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Login from "./Login";
+import Upload from "./Upload";
+import Signup from "./Signup";
+import LibraryTest from './LibraryTest';
 
 const App = () => {
-  const [name, setName] = useState('BROTHER');
+  const [name, setName] = useState("BROTHER");
   return (
-  <div>
-    <h1>HELLO {name}</h1>
-    <Upload/>
-    <Signup/>
-  </div>
-  )
-}
+    <BrowserRouter>
+    <div className="app">
+        <Switch>
+          <Route exact path="/" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/librarytest" component={LibraryTest} />
+        </Switch>
+    </div>
+      </BrowserRouter>
+  );
+};
 
 export default App;

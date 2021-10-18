@@ -29,9 +29,25 @@ const getObject = (bucketParams, callback) => {
     }
   });
 }
-
 //upload object to s3
-const uploadObject = () => {};
+const upload = (bucketName) => {
+  multer({
+    storage: multerS3({
+      s3,
+      bucket: bucketName,
+      metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: function (req, file, cb) {
+        cb(null, `epub-${Date.now()}`);
+      },
+    })})
+}
+const uploadObject = (req, res) => {
+  const uploadSingle = upload('blueocean').single('sing-epub');
+
+
+};
 
 module.exports = {
   uploadObject,

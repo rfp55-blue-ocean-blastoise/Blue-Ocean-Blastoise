@@ -5,6 +5,7 @@ const { db, postTheBrother, retrieveTheBrother } = require('../database/index.js
 const s3 = require('../aws/s3.js');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+// console.log({s3})
 
 const PORT = 3000;
 const app = express();
