@@ -2,10 +2,22 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 const { db, postTheBrother, retrieveTheBrother } = require('../database/index.js');
-const { upload } = require('../aws/s3.js');
+// const { uploadS3 } = require('../aws/s3.js');
+
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const fs = require('fs')
+
+const upload = multer({ dest: 'uploads/' })
+
+const util = require('util')
+const unlinkFile = util.promisify(fs.unlink)
+
+const { getObject, uploadFile, getFileStream } = require('../aws/s3.js')
+
+
+
 // console.log('single', s3.upload.single)
 // console.log({upload})
 
@@ -44,7 +56,7 @@ app.get('/library', (req, res)=> {
 })
 
 app.get('/epub', (req, res) => {
-  s3.getObject(req.body, (err, data) => {
+  getObject(req.body, (err, data) => {
     if (err){
       res.sendStatus(500)
     } else {
@@ -53,14 +65,38 @@ app.get('/epub', (req, res) => {
   })
 })
 
-app.post('/upload', upload.array('epub'), (req, res)=> {
-  console.log({res})
-  // console.log(req.body)
-  //upload to s3
+// app.post('/upload', uploadS3.array('epub'), (req, res)=> {
+//   console.log(res)
+//   // console.log(req.body)
+//   //upload to s3
 
-  // get link from s3
-  // post link into db where email
-  //
+//   // get link from s3
+//   // post link into db where email
+//   //
+// })
+
+// NEW CODE
+
+app.get('/epub/:key', (req, res) => {
+  console.log(req.params)
+  const key = req.params.key
+  const readStream = getFileStream(key)
+
+  readStream.pipe(res)
+})
+
+app.post('/upload', upload.single('image'), async (req, res) => {
+  const file = req.file
+  console.log(file)
+
+  // apply filter
+  // resize
+
+  const result = await uploadFile(file)
+  await unlinkFile(file.path)
+  console.log({result})
+  const description = req.body.description
+  res.send({imagePath: `/epub/${result.Key}`})
 })
 
 
