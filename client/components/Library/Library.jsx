@@ -15,6 +15,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
+import { styled } from '@mui/system';
+import ModalUnstyled from '@mui/core/ModalUnstyled';
 import Search from './Search';
 import Player from './Player';
 
@@ -22,8 +24,13 @@ const Library = (props) => {
   const [books, setBooks] = useState(bookMockData.slice().reverse());
   const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
   const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
-  const [email, setEmail] = useState('t@t.com')
-  const [sortOption, setSortOption] = useState('recently added')
+  const [email, setEmail] = useState('t@t.com');
+  const [sortOption, setSortOption] = useState('recently added');
+  const [open, setOpen] = useState(false);
+  const [removeBook, setRemoveBook] = useState({});
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const history = useHistory();
 
   let voiceCommandError = '';
@@ -208,11 +215,34 @@ const Library = (props) => {
           </CardContent>
           <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button size='medium' value={book.link} onClick={e => handlePlayBook(e.target.value)}>Play</Button>
-            <Button size='medium' value={book.link} color='warning' onClick={handleRemoveBook}>Remove</Button>
+            <Button size='medium' value={book} color='warning' onClick={() => {
+              setRemoveBook(book);
+              setOpen(true);
+            }}>Remove</Button>
           </CardActions>
         </Card>
       ))}
       </div>
+      <div>
+        <StyledModal
+          aria-labelledby="unstyled-modal-title"
+          aria-describedby="unstyled-modal-description"
+          open={open}
+          onClose={handleClose}
+          BackdropComponent={Backdrop}
+        >
+          <Box sx={style}>
+            <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button size='small' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
+              <Button size='small' onClick={() => {
+                setRemoveBook({});
+                setOpen(false);
+              }}>No</Button>
+            </div>
+          </Box>
+        </StyledModal>
+    </div>
     </div>
   );
 };
@@ -267,8 +297,8 @@ const bookMockData = [
     id: 3
   },
   {
-    link: 'url Winnie the Pooh',
-    title: 'Winnie the Pooh',
+    link: 'url Winnie-the-Pooh',
+    title: 'Winnie-the-Pooh',
     CFI: 'string',
     id: 2
   },
@@ -285,5 +315,37 @@ const bookMockData = [
     id: 0
   }
 ];
+
+const StyledModal = styled(ModalUnstyled)`
+  position: fixed;
+  z-index: 1300;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Backdrop = styled('div')`
+  z-index: -1;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-tap-highlight-color: transparent;
+`;
+
+const style = {
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  p: 2,
+  px: 4,
+  pb: 3,
+};
 
 export default Library;
