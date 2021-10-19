@@ -76,6 +76,38 @@ const App = () => {
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
+  // Callback stuff
+  function voiceStartCallback() {
+    console.log("Voice started");
+  }
+
+  function voiceEndCallback() {
+    console.log("Voice ended");
+    var audio = document.getElementById('audio');
+    audio.play();
+    setTimeout(() => {
+      if (renditionRef.current) {
+        renditionRef.current.next()
+      }
+    }, 400);
+  }
+
+  function voicePauseCallback() {
+    console.log("Voice paused");
+  }
+
+  function voiceResumeCallback() {
+    console.log("Voice resumed");
+  }
+
+  var parameters = {
+    onstart: voiceStartCallback,
+    onend: voiceEndCallback,
+    onpause: voicePauseCallback,
+    onresume: voiceResumeCallback,
+    volume: 0.8
+  }
+
   const handlePause = (e) => {
     if (isPlaying) {
       e.preventDefault();
@@ -131,34 +163,6 @@ const App = () => {
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
       setLocation(epubcifi)
 
-      // Callback stuff
-      function voiceStartCallback() {
-        console.log("Voice started");
-      }
-
-      function voiceEndCallback() {
-        console.log("Voice ended");
-        var audio = document.getElementById('audio');
-        audio.play();
-        setTimeout(() => { renditionRef.current.next() }, 400);
-      }
-
-      function voicePauseCallback() {
-        console.log("Voice paused");
-      }
-
-      function voiceResumeCallback() {
-        console.log("Voice resumed");
-      }
-
-      var parameters = {
-        onstart: voiceStartCallback,
-        onend: voiceEndCallback,
-        onpause: voicePauseCallback,
-        onresume: voiceResumeCallback,
-        volume: 1
-      }
-
       // console.log('current rendition', renditionRef.current)
       // console.log('current book', renditionRef.current.book)
       // console.log('current book "getRange"', renditionRef.current.book.getRange)
@@ -194,7 +198,7 @@ const App = () => {
         remainingText.current = text;
         console.log('text', text);
         // console.log(text === "\n  ")
-        if (text && text.length > 0 && text !== "\n  ") {
+        if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n  ") {
           // currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
           setPlaying(true);
