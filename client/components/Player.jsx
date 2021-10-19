@@ -27,7 +27,13 @@ const Player = () => {
   ***************************************************************************************************************/
   const [isPlaying, setPlaying] = useState(false);
   // const [volume, setVolume] = useState(.1);
-  const volumeRef = useRef(0.1);
+  // const volumeRef = useRef(0.1);
+  const [parameters, setParameters] = useState({
+    onstart: voiceStartCallback,
+    onend: voiceEndCallback,
+    volume: 0.5,
+  });
+
   const responsiveVoiceTextArray = useRef([]);
   const responsiveVoiceCurrentMsgIndex = useRef(null);
   const remainingText = useRef('');
@@ -38,14 +44,6 @@ const Player = () => {
   // Callback stuff
   function voiceStartCallback() {
     console.log("Voice started");
-  }
-
-  var parameters = {
-    onstart: voiceStartCallback,
-    onend: voiceEndCallback,
-    onpause: voicePauseCallback,
-    onresume: voiceResumeCallback,
-    volume: volumeRef.current,
   }
 
   function voiceEndCallback() {
@@ -59,17 +57,8 @@ const Player = () => {
     }, 400);
   }
 
-  function voicePauseCallback() {
-    console.log("Voice paused");
-  }
-
-  function voiceResumeCallback() {
-    console.log("Voice resumed");
-  }
-
-  const handlePause = (e) => {
+  const handlePause = () => {
     if (isPlaying) {
-      e.preventDefault();
       responsiveVoiceTextArray.current = responsiveVoice.multipartText;
       responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
       remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
@@ -85,9 +74,8 @@ const Player = () => {
     }
   }
 
-  const handleResume = (e) => {
+  const handleResume = () => {
     if (!isPlaying) {
-      e.preventDefault();
       responsiveVoice.clickEvent();
       responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
       console.log('clicked to resume');
@@ -153,17 +141,58 @@ const Player = () => {
     }
   }
 
-  const handleIncrease = (e) => {
+  const handleVolumeChange = (e) => {
     console.log('increase detected')
     e.preventDefault();
-    volumeRef.current = 1;
-    responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-    responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-    remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    responsiveVoice.cancel();
-    responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-    // responsiveVoice.msgparameters.volume = 1;
+    // volumeRef.current = 1;
+    // const newVolume = e.target.value / 100;
+    const newVolume = e.target.value;
+    setParameters({
+      onstart: voiceStartCallback,
+      onend: voiceEndCallback,
+      volume: newVolume,
+    })
+    console.log('old volume', parameters.volume);
+    handlePause();
   }
+
+  // const handleIncrease = (e) => {
+  //   console.log('increase detected')
+  //   e.preventDefault();
+  //   // volumeRef.current = 1;
+  //   const newVolume = parameters.volume + .5;
+  //   setParameters({
+  //     onstart: voiceStartCallback,
+  //     onend: voiceEndCallback,
+  //     volume: newVolume,
+  //   })
+  //   console.log('old volume', parameters.volume);
+  //   handlePause();
+  // }
+
+  // const handleDecrease = (e) => {
+  //   console.log('Decrease detected')
+  //   e.preventDefault();
+  //   // volumeRef.current = .5;
+  //   responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+  //   responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+  //   remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+  //   responsiveVoice.cancel();
+  //   responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+  // }
+
+  useEffect(() => {
+    if (responsiveVoice.multipartText && responsiveVoice.currentMsg) {
+      console.log('new volume', parameters.volume);
+      responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+      responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+      remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+      // responsiveVoice.cancel();
+      handleResume()
+      // responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+      // responsiveVoice.msgparameters.volume = 1;
+    }
+  }, [parameters]);
 
   useEffect(() => {
     if (renditionRef.current) {
@@ -220,8 +249,8 @@ const Player = () => {
             </li>
           ))}
         </ul> */}
-        <button onClick={handleIncrease}>Increase Volume</button>
-        <Controls handleResume={handleResume} handlePause={handlePause} handleIncrease={handleIncrease} />
+        {/* <Controls handleResume={handleResume} handlePause={handlePause} handleIncrease={handleIncrease} handleDecrease={handleDecrease} /> */}
+        <Controls handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters}/>
       </div>
     </>
   )
