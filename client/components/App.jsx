@@ -63,6 +63,12 @@ const App = () => {
   // const [remainingRenditionText, setRemainingRenditionText] = useState('');
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
+
+  /**************************************************************************************************************
+  NOTE: We need to keep track of a 'playing' state/ref which gets updated when whenever we click on the pause/resume buttons.
+  When speech is playing, we don't want to be able to hit the resume button again (otherwise it'll re-start the speech).
+  ***************************************************************************************************************/
+  const [isPlaying, setPlaying] = useState(false);
   const responsiveVoiceTextArray = useRef([]);
   const responsiveVoiceCurrentMsgIndex = useRef(null);
   const remainingText = useRef('');
@@ -71,43 +77,50 @@ const App = () => {
   const tocRef = useRef(null)
 
   const handlePause = (e) => {
-    e.preventDefault();
-    console.log('current message', responsiveVoice.currentMsg)
-    console.log('current message text', responsiveVoice.currentMsg.text)
-    // remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
-    responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-    responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-    remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    // responsiveVoice.pause();
-    responsiveVoice.cancel();
-    console.log('clicked to pause');
-    // console.log('currentRenditionText ref', currentRenditionText.current);
-    // console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
-    // console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
-    console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
-    console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
-    console.log('remainingText.current', remainingText.current);
+    if (isPlaying) {
+      e.preventDefault();
+      console.log('current message', responsiveVoice.currentMsg)
+      console.log('current message text', responsiveVoice.currentMsg.text)
+      // remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+      responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+      responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+      remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+      // responsiveVoice.pause();
+      responsiveVoice.cancel();
+      console.log('clicked to pause');
+      // console.log('currentRenditionText ref', currentRenditionText.current);
+      // console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+      // console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
+      console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
+      console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
+      console.log('remainingText.current', remainingText.current);
+      setPlaying(false);
+    }
   }
 
+
   const handleResume = (e) => {
-    responsiveVoice.clickEvent();
-    e.preventDefault();
-    // responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-    // responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-    // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    // remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    // responsiveVoice.speak(remainingText, "UK English Female");
-    responsiveVoice.speak(remainingText.current, "UK English Female");
-    // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
-    // responsiveVoice.resume();
-    console.log('clicked to resume');
-    // console.log('current responsiveVoice', responsiveVoice)
-    // console.log('current message', responsiveVoice.currentMsg)
-    // console.log('remainingRenditionText', remainingRenditionText.current)
-    // console.log('remainingText', remainingText)
-    console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
-    console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
-    console.log('remainingText.current', remainingText.current);
+    if (!isPlaying) {
+      responsiveVoice.clickEvent();
+      e.preventDefault();
+      // responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+      // responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+      // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+      // remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+      // responsiveVoice.speak(remainingText, "UK English Female");
+      responsiveVoice.speak(remainingText.current, "UK English Female");
+      // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
+      // responsiveVoice.resume();
+      console.log('clicked to resume');
+      // console.log('current responsiveVoice', responsiveVoice)
+      // console.log('current message', responsiveVoice.currentMsg)
+      // console.log('remainingRenditionText', remainingRenditionText.current)
+      // console.log('remainingText', remainingText)
+      console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
+      console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
+      console.log('remainingText.current', remainingText.current);
+      setPlaying(true);
+    }
   }
 
   const locationChanged = (epubcifi) => {
@@ -184,6 +197,7 @@ const App = () => {
         if (text && text.length > 0 && text !== "\n  ") {
           // currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+          setPlaying(true);
         }
       })
     }
