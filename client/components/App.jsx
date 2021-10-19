@@ -52,23 +52,39 @@ console.log(responsiveVoice.enableEstimationTimeout);
 responsiveVoice.enableEstimationTimeout = false;
 console.log(responsiveVoice.enableEstimationTimeout);
 
+console.log(responsiveVoice);
+responsiveVoice.enableWindowClickHook();
+
 const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const [selections, setSelections] = useState([])
+  const [currentRenditionText, setCurrentRenditionText] = useState('');
+  const [remainingRenditionText, setRemainingRenditionText] = useState('');
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
   const handlePause = (e) => {
     e.preventDefault();
+    console.log('current message', responsiveVoice.currentMsg)
+    console.log('current message text', responsiveVoice.currentMsg.text)
+    console.log('currentRenditionText state', currentRenditionText);
+    console.log('index of current message text in currentRenditionText state', currentRenditionText.indexOf(responsiveVoice.currentMsg.text))
+    console.log('remaining message text', currentRenditionText.substring(currentRenditionText.indexOf(responsiveVoice.currentMsg.text)))
+    setRemainingRenditionText(currentRenditionText.substring(currentRenditionText.indexOf(responsiveVoice.currentMsg.text)))
     responsiveVoice.pause();
     console.log('clicked to pause');
   }
 
   const handleResume = (e) => {
+    responsiveVoice.clickEvent();
     e.preventDefault();
-    responsiveVoice.resume();
+    // console.log('current responsiveVoice', responsiveVoice)
+    // console.log('current message', responsiveVoice.currentMsg)
+    responsiveVoice.cancel();
+    responsiveVoice.speak(remainingRenditionText, "UK English Female");
+    // responsiveVoice.resume();
     console.log('clicked to resume');
   }
 
@@ -143,6 +159,7 @@ const App = () => {
         console.log('text', text);
         // console.log(text === "\n  ")
         if (text && text.length > 0 && text !== "\n  ") {
+          setCurrentRenditionText(text);
           responsiveVoice.speak(text, "UK English Female", parameters);
         }
       })
