@@ -14,7 +14,9 @@ const {
   postTheBrother,
   retrieveTheBrother,
   updateBooksArrayForUniqueUser,
+  updateTheCFIForUniqueBookForUniqueUser,
 } = require("../database/index.js");
+
 const upload = multer({ dest: "uploads/" });
 const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
 
@@ -28,7 +30,7 @@ app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
-// Creates a user and post to MongoDB
+// Post to MongoDB after successful account sign up
 app.post("/users", (req, res) => {
   // console.log(req.body);
   postTheBrother(req.body, (err, data) => {
@@ -57,14 +59,16 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
   const file = req.file;
   const { user } = req.body;
 
-  console.log(user, "user");
-
   const result = await uploadFile(file, file.originalname);
   await unlinkFile(file.path);
-  // TODO post to MONGO after successful S3 upload!!
-  console.log({ result })
 
-  const book = { link: result.Location, title: result.Key }
+  // Post to MONGO after successful S3 upload!!
+  const book = {
+    link: result.Location,
+    title: result.Key,
+    cfi: "",
+    remainingText: "",
+  };
 
   updateBooksArrayForUniqueUser(user, book, (err, data) => {
     if (err) {
@@ -72,7 +76,18 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
     } else {
       res.status(201).send(data);
     }
-  })
+  });
+});
+
+app.put("/library", (req, res) => {
+  const params = req.body;
+  updateTheCFIForUniqueBookForUniqueUser(params, (err, data) => {
+    if (err) {
+      res.status(418).send(err);
+    } else {
+      res.status(201).send(data);
+    }
+  });
 });
 
 // EXPERIMENTAL
@@ -81,7 +96,7 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
 app.get("/epub", (req, res) => {
   getObject(req.body, (err, data) => {
     if (err) {
-      res.sendStatus(500);
+      res.sendStatus(500).send(err);
     } else {
       res.status(200).send(data);
     }

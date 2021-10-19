@@ -18,7 +18,7 @@ db.once("open", () => {
 let Brothers = mongoose.Schema({
   email: {
     type: String,
-    unique: true
+    unique: true,
   },
   books: [{ link: String, title: String, cfi: String, remainingText: String }],
 });
@@ -39,18 +39,27 @@ let postTheBrother = (body, callback) => {
 };
 
 let updateBooksArrayForUniqueUser = (email, book, callback) => {
-  Brother.findOneAndUpdate({ email }, { '$push': { books: book } })
+  Brother.findOneAndUpdate({ email }, { $push: { books: book } })
     .then((results) => callback(null, results))
-    .catch((err) => console.log(err, "err from posthomie"));
+    .catch((err) => console.log(err, "err from updateBooksArrayForUniqueUser"));
 };
 
-// let updateTheHomie = (, , callback) =>  {
-
-// }
+let updateTheCFIForUniqueBookForUniqueUser = (params, callback) => {
+  const { email, title, cfi, remainingText } = params;
+  Brother.findOneAndUpdate(
+    { email: email, "books.title": title },
+    { $set: { "books.$.cfi": cfi, "books.$.remainingText": remainingText } }
+  )
+    .then((results) => callback(null, results))
+    .catch((err) =>
+      console.log(err, "err from updateTheCFIForUniqueBookForUniqueUser")
+    );
+};
 
 module.exports = {
   db,
   retrieveTheBrother,
   postTheBrother,
   updateBooksArrayForUniqueUser,
+  updateTheCFIForUniqueBookForUniqueUser,
 };
