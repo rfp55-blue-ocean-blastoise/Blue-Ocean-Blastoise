@@ -17,16 +17,19 @@ import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 import { styled } from '@mui/system';
 import ModalUnstyled from '@mui/core/ModalUnstyled';
+import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
 import Player from './Player';
+import Upload from './Upload';
 
 const Library = (props) => {
   const [books, setBooks] = useState(bookMockData.slice().reverse());
   const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
   const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
   const [email, setEmail] = useState('t@t.com');
-  const [sortOption, setSortOption] = useState('recently added');
+  const [sortOption, setSortOption] = useState('recent');
   const [openRemove, setOpenRemove] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
 
   const history = useHistory();
@@ -50,7 +53,7 @@ const Library = (props) => {
       command: ['Sort by *'],
       callback: (input) => {
         const lowerInput = input.toLowerCase();
-        if (lowerInput === 'recently added' || lowerInput === 'a-to-z') {
+        if (lowerInput === 'recent' || lowerInput === 'title') {
           setSortOption(lowerInput);
         } else {
           voiceCommandError = <p>Sort option not found</p>;
@@ -58,9 +61,26 @@ const Library = (props) => {
       }
     },
     {
-      command: ['Play *'],
+      command: ['Read *'],
       callback: (input) => {
-        console.log('THIS IS INPUT: ', input);
+        let book = {};
+        for (var i = 0; i < books.length; i++) {
+          if (books[i].title.toLowerCase() === input.toLowerCase()) {
+            book = books[i];
+            break;
+          }
+        }
+        console.log('THIS IS BOOKLINK: ', bookLink);
+        if (Object.keys(book).length) {
+          props.handleReadBook(book);
+        } else {
+          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
+        }
+      }
+    },
+    {
+      command: ['Remove *'],
+      callback: (input) => {
         let bookLink = '';
         for (var i = 0; i < books.length; i++) {
           if (books[i].title.toLowerCase() === input.toLowerCase()) {
@@ -70,9 +90,9 @@ const Library = (props) => {
         }
         console.log('THIS IS BOOKLINK: ', bookLink);
         if (bookLink.length) {
-          handlePlayBook(bookLink);
+          handleRemoveBook(bookLink);
         } else {
-          voiceCommandError = <p>Could not find book with title: {input}</p>;
+          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
         }
       }
     }
@@ -89,12 +109,12 @@ const Library = (props) => {
   }, [])
 
   useEffect(() => {
-    if (sortOption === 'a-to-z') {
+    if (sortOption === 'title') {
       const sortedBooks = books.slice().sort(sortByTitle);
       const sortedDisplayBooks = displayBooks.slice().sort(sortByTitle);
       setBooks(sortedBooks);
       setDisplayBooks(sortedDisplayBooks);
-    } else if (sortOption === 'recently added') {
+    } else if (sortOption === 'recent') {
       const sortedBooks = books.slice().sort(sortById);
       const sortedDisplayBooks = displayBooks.slice().sort(sortById);
       setBooks(sortedBooks);
@@ -102,8 +122,10 @@ const Library = (props) => {
     }
   },[sortOption])
 
-  const handlePlayBook = (bookLink) => {
-    props.handlePlayBook(bookLink);
+  const handleCloseUpload = () => setOpenUpload(false);
+
+  const handleReadBook = (book) => {
+    props.handleReadBook(book);
     history.push('/player');
   };
 
@@ -153,35 +175,53 @@ const Library = (props) => {
 
   const handleLogOut = () => {
     //change email stored in global context to ''
-    //redirect to the landing page: history.push('/');
+    //setValue('');
+    //redirect to the landing page:
+    //history.push('/');
     console.log('To Do after setting up react context and router');
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>BookBrother</h1>
+      <div id='banner' style={{ display: 'flex', alignItems: 'center' }}>
+        <h1 style={{ fontSize: '4rem', marginRight: '70%' }} > BookBrother</h1>
         <Button
-          style={{ height: '2rem' }}
+          style={{ height: '2rem', backgroundColor: '#0c6057' }}
           variant='contained'
-          color='primary'
           type='button'
           onClick={handleLogOut}
         >
           Sign Out
         </Button>
       </div>
-      <Search titles={titles} handleSearch={handleSearch} />
-      <div style={{display: 'flex', justifyContent: 'center'}}>
-        <Button variant='contained' color='primary' type='button' onClick={SpeechRecognition.startListening}>
+      <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+        <Search titles={titles} handleSearch={handleSearch} />
+        <Button
+          style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+          variant='contained'
+          type='button'
+          onClick={() => setOpenUpload(true)}
+        >
+          <AddIcon />
+          &nbsp;
+          new ebook
+        </Button>
+      </div>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+        <Button
+          variant='contained'
+          style={{ backgroundColor: '#11A797' }}
+          type='button'
+          onClick={SpeechRecognition.startListening}
+        >
           <SettingsVoiceIcon />
         </Button>
-        <p id="transcript" style={{marginLeft: '2rem'}}>Transcript: {transcript}</p>
+        <p id="transcript">Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <h2>My Library</h2>
-        <FormControl sx={{ width: '15%', maxheight: '1rem'}}>
+        <h1>My Books</h1>
+        <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
@@ -190,14 +230,14 @@ const Library = (props) => {
             value={sortOption}
             onChange={handleSortOptionChange}
           >
-            <MenuItem value={'recently added'}>Recently added</MenuItem>
-            <MenuItem value={'a-to-z'}>A-Z</MenuItem>
+            <MenuItem value={'recent'}>Recent</MenuItem>
+            <MenuItem value={'title'}>Title</MenuItem>
           </Select>
         </FormControl>
       </div>
-      <div style={{ display: 'flex', padding: '1rem 1rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
       {displayBooks.length === 0 ?
-        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No results found</p>
+        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
         : displayBooks.map(book => (
         <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
           <CardMedia
@@ -212,7 +252,7 @@ const Library = (props) => {
             </Typography>
           </CardContent>
           <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' value={book.link} onClick={e => handlePlayBook(e.target.value)}>Play</Button>
+            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
             <Button size='medium' value={book} color='warning' onClick={() => {
               setRemoveBook(book);
               setOpenRemove(true);
@@ -221,26 +261,58 @@ const Library = (props) => {
         </Card>
       ))}
       </div>
-      <div>
-        <StyledModal
-          aria-labelledby="unstyled-modal-title"
-          aria-describedby="unstyled-modal-description"
-          open={openRemove}
-          onClose={() => setOpenRemove(false)}
-          BackdropComponent={Backdrop}
-        >
-          <Box sx={style}>
-            <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button size='small' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
-              <Button size='small' onClick={() => {
-                setRemoveBook({});
-                setOpenRemove(false);
-              }}>No</Button>
-            </div>
-          </Box>
-        </StyledModal>
-    </div>
+      <h1 style={{padding: '0 2rem'}}>Reading Now</h1>
+      <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
+      {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
+        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
+        : displayBooks.filter(book => book.remainingText !== '').map(book => (
+        <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
+          <CardMedia
+            component='img'
+            width='30'
+            image='/book-cover.png'
+            alt='book cover'
+            />
+          <CardContent sx={{ height: '2.5rem' }}>
+            <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+              {book.title}
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
+          </CardActions>
+        </Card>
+      ))}
+      </div>
+      <StyledModal
+        aria-labelledby="unstyled-modal-title"
+        aria-describedby="unstyled-modal-description"
+        open={openRemove}
+        onClose={() => setOpenRemove(false)}
+        BackdropComponent={Backdrop}
+      >
+        <Box sx={style}>
+          <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button size='small' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
+            <Button size='small' style={{ color: '#0c6057' }} onClick={() => {
+              setRemoveBook({});
+              setOpenRemove(false);
+            }}>No</Button>
+          </div>
+        </Box>
+      </StyledModal>
+      <StyledModal
+        aria-labelledby="unstyled-modal-title"
+        aria-describedby="unstyled-modal-description"
+        open={openUpload}
+        onClose={() => setOpenUpload(false)}
+        BackdropComponent={Backdrop}
+      >
+        <Box sx={style}>
+          <Upload handleCloseUpload={handleCloseUpload}/>
+        </Box>
+      </StyledModal>
     </div>
   );
 };
@@ -259,57 +331,66 @@ const sortById = (a, b) => {
 
 const bookMockData = [
   {
-    link: 'url Alice in Wonderland',
+    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
     title: 'Alice in Wonderland',
     CFI: 'string',
+    remainingText: 'reading now',
     id: 8
   },
   {
-    link: 'url Pinocchio',
+    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
     title: 'Pinocchio',
     CFI: 'string',
+    remainingText: '',
     id: 7
   },
   {
-    link: 'url Snow White and the Seven Dwarfs',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
     title: 'Snow White and the Seven Dwarfs',
     CFI: 'string',
+    remainingText: '',
     id: 6
   },
   {
-    link: 'url Cinderella',
+    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
     title: 'Cinderella',
     CFI: 'string',
+    remainingText: 'reading now',
     id: 5
   },
   {
-    link: 'url Peter Pan',
+    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
     title: 'Peter Pan',
     CFI: 'string',
+    remainingText: 'reading now',
     id: 4
   },
   {
-    link: 'url Tangled',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
     title: 'Tangled',
     CFI: 'string',
+    remainingText: '',
     id: 3
   },
   {
-    link: 'url Winnie-the-Pooh',
+    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
     title: 'Winnie-the-Pooh',
     CFI: 'string',
+    remainingText: '',
     id: 2
   },
   {
-    link: 'url Beauty and the Beast',
+    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
     title: 'Beauty and the Beast',
     CFI: 'string',
+    remainingText: 'reading now',
     id: 1
   },
   {
-    link: 'url Sleeping Beauty',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
     title: 'Sleeping Beauty',
     CFI: 'string',
+    remainingText: '',
     id: 0
   }
 ];
@@ -339,7 +420,7 @@ const Backdrop = styled('div')`
 
 const style = {
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: '#fffa9f',
   border: '2px solid #000',
   p: 2,
   px: 4,

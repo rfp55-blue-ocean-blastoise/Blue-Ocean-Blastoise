@@ -12,8 +12,8 @@ const Search = (props) => {
   };
 
   return (
-    <div style={{display: 'flex', justifyContent: 'center', margin: '2rem 0 2rem 0' }}>
-      <TextField sx={{width: '60%'}} id="search" label="Search" type="search" value={searchValue} onChange={handleChange} InputProps={{
+    <div style={{ width: '70%', marginRight: '2rem' }}>
+      <TextField sx={{width: '100%'}} id="search" label="Search" type="search" value={searchValue} onChange={handleChange} InputProps={{
           startAdornment: (
             <InputAdornment position="start">
               <SearchIcon />

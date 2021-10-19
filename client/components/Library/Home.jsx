@@ -4,19 +4,19 @@ import Library from './Library';
 import Player from './Player';
 
 const Home = () => {
-  const [bookURL, setBookURL] = useState('');
+  const [book, setBook] = useState({});
 
-  const handlePlayBook = (url) => {
-    setBookURL(url);
+  const handleReadBook = (book) => {
+    setBook(book);
   };
 
   return (
     <BrowserRouter>
         <Route exact path='/'>
-          <Library handlePlayBook={handlePlayBook} />
+          <Library handleReadBook={handleReadBook} />
         </Route>
         <Route path='/player'>
-          <Player url={bookURL}/>
+          <Player book={book}/>
         </Route>
     </BrowserRouter>
   )
