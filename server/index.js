@@ -1,116 +1,88 @@
-const express = require('express');
-const path = require('path');
-const axios = require('axios');
-const { db, postTheBrother, retrieveTheBrother } = require('../database/index.js');
-// const { uploadS3 } = require('../aws/s3.js');
-
-const aws = require('aws-sdk');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const fs = require('fs')
-
-const upload = multer({ dest: 'uploads/' })
-
-const util = require('util')
-const unlinkFile = util.promisify(fs.unlink)
-
-const { getObject, uploadFile, getFileStream } = require('../aws/s3.js')
-
-
-
-// console.log('single', s3.upload.single)
-// console.log({upload})
-
-const PORT = 3000;
+const express = require("express");
+const path = require("path");
+const aws = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const fs = require("fs");
+const util = require("util");
+const unlinkFile = util.promisify(fs.unlink);
 const app = express();
+const PORT = 3000;
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
-// app.use(express.json());
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
+const {
+  db,
+  postTheBrother,
+  retrieveTheBrother,
+  postTheHomie,
+} = require("../database/index.js");
+const upload = multer({ dest: "uploads/" });
+const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
+
+app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.json({ limit: "50mb" }));
+app.use(
+  express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 })
+);
 
 app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
-app.post('/users', (req, res)=> {
-  console.log(req.body)
-  postTheBrother(req.body, (err, data)=> {
+// Creates a user and post to MongoDB
+app.post("/users", (req, res) => {
+  // console.log(req.body);
+  postTheBrother(req.body, (err, data) => {
     if (err) {
-      res.status(418).send(err)
+      res.status(418).send(err);
     } else {
-      res.status(201).send(data)
+      res.status(201).send(data);
     }
-  })
-})
+  });
+});
 
-app.get('/library', (req, res)=> {
-  const email = req.query.email
+// gives back Book Array for unique user
+app.get("/library", (req, res) => {
+  const email = req.query.email;
   retrieveTheBrother(email, (err, data) => {
     if (err) {
-      res.status(418).send(err)
+      res.status(418).send(err);
     } else {
-      res.status(200).send(data[0].books)
+      res.status(200).send(data[0].books);
     }
-  })
-})
+  });
+});
 
-app.get('/epub', (req, res) => {
+// Upload to S3 and Post Book Title to MongoDB
+app.post("/upload", upload.single("epub"), async (req, res) => {
+  const file = req.file;
+  const { user } = req.body;
+
+  console.log(user, "user");
+
+  const result = await uploadFile(file, file.originalname);
+  await unlinkFile(file.path);
+  // TODO post to MONGO after successful S3 upload!!
+  console.log({ result });
+  res.send({ imagePath: `/epub/${result.Key}` });
+});
+
+// EXPERIMENTAL
+
+// Retrieves specific EPUB
+app.get("/epub", (req, res) => {
   getObject(req.body, (err, data) => {
-    if (err){
-      res.sendStatus(500)
-    } else {
-      res.status(200).send(data)
-    }
-  })
-})
-
-// app.post('/upload', uploadS3.array('epub'), (req, res)=> {
-//   console.log(res)
-//   // console.log(req.body)
-//   //upload to s3
-
-//   // get link from s3
-//   // post link into db where email
-//   //
-// })
-
-// NEW CODE
-
-app.get('/epub/:key', (req, res) => {
-  console.log(req.params)
-  const key = req.params.key
-  const readStream = getFileStream(key)
-
-  readStream.pipe(res)
-})
-
-app.post('/upload', upload.single('epub'), async (req, res) => {
-  const file = req.file
-  console.log(file)
-
-  // apply filter
-  // resize
-
-  const result = await uploadFile(file)
-  await unlinkFile(file.path)
-  console.log({result})
-  const description = req.body.description
-  res.send({imagePath: `/epub/${result.Key}`})
-})
-
-
-
-
-
-// testing
-app.get('/users:email', (req, res)=> {
-  console.log(req.params)
-  retrieveTheBrother(req.params, (err, data)=> {
     if (err) {
-      res.status(418).send(err)
+      res.sendStatus(500);
     } else {
-      res.status(200).send(data)
+      res.status(200).send(data);
     }
-  })
-})
+  });
+});
+
+// app.get("/epub/:key", (req, res) => {
+//   console.log(req.params);
+//   const key = req.params.key;
+//   const readStream = getFileStream(key);
+
+//   readStream.pipe(res);
+// });

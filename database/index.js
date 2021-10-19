@@ -17,46 +17,39 @@ db.once("open", () => {
 
 let Brothers = mongoose.Schema({
   email: String,
-  books: [{ Link: String, Title: String, CFI: String }]
+  books: [{ Link: String, Title: String, CFI: String, remainingText: String }],
 });
 
-let Brother = mongoose.model('Brother', Brothers);
-
-
-// REST API
-
+let Brother = mongoose.model("Brother", Brothers);
 
 let retrieveTheBrother = (email, callback) => {
-  Brother.find({email})
-  .then((results) => callback(null, results))
-  .catch( err => callback(err));
-}
+  Brother.find({ email })
+    .then((results) => callback(null, results))
+    .catch((err) => callback(err));
+};
 
 let postTheBrother = (body, callback) => {
   const { email, books } = body;
   Brother.create({ email, books })
-  .then((results) => callback(null, results))
-  .catch( err => callback(err));
-}
+    .then((results) => callback(null, results))
+    .catch((err) => callback(err));
+};
 
-// let postTheHomie = (, , callback) => {
-  //  Upload data to s3
-  //  get the link and title from s3
+let postTheHomie = (email, book, callback) => {
+  Brother.findOneAndUpdate({ email }, { $push: { books: book } })
+    .then((results) => callback(null, results))
+    .catch((err) => console.log(err, "err from posthomie"));
   //  update mongodb with link, title based on user context
   //  send
-// }
+};
 
 // let updateTheHomie = (, , callback) =>  {
 
 // }
 
-
-
-
-
-
 module.exports = {
   db,
   retrieveTheBrother,
-  postTheBrother
+  postTheBrother,
+  postTheHomie,
 };

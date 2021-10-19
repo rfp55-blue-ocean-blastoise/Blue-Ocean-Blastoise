@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GlobalContext } from "./GlobalContextProvider";
 import axios from "axios";
 
 const Upload = () => {
   const [files, setFiles] = useState([]);
+  const { value, setValue } = useContext(GlobalContext);
 
   const post = (event) => {
     event.preventDefault();
 
     const formData = new FormData();
     formData.append("epub", files)
-
-    console.log('WALMART ',formData)
-    axios.post('/upload', formData ,{headers: {'Content-Type': 'multipart/form-data'}})
+    formData.append("user", value)
+    axios.post('/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .then((result) => console.log(result))
       .catch((err) => console.log(err));
   };
