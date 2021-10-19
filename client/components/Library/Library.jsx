@@ -26,10 +26,8 @@ const Library = (props) => {
   const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
   const [email, setEmail] = useState('t@t.com');
   const [sortOption, setSortOption] = useState('recently added');
-  const [open, setOpen] = useState(false);
+  const [openRemove, setOpenRemove] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   const history = useHistory();
 
@@ -217,7 +215,7 @@ const Library = (props) => {
             <Button size='medium' value={book.link} onClick={e => handlePlayBook(e.target.value)}>Play</Button>
             <Button size='medium' value={book} color='warning' onClick={() => {
               setRemoveBook(book);
-              setOpen(true);
+              setOpenRemove(true);
             }}>Remove</Button>
           </CardActions>
         </Card>
@@ -227,8 +225,8 @@ const Library = (props) => {
         <StyledModal
           aria-labelledby="unstyled-modal-title"
           aria-describedby="unstyled-modal-description"
-          open={open}
-          onClose={handleClose}
+          open={openRemove}
+          onClose={() => setOpenRemove(false)}
           BackdropComponent={Backdrop}
         >
           <Box sx={style}>
@@ -237,7 +235,7 @@ const Library = (props) => {
               <Button size='small' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
               <Button size='small' onClick={() => {
                 setRemoveBook({});
-                setOpen(false);
+                setOpenRemove(false);
               }}>No</Button>
             </div>
           </Box>
