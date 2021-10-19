@@ -76,6 +76,26 @@ const App = () => {
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
+  function longestBaseString(str1, str2){
+    let shorterString;
+    let longerString;
+    if (str1.length < str2.length) {
+      shorterString = str1;
+      longerString = str2;
+    } else {
+      shorterString = str2;
+      longerString = str1;
+    }
+
+    const length = shorterString.length;
+    let i = 0;
+    while (i < length && str1.charAt(i) === str2.charAt(i)) {
+      i++;
+    }
+
+    return str1.substring(0, i);
+}
+
   // Callback stuff
   function voiceStartCallback() {
     console.log("Voice started");
@@ -187,12 +207,21 @@ const App = () => {
       const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
-      // console.log('base', base);
-      // console.log('startRange', startRange);
-      // console.log('endRange', endRange);
-      // console.log('cfiRange', cfiRange);
+      const myBase = longestBaseString(locationStartCfi, locationEndCfi);
+      const myStartRange = locationStartCfi.substring(myBase.length, locationStartCfi.length - 1);
+      const myEndRange = locationEndCfi.substring(myBase.length, locationEndCfi.length);
+      const myCfiRange = `${myBase},${myStartRange},${myEndRange}`;
+      console.log('myBase', myBase)
+      console.log('myStartRange', myStartRange);
+      console.log('myEndRange', myEndRange);
+      console.log('myCfiRange', myCfiRange);
 
-      renditionRef.current.book.getRange(cfiRange).then(function (range) {
+      console.log('base', base);
+      console.log('startRange', startRange);
+      console.log('endRange', endRange);
+      console.log('cfiRange', cfiRange);
+
+      renditionRef.current.book.getRange(myCfiRange).then(function (range) {
         console.log('range', range);
         let text = range.toString()
         remainingText.current = text;
