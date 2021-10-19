@@ -56,7 +56,7 @@ let updateBooksArrayForUniqueUser = (email, book, callback) => {
             console.log(err, "err from updateBooksArrayForUniqueUser")
           );
       } else {
-        callback(err, "This book already exists");
+        callback(null, "This book already exists");
       }
     })
     .catch((err) => callback(err));
@@ -73,6 +73,8 @@ let updateTheCFIForUniqueBookForUniqueUser = (params, callback) => {
       console.log(err, "err from updateTheCFIForUniqueBookForUniqueUser")
     );
 };
+
+
 
 module.exports = {
   db,

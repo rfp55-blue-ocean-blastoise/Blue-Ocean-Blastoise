@@ -86,6 +86,10 @@ app.put("/library", (req, res) => {
   });
 });
 
+app.delete("/library/:epub", (err, data) => {
+
+});
+
 // EXPERIMENTAL
 
 // Retrieves specific EPUB
@@ -94,7 +98,7 @@ app.get("/epub", (req, res) => {
     if (err) {
       res.sendStatus(500).send(err);
     } else {
-      res.status(200).send('Successful CFI update');
+      res.status(200).send("Successful CFI update");
     }
   });
 });
