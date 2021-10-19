@@ -140,7 +140,7 @@ const App = () => {
       // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
       // remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
       // responsiveVoice.speak(remainingText, "UK English Female");
-      responsiveVoice.speak(remainingText.current, "UK English Female");
+      responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
       // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
       // responsiveVoice.resume();
       console.log('clicked to resume');
@@ -233,7 +233,7 @@ const App = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={moby}
+          url={alice}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
