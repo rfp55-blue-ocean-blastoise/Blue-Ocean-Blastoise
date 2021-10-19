@@ -61,8 +61,11 @@ const App = () => {
   const [selections, setSelections] = useState([])
   // const [currentRenditionText, setCurrentRenditionText] = useState('');
   // const [remainingRenditionText, setRemainingRenditionText] = useState('');
-  const currentRenditionText = useRef('');
-  const remainingRenditionText = useRef('');
+  // const currentRenditionText = useRef('');
+  // const remainingRenditionText = useRef('');
+  const responsiveVoiceTextArray = useRef([]);
+  const responsiveVoiceCurrentMsgIndex = useRef(null);
+  const remainingText = useRef('');
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
@@ -71,23 +74,40 @@ const App = () => {
     e.preventDefault();
     console.log('current message', responsiveVoice.currentMsg)
     console.log('current message text', responsiveVoice.currentMsg.text)
-    console.log('currentRenditionText ref', currentRenditionText.current);
-    console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
-    console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
-    remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+    // remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+    responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+    responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+    remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
     responsiveVoice.pause();
     console.log('clicked to pause');
+    // console.log('currentRenditionText ref', currentRenditionText.current);
+    // console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+    // console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
+    console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
+    console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
+    console.log('remainingText.current', remainingText.current);
   }
 
   const handleResume = (e) => {
     responsiveVoice.clickEvent();
     e.preventDefault();
-    // console.log('current responsiveVoice', responsiveVoice)
-    // console.log('current message', responsiveVoice.currentMsg)
     responsiveVoice.cancel();
-    responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
+    responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+    responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+    // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+    remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+    // responsiveVoice.speak(remainingText, "UK English Female");
+    responsiveVoice.speak(remainingText.current, "UK English Female");
+    // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
     // responsiveVoice.resume();
     console.log('clicked to resume');
+    // console.log('current responsiveVoice', responsiveVoice)
+    // console.log('current message', responsiveVoice.currentMsg)
+    // console.log('remainingRenditionText', remainingRenditionText.current)
+    // console.log('remainingText', remainingText)
+    console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
+    console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
+    console.log('remainingText.current', remainingText.current);
   }
 
   const locationChanged = (epubcifi) => {
@@ -161,7 +181,7 @@ const App = () => {
         console.log('text', text);
         // console.log(text === "\n  ")
         if (text && text.length > 0 && text !== "\n  ") {
-          currentRenditionText.current = text;
+          // currentRenditionText.current = text;
           responsiveVoice.speak(text, "UK English Female", parameters);
         }
       })
@@ -178,7 +198,7 @@ const App = () => {
           cfiRange
         }))
         // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
-        renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5"})
+        renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
         contents.window.getSelection().removeAllRanges()
       }
       renditionRef.current.on("selected", setRenderSelection)
