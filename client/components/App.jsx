@@ -59,8 +59,6 @@ const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const [selections, setSelections] = useState([])
-  // const [currentRenditionText, setCurrentRenditionText] = useState('');
-  // const [remainingRenditionText, setRemainingRenditionText] = useState('');
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
 
@@ -111,18 +109,14 @@ const App = () => {
   const handlePause = (e) => {
     if (isPlaying) {
       e.preventDefault();
-      console.log('current message', responsiveVoice.currentMsg)
-      console.log('current message text', responsiveVoice.currentMsg.text)
-      // remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
       responsiveVoiceTextArray.current = responsiveVoice.multipartText;
       responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
       remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-      // responsiveVoice.pause();
       responsiveVoice.cancel();
       console.log('clicked to pause');
-      // console.log('currentRenditionText ref', currentRenditionText.current);
-      // console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
-      // console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
+      console.log('current responsiveVoice', responsiveVoice)
+      console.log('current message', responsiveVoice.currentMsg)
+      console.log('current message text', responsiveVoice.currentMsg.text)
       console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
       console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
       console.log('remainingText.current', remainingText.current);
@@ -133,21 +127,13 @@ const App = () => {
 
   const handleResume = (e) => {
     if (!isPlaying) {
-      responsiveVoice.clickEvent();
       e.preventDefault();
-      // responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-      // responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-      // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-      // remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-      // responsiveVoice.speak(remainingText, "UK English Female");
+      responsiveVoice.clickEvent();
       responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-      // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
-      // responsiveVoice.resume();
       console.log('clicked to resume');
-      // console.log('current responsiveVoice', responsiveVoice)
-      // console.log('current message', responsiveVoice.currentMsg)
-      // console.log('remainingRenditionText', remainingRenditionText.current)
-      // console.log('remainingText', remainingText)
+      console.log('current responsiveVoice', responsiveVoice)
+      console.log('current message', responsiveVoice.currentMsg)
+      console.log('current message text', responsiveVoice.currentMsg.text)
       console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
       console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
       console.log('remainingText.current', remainingText.current);
