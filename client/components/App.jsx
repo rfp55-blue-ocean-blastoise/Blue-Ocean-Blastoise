@@ -178,12 +178,20 @@
 import React, { useRef, useState, useEffect } from "react";
 import { ReactReader } from "react-reader";
 import axios from 'axios';
-
+import Epub from 'epubjs/lib/index';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
 const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
+
+const bookTest = new Epub(moby)
+console.log('epub', bookTest);
+// console.log('BOOKTEST', bookTest.locations.cfiFromLocation());
+
+let textIndex = 0;
+let audio1 = document.getElementById('audio1')
+let audio2 = document.getElementById('audio2')
 
 console.log(responsiveVoice.enableEstimationTimeout);
 responsiveVoice.enableEstimationTimeout = false;
@@ -196,6 +204,7 @@ const App = () => {
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
+
 
   const handlePause = (e) => {
     e.preventDefault();
@@ -224,8 +233,8 @@ const App = () => {
 
       function voiceEndCallback() {
         console.log("Voice ended");
-        var audio = document.getElementById('audio');
-        audio.play();
+        var pageFlip = document.getElementById('page-flip');
+        pageFlip.play();
         setTimeout(() => { renditionRef.current.next() }, 400);
       }
 
@@ -258,8 +267,9 @@ const App = () => {
 
       const locationStartCfi = renditionRef.current.location.start.cfi;
       const locationEndCfi = renditionRef.current.location.end.cfi;
-
-
+      // console.log('locationEndCfi', locationEndCfi)
+      // const locationTest = new Locations(renditionRef.current.book.spine)
+      // console.log('locationTest', locationTest)
       /**************************************************************************************************************
       NOTE: Need to use a function to find the greatest common base string between the two start/end rage cfi's for the "breakpoint"
       ***************************************************************************************************************/
@@ -269,31 +279,76 @@ const App = () => {
       const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
+      // console.log('cfiRange', cfiRange, startRange, endRange)
+
       // console.log('base', base);
       // console.log('startRange', startRange);
       // console.log('endRange', endRange);
       // console.log('cfiRange', cfiRange);
 
+      const createAudio = (line) => {
+        return axios.post('/audio', {data: line})
+          .catch((err) => console.log(err));
+      }
 
+      audio1.addEventListener('ended', () => {
+        let audio2 = document.getElementById(`audio2`)
+        audio2.play();
+      });
 
-
+      audio2.addEventListener('ended', () => {
+        let audio1 = document.getElementById(`audio1`)
+        audio1.play();
+      });
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
-        console.log('range', range);
+        console.log('renditionRef', renditionRef, 'range', range);
         let text = range.toString()
+        text = text.split('\n');
+        text = text.map((line) => line.trim());
+        text = text.filter((line) => {
+          return line !== '' ? true : false
+        });
         console.log('text', text);
-        axios.post('/audio', {data: text})
-          .then((res) => console.log(res))
-          .catch((err) => console.error(err));
-        // console.log(text === "\n  ")
-        if (text && text.length > 0 && text !== "\n  ") {
-          responsiveVoice.speak(text, "UK English Female", parameters);
-        }
-      }).catch((err) => {
-        console.error(err);
+        createAudio(text[textIndex])
+          .then(() => {
+            textIndex++;
+            document.getElementById(`audio1`).play();
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+
+        audio1.addEventListener('playing', () => {
+          console.log('detected audio1 playing')
+          if (textIndex > text.length - 1) return;
+          createAudio(text[textIndex])
+            .then(() => textIndex++)
+            .catch((error) => {
+              console.log(error)
+            })
+        });
+
+        audio2.addEventListener('playing', () => {
+          console.log('detected audio2 playing')
+          if (textIndex > text.length - 1) return;
+          createAudio(text[textIndex])
+            .then(() => textIndex++)
+            .catch((error) => {
+              console.log(error)
+            })
+        });
       })
+        // console.log(text === "\n  ")
+        // if (text && text.length > 0 && text !== "\n  ") {
+        //   responsiveVoice.speak(text, "UK English Female", parameters);
+        // }
+      // }).catch((err) => {
+      //   console.error(err);
+      // })
     }
   }
+
 
   useEffect(() => {
     if (renditionRef.current) {
