@@ -78,7 +78,8 @@ const App = () => {
     responsiveVoiceTextArray.current = responsiveVoice.multipartText;
     responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
     remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    responsiveVoice.pause();
+    // responsiveVoice.pause();
+    responsiveVoice.cancel();
     console.log('clicked to pause');
     // console.log('currentRenditionText ref', currentRenditionText.current);
     // console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
@@ -91,11 +92,10 @@ const App = () => {
   const handleResume = (e) => {
     responsiveVoice.clickEvent();
     e.preventDefault();
-    responsiveVoice.cancel();
-    responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-    responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
+    // responsiveVoiceTextArray.current = responsiveVoice.multipartText;
+    // responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
     // const remainingText = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-    remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+    // remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
     // responsiveVoice.speak(remainingText, "UK English Female");
     responsiveVoice.speak(remainingText.current, "UK English Female");
     // responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
