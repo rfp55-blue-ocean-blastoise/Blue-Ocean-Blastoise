@@ -20,7 +20,14 @@ let Brothers = mongoose.Schema({
     type: String,
     unique: true,
   },
-  books: [{ link: String, title: String, cfi: String, remainingText: String }],
+  books: [
+    {
+      link: { type: String, unique: true },
+      title: { type: String, unique: true },
+      cfi: String,
+      remainingText: String
+    }
+  ],
 });
 
 let Brother = mongoose.model("Brother", Brothers);

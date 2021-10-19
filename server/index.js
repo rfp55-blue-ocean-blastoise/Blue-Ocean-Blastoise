@@ -9,6 +9,7 @@ const unlinkFile = util.promisify(fs.unlink);
 const app = express();
 const PORT = 3000;
 
+const upload = multer({ dest: "uploads/" });
 const {
   db,
   postTheBrother,
@@ -16,8 +17,6 @@ const {
   updateBooksArrayForUniqueUser,
   updateTheCFIForUniqueBookForUniqueUser,
 } = require("../database/index.js");
-
-const upload = multer({ dest: "uploads/" });
 const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
 
 app.use(express.static(path.join(__dirname, "..", "public")));
@@ -98,7 +97,7 @@ app.get("/epub", (req, res) => {
     if (err) {
       res.sendStatus(500).send(err);
     } else {
-      res.status(200).send(data);
+      res.status(200).send('Successful CFI update');
     }
   });
 });
