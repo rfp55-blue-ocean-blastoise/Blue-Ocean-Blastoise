@@ -37,14 +37,14 @@ function getObject (bucketParams, callback) {
 exports.getObject = getObject;
 
 function uploadFile(file) {
-  console.log({file})
-  console.log('file.path', file.path)
+  // console.log({file})
+  // console.log('file.path', file.path)
   const fileStream = fs.createReadStream(file.path)
 
   const uploadParams = {
     Bucket: bucket,
     Body: fileStream,
-    Key: file.filename
+    Key: file.filename + '.epub'
   }
 
   return s3.upload(uploadParams).promise()

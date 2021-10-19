@@ -6,16 +6,10 @@ const Upload = () => {
 
   const post = (event) => {
     event.preventDefault();
+
     const formData = new FormData();
-    formData.append("image", files)
-    const request = {
-      method: "POST",
-      url: "/upload",
-      data: files,
-    };
-    const data = {
-      data : files,
-    }
+    formData.append("epub", files)
+
     console.log('WALMART ',formData)
     axios.post('/upload', formData ,{headers: {'Content-Type': 'multipart/form-data'}})
       .then((result) => console.log(result))
@@ -25,8 +19,9 @@ const Upload = () => {
     <div>
       <form onSubmit={post} encType="multipart/form-data">
         <input
-          name="image"
+          name="epub"
           type="file"
+          accept=".epub"
           onChange={(e) => setFiles(e.target.files[0])}
         ></input>
         <input type="submit"></input>

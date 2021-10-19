@@ -85,7 +85,7 @@ app.get('/epub/:key', (req, res) => {
   readStream.pipe(res)
 })
 
-app.post('/upload', upload.single('image'), async (req, res) => {
+app.post('/upload', upload.single('epub'), async (req, res) => {
   const file = req.file
   console.log(file)
 
