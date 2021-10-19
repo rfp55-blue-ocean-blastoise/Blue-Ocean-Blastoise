@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Library from './Library/Library';
+import Home from './Library/Home';
 
 const App = () => {
   const [name, setName] = useState('BROTHER');
   return (
   <div>
-    <Library />
+    <Home />
   </div>
   )
 };
