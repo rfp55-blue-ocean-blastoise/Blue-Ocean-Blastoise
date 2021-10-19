@@ -13,7 +13,7 @@ const {
   db,
   postTheBrother,
   retrieveTheBrother,
-  postTheHomie,
+  updateBooksArrayForUniqueUser,
 } = require("../database/index.js");
 const upload = multer({ dest: "uploads/" });
 const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
@@ -62,8 +62,17 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
   const result = await uploadFile(file, file.originalname);
   await unlinkFile(file.path);
   // TODO post to MONGO after successful S3 upload!!
-  console.log({ result });
-  res.send({ imagePath: `/epub/${result.Key}` });
+  console.log({ result })
+
+  const book = { link: result.Location, title: result.Key }
+
+  updateBooksArrayForUniqueUser(user, book, (err, data) => {
+    if (err) {
+      res.status(418).send(err);
+    } else {
+      res.status(201).send(data);
+    }
+  })
 });
 
 // EXPERIMENTAL
