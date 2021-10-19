@@ -59,8 +59,10 @@ const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const [selections, setSelections] = useState([])
-  const [currentRenditionText, setCurrentRenditionText] = useState('');
-  const [remainingRenditionText, setRemainingRenditionText] = useState('');
+  // const [currentRenditionText, setCurrentRenditionText] = useState('');
+  // const [remainingRenditionText, setRemainingRenditionText] = useState('');
+  const currentRenditionText = useRef('');
+  const remainingRenditionText = useRef('');
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
@@ -69,10 +71,10 @@ const App = () => {
     e.preventDefault();
     console.log('current message', responsiveVoice.currentMsg)
     console.log('current message text', responsiveVoice.currentMsg.text)
-    console.log('currentRenditionText state', currentRenditionText);
-    console.log('index of current message text in currentRenditionText state', currentRenditionText.indexOf(responsiveVoice.currentMsg.text))
-    console.log('remaining message text', currentRenditionText.substring(currentRenditionText.indexOf(responsiveVoice.currentMsg.text)))
-    setRemainingRenditionText(currentRenditionText.substring(currentRenditionText.indexOf(responsiveVoice.currentMsg.text)))
+    console.log('currentRenditionText ref', currentRenditionText.current);
+    console.log('index of current message text in currentRenditionText ref', currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
+    console.log('remaining message text', currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text)))
+    remainingRenditionText.current = currentRenditionText.current.substring(currentRenditionText.current.indexOf(responsiveVoice.currentMsg.text))
     responsiveVoice.pause();
     console.log('clicked to pause');
   }
@@ -83,7 +85,7 @@ const App = () => {
     // console.log('current responsiveVoice', responsiveVoice)
     // console.log('current message', responsiveVoice.currentMsg)
     responsiveVoice.cancel();
-    responsiveVoice.speak(remainingRenditionText, "UK English Female");
+    responsiveVoice.speak(remainingRenditionText.current, "UK English Female");
     // responsiveVoice.resume();
     console.log('clicked to resume');
   }
@@ -159,7 +161,7 @@ const App = () => {
         console.log('text', text);
         // console.log(text === "\n  ")
         if (text && text.length > 0 && text !== "\n  ") {
-          setCurrentRenditionText(text);
+          currentRenditionText.current = text;
           responsiveVoice.speak(text, "UK English Female", parameters);
         }
       })
