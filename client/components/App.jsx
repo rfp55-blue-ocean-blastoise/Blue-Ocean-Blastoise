@@ -178,11 +178,12 @@ const App = () => {
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
         let text = range.toString()
+        remainingText.current = text;
         console.log('text', text);
         // console.log(text === "\n  ")
         if (text && text.length > 0 && text !== "\n  ") {
           // currentRenditionText.current = text;
-          responsiveVoice.speak(text, "UK English Female", parameters);
+          responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
         }
       })
     }
