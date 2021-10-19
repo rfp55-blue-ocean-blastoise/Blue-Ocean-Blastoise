@@ -128,14 +128,18 @@ const Player = () => {
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
-        let text = range.toString()
+        let text = range.toString().trim()
         remainingText.current = text;
-        console.log('text', text);
+        console.log('text', text.length);
         // console.log(text === "\n  ")
-        if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n  ") {
+        if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n") {
           // currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
           setPlaying(true);
+          // console.log('did if fire')
+        } else {
+          // console.log('did else fire')
+          setTimeout(() => {renditionRef.current.next()}, 4269);
         }
       })
     }
@@ -220,7 +224,7 @@ const Player = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={alice}
+          url={moby}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
