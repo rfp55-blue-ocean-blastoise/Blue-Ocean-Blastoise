@@ -57,10 +57,8 @@ app.get("/library", (req, res) => {
 app.post("/upload", upload.single("epub"), async (req, res) => {
   const file = req.file;
   const { user } = req.body;
-
   const result = await uploadFile(file, file.originalname);
   await unlinkFile(file.path);
-
   // Post to MONGO after successful S3 upload!!
   const book = {
     link: result.Location,
@@ -68,7 +66,6 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
     cfi: "",
     remainingText: "",
   };
-
   updateBooksArrayForUniqueUser(user, book, (err, data) => {
     if (err) {
       res.status(418).send(err);

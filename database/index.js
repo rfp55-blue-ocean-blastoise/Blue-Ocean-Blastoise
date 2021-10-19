@@ -22,11 +22,11 @@ let Brothers = mongoose.Schema({
   },
   books: [
     {
-      link: { type: String, unique: true },
-      title: { type: String, unique: true },
+      link: String,
+      title: String,
       cfi: String,
-      remainingText: String
-    }
+      remainingText: String,
+    },
   ],
 });
 
@@ -46,9 +46,20 @@ let postTheBrother = (body, callback) => {
 };
 
 let updateBooksArrayForUniqueUser = (email, book, callback) => {
-  Brother.findOneAndUpdate({ email }, { $push: { books: book } })
-    .then((results) => callback(null, results))
-    .catch((err) => console.log(err, "err from updateBooksArrayForUniqueUser"));
+  const { link, title, cfi, remainingText } = book;
+  Brother.find({ email, "books.title": title })
+    .then((results) => {
+      if (results.length === 0) {
+        Brother.findOneAndUpdate({ email }, { $push: { books: book } })
+          .then((results) => callback(null, results))
+          .catch((err) =>
+            console.log(err, "err from updateBooksArrayForUniqueUser")
+          );
+      } else {
+        callback(err, "This book already exists");
+      }
+    })
+    .catch((err) => callback(err));
 };
 
 let updateTheCFIForUniqueBookForUniqueUser = (params, callback) => {
