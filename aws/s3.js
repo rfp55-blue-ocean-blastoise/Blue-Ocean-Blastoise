@@ -28,3 +28,9 @@ function uploadFile(file, title) {
   return s3.upload(uploadParams).promise()
 }
 exports.uploadFile = uploadFile
+
+function listObjectsFromBucket (bucketParams){
+  return s3.listObjects(bucketParams).promise()
+
+}
+exports.listObjectsFromBucket = listObjectsFromBucket

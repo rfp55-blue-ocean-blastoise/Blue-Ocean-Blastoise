@@ -18,7 +18,9 @@ const {
   updateBooksArrayForUniqueUser,
   updateTheCFIForUniqueBookForUniqueUser,
 } = require("../database/index.js");
-const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
+const { uploadFile, listObjectsFromBucket } = require("../aws/s3.js");
+const {aws_bucket_name, aws_bucket_region} = require("../config.js");
+
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: "50mb" }));
@@ -107,10 +109,39 @@ app.put("/library", async (req, res) => {
 // req.body = { email , title}
 // returns modifiedCount = <num>
 app.delete("/library", async (req, res) => {
-  try{
-    const result = await deleteTheBrother(req.body)
+  try {
+    const result = await deleteTheBrother(req.body);
     res.status(200).send(result);
-  } catch(err){
+  } catch (err) {
+    res.status(418).send(err);
+  }
+});
+
+
+// Get all Objects in S3
+// req.query = { "Bucket": <s3 bucket name>}
+// response =
+/*
+    {
+        "Key": "09dc6a71a2bd87b6fb2a79a112a971d2.epub",
+        "Etag": "\"a0e1a481a9d2cd4a14444e3bc7ca3320\"",
+        "size": 500133,
+        "URL": "https://blueocean.s3.us-west-1.amazonaws.com/09dc6a71a2bd87b6fb2a79a112a971d2.epub"
+    }
+*/
+app.get("/listObjects", async (req, res) => {
+  try {
+    const objects = await listObjectsFromBucket(req.query);
+    const list = objects.Contents.map((epub) => {
+      return {
+        Key: epub.Key,
+        Etag: epub.ETag,
+        size: epub.Size,
+        URL: `https://${aws_bucket_name}.s3.${aws_bucket_region}.amazonaws.com/${epub.Key}`,
+      };
+    });
+    res.status(200).send(list);
+  } catch (err) {
     res.status(418).send(err);
   }
 });
