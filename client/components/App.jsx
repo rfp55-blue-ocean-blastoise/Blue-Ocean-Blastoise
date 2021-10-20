@@ -76,6 +76,29 @@ const App = () => {
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
+//   setInterval(function(){
+//     //this code runs every second
+//     console.log('does this work')
+// }, 1000);
+
+// function loop() {
+//   console.log('does this work')
+//   if (responsiveVoice) {
+//     if (responsiveVoice.currentMsg) {
+//        console.log('current message', responsiveVoice.currentMsg)
+//        if (responsiveVoice.currentMsg.text) { console.log('current message text', responsiveVoice.currentMsg.text) }
+//   }
+//   }
+//     setTimeout(function () {
+//     // execute script
+//     loop()
+//   }, 1000); //9000 = 9000ms = 9s
+// };
+
+// loop();
+
+console.log('does this work')
+
   function longestBaseString(str1, str2) {
     let shorterString;
     let longerString;
