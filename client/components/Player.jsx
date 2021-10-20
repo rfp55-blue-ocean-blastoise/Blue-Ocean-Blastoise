@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from "react"
 import { ReactReader } from "react-reader"
 import Controls from "./Controls.jsx"
+import Modal from './Modal.jsx';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
 const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
+
+console.log(responsiveVoice.getVoices());
 
 console.log(responsiveVoice.enableEstimationTimeout);
 responsiveVoice.enableEstimationTimeout = false;
@@ -18,6 +21,7 @@ const Player = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const [selections, setSelections] = useState([])
+  const [showModal, setShowModal] = useState(false);
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
 
@@ -28,10 +32,13 @@ const Player = () => {
   const [isPlaying, setPlaying] = useState(false);
   // const [volume, setVolume] = useState(.1);
   // const volumeRef = useRef(0.1);
+  const [size, setSize] = useState(100);
   const [parameters, setParameters] = useState({
     onstart: voiceStartCallback,
     onend: voiceEndCallback,
     volume: 0.5,
+    pitch: 1,
+    rate: 1
   });
 
   const responsiveVoiceTextArray = useRef([]);
@@ -46,6 +53,7 @@ const Player = () => {
     console.log("Voice started");
   }
 
+  // page flip doesn't work anymore :(
   function voiceEndCallback() {
     console.log("Voice ended");
     var audio = document.getElementById('audio');
@@ -77,7 +85,7 @@ const Player = () => {
   const handleResume = () => {
     if (!isPlaying) {
       responsiveVoice.clickEvent();
-      responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+      responsiveVoice.speak(remainingText.current, 'Russian Female', parameters);
       console.log('clicked to resume');
       console.log('current responsiveVoice', responsiveVoice)
       console.log('current message', responsiveVoice.currentMsg)
@@ -134,7 +142,7 @@ const Player = () => {
         // console.log(text === "\n  ")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n") {
           // currentRenditionText.current = text;
-          responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+          responsiveVoice.speak(remainingText.current, 'Russian Female', parameters);
           setPlaying(true);
           // console.log('did if fire')
         } else {
@@ -148,42 +156,17 @@ const Player = () => {
   const handleVolumeChange = (e) => {
     console.log('increase detected')
     e.preventDefault();
-    // volumeRef.current = 1;
-    // const newVolume = e.target.value / 100;
     const newVolume = e.target.value;
     setParameters({
       onstart: voiceStartCallback,
       onend: voiceEndCallback,
       volume: newVolume,
+      rate: parameters.rate,
+      pitch: parameters.pitch
     })
     console.log('old volume', parameters.volume);
     handlePause();
   }
-
-  // const handleIncrease = (e) => {
-  //   console.log('increase detected')
-  //   e.preventDefault();
-  //   // volumeRef.current = 1;
-  //   const newVolume = parameters.volume + .5;
-  //   setParameters({
-  //     onstart: voiceStartCallback,
-  //     onend: voiceEndCallback,
-  //     volume: newVolume,
-  //   })
-  //   console.log('old volume', parameters.volume);
-  //   handlePause();
-  // }
-
-  // const handleDecrease = (e) => {
-  //   console.log('Decrease detected')
-  //   e.preventDefault();
-  //   // volumeRef.current = .5;
-  //   responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-  //   responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-  //   remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-  //   responsiveVoice.cancel();
-  //   responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-  // }
 
   useEffect(() => {
     if (responsiveVoice.multipartText && responsiveVoice.currentMsg) {
@@ -191,12 +174,16 @@ const Player = () => {
       responsiveVoiceTextArray.current = responsiveVoice.multipartText;
       responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
       remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-      // responsiveVoice.cancel();
       handleResume()
-      // responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-      // responsiveVoice.msgparameters.volume = 1;
     }
   }, [parameters]);
+
+  useEffect(() => {
+    if (renditionRef.current) {
+      renditionRef.current.themes.fontSize(`${size}%`)
+      handleResume();
+    }
+  }, [size])
 
   useEffect(() => {
     if (renditionRef.current) {
@@ -212,6 +199,7 @@ const Player = () => {
         contents.window.getSelection().removeAllRanges()
       }
       renditionRef.current.on("selected", setRenderSelection)
+
       return () => {
         renditionRef.current.off("selected", setRenderSelection)
       }
@@ -232,6 +220,7 @@ const Player = () => {
                 'background': 'orange'
               }
             })
+            renditionRef.current.themes.fontSize(`${size}%`)
             setSelections([])
           }}
           tocChanged={toc => tocRef.current = toc}
@@ -239,22 +228,8 @@ const Player = () => {
       </div>
       <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', left: '1rem', textAlign: 'center', zIndex: 1 }}>
         {page}
-        {/* Selection:
-        <ul>
-          {selections.map(({ text, cfiRange }, i) => (
-            <li key={i}>
-              {text} <button onClick={() => {
-                renditionRef.current.display(cfiRange)
-              }}>Show</button>
-              <button onClick={() => {
-                renditionRef.current.annotations.remove(cfiRange, 'highlight')
-                setSelections(selections.filter((item, j) => j !== i))
-              }}>x</button>
-            </li>
-          ))}
-        </ul> */}
-        {/* <Controls handleResume={handleResume} handlePause={handlePause} handleIncrease={handleIncrease} handleDecrease={handleDecrease} /> */}
-        <Controls handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters}/>
+        <Controls setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters}/>
+        <Modal setShowModal={setShowModal} showModal={showModal} setParameters={setParameters} setSize={setSize} size={size} parameters={parameters} handlePause={handlePause}/>
       </div>
     </>
   )
