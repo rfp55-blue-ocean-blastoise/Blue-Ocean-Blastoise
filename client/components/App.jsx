@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./Login";
-import Upload from "./Upload";
 import Signup from "./Signup";
 import Home from './Library/Home';
 
