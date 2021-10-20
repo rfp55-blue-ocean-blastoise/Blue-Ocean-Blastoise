@@ -14,6 +14,7 @@ const {
   db,
   postTheBrother,
   retrieveTheBrother,
+  deleteTheBrother,
   updateBooksArrayForUniqueUser,
   updateTheCFIForUniqueBookForUniqueUser,
 } = require("../database/index.js");
@@ -86,7 +87,14 @@ app.put("/library", (req, res) => {
   });
 });
 
-app.delete("/library/:epub", (err, data) => {
+app.delete("/library", (req, res) => {
+  deleteTheBrother(req.body, (err,data) => {
+    if (err) {
+      res.status(418).send(err)
+    } else {
+      res.status(204).send(data)
+    }
+  })
 
 });
 

@@ -47,6 +47,7 @@ let postTheBrother = (body, callback) => {
 
 let updateBooksArrayForUniqueUser = (email, book, callback) => {
   const { link, title, cfi, remainingText } = book;
+  // TODO : DOUBLE CHECK THE FUNCTION BELOW
   Brother.find({ email, "books.title": title })
     .then((results) => {
       if (results.length === 0) {
@@ -74,6 +75,38 @@ let updateTheCFIForUniqueBookForUniqueUser = (params, callback) => {
     );
 };
 
+let deleteTheBrother = (body, callback) => {
+  const { email, title} = body;
+  // need to query by email
+
+  Brother.find({ email, "books.title": title })
+  .then((results) => {
+    // console.log(results[0].books)
+    const flamingo = results[0].books
+    // console.log({flamingo})
+    const lol = flamingo.filter((book) => book.title=== title)
+    console.log(lol[0]._id)
+    const id = lol[0]._id
+    console.log('id of object to remove', id)
+    Brother.updateOne({_id: id}, { $pull: { books: { t: ['link', 'title', 'cfi', 'remainingText']}}})
+      .then((results) => callback(results))
+      .catch((err) => callback(err, 'lmao'))
+  })
+  .catch((err)=> console.log(err))
+
+
+  // Brother.findOneAndUpdate(
+  //   { email: email, "books.title": title },
+  //   { $pull : {
+  //     books : { $in:
+  //     }
+  //   }}
+  // )
+  // access books array
+  // pull book where query = title
+
+}
+
 
 
 module.exports = {
@@ -82,4 +115,5 @@ module.exports = {
   postTheBrother,
   updateBooksArrayForUniqueUser,
   updateTheCFIForUniqueBookForUniqueUser,
+  deleteTheBrother,
 };
