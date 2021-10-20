@@ -128,14 +128,15 @@ const Player = () => {
 
       console.log('current book', renditionRef.current.book)
       console.log(renditionRef.current.book.coverUrl()
-      .then((result) => {
-        console.log('cover url found', result)
-        document.getElementById('cover-image').src = result;
-      })
-      .catch((error) => {
-        // load default book cover
-        // save nothing?
-      }))
+        .then((result) => {
+          console.log('cover url found', result)
+          document.getElementById('cover-image').src = result;
+          document.getElementById('cover-image-download').href = result;
+        })
+        .catch((error) => {
+          // load default book cover
+          // save nothing?
+        }))
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
@@ -150,7 +151,7 @@ const Player = () => {
           // console.log('did if fire')
         } else {
           // console.log('did else fire')
-          setTimeout(() => {renditionRef.current.next()}, 4269);
+          setTimeout(() => { renditionRef.current.next() }, 4269);
         }
       })
     }
@@ -235,7 +236,7 @@ const Player = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={moby}
+          url={accessible}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
@@ -265,8 +266,10 @@ const Player = () => {
           ))}
         </ul> */}
         {/* <Controls handleResume={handleResume} handlePause={handlePause} handleIncrease={handleIncrease} handleDecrease={handleDecrease} /> */}
-        <Controls handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters}/>
-        <img id="cover-image" src="blank" />
+        <Controls handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters} />
+        <a id="cover-image-download" href="" download>
+          <img id="cover-image" src="" style={{ width: '10%' }} />
+        </a>
       </div>
     </>
   )
