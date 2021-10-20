@@ -1,6 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./components/App.jsx";
+import GlobalContextProvider from "./components/GlobalContextProvider.jsx";
 
-import App from './components/App.jsx';
-
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(
+    <GlobalContextProvider>
+      <App />
+    </GlobalContextProvider>,
+  document.getElementById("app")
+);

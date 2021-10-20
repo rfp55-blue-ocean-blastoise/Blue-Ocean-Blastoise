@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
+import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import axios from 'axios';
@@ -31,6 +32,7 @@ const Library = (props) => {
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
+  const { value, setValue } = useContext(GlobalContext);
 
   const history = useHistory();
 
@@ -174,11 +176,8 @@ const Library = (props) => {
   };
 
   const handleLogOut = () => {
-    //change email stored in global context to ''
-    //setValue('');
-    //redirect to the landing page:
-    //history.push('/');
-    console.log('To Do after setting up react context and router');
+    setValue('');
+    history.push('/');
   };
 
   return (
