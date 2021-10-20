@@ -20,7 +20,7 @@ import { styled } from '@mui/system';
 import ModalUnstyled from '@mui/core/ModalUnstyled';
 import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
-import Player from './Player';
+import Player from '../Player/Player';
 import Upload from './Upload';
 
 const Library = (props) => {
@@ -72,9 +72,9 @@ const Library = (props) => {
             break;
           }
         }
-        console.log('THIS IS BOOKLINK: ', bookLink);
         if (Object.keys(book).length) {
-          props.handleReadBook(book);
+          console.log('THIS IS BOOK: ', book);
+          handleReadBook(book);
         } else {
           voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
         }

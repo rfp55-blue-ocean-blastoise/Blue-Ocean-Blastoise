@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import Library from './Library';
-import Player from './Player';
+import Player from '../Player/Player';
 import Login from '../Login';
 
 const Home = () => {
