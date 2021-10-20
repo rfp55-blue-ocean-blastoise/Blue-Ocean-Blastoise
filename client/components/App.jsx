@@ -76,7 +76,7 @@ const App = () => {
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
-  function longestBaseString(str1, str2){
+  function longestBaseString(str1, str2) {
     let shorterString;
     let longerString;
     if (str1.length < str2.length) {
@@ -94,7 +94,7 @@ const App = () => {
     }
 
     return str1.substring(0, i);
-}
+  }
 
   // Callback stuff
   function voiceStartCallback() {
@@ -197,31 +197,53 @@ const App = () => {
       const locationStartCfi = renditionRef.current.location.start.cfi;
       const locationEndCfi = renditionRef.current.location.end.cfi;
 
+      // const cfiBase = locationStartCfi.replace(/!.*/, '')
+      // const cfiStart = locationStartCfi.replace(/.*!/, '').replace(/\)$/, '')
+      // const cfiEnd = locationEndCfi.replace(/.*!/, '').replace(/\)$/, '')
+      // const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`
+
+      // console.log('cfiBase', cfiBase);
+      // console.log('cfiStart', cfiStart);
+      // console.log('cfiEnd', cfiEnd);
+      // console.log('cfiRange', cfiRange);
 
       /**************************************************************************************************************
       NOTE: Need to use a function to find the greatest common base string between the two start/end rage cfi's for the "breakpoint"
       ***************************************************************************************************************/
-      const breakpoint = locationStartCfi.indexOf(']!') + 6;
+      const breakpoint = locationStartCfi.indexOf('!') + 1;
       const base = locationStartCfi.substring(0, breakpoint);
       const startRange = locationStartCfi.substring(breakpoint, locationStartCfi.length - 1);
       const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
-      const myBase = longestBaseString(locationStartCfi, locationEndCfi);
-      const myStartRange = locationStartCfi.substring(myBase.length, locationStartCfi.length - 1);
-      const myEndRange = locationEndCfi.substring(myBase.length, locationEndCfi.length);
-      const myCfiRange = `${myBase},${myStartRange},${myEndRange}`;
-      console.log('myBase', myBase)
-      console.log('myStartRange', myStartRange);
-      console.log('myEndRange', myEndRange);
-      console.log('myCfiRange', myCfiRange);
+      // const myBase = longestBaseString(locationStartCfi, locationEndCfi);
+      // const myStartRange = locationStartCfi.substring(myBase.length, locationStartCfi.length - 1);
+      // const myEndRange = locationEndCfi.substring(myBase.length, locationEndCfi.length);
+      // const myCfiRange = `${myBase},${myStartRange},${myEndRange}`;
+      // console.log('myBase', myBase)
+      // console.log('myStartRange', myStartRange);
+      // console.log('myEndRange', myEndRange);
+      // console.log('myCfiRange', myCfiRange);
 
       console.log('base', base);
       console.log('startRange', startRange);
       console.log('endRange', endRange);
       console.log('cfiRange', cfiRange);
 
-      renditionRef.current.book.getRange(myCfiRange).then(function (range) {
+      // if (renditionRef.current) {console.log(renditionRef.current.book)}
+      console.log('renditionRef.current', renditionRef.current)
+      if (renditionRef.current.location.atEnd) {
+        alert("you're at the end")
+      }
+      // if (currentSection === renditionRef.current.book.spine.spineItems[renditionRef.current.book.spine.spineItems.length - 1]) {
+      //   if page is double view,
+      //     check if current page is 1 less than last page
+      //   if page is single view,
+      //     check if current page is equal to last page
+      //     alert('on last page')
+      // }
+
+      renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
         let text = range.toString()
         remainingText.current = text;
@@ -262,7 +284,7 @@ const App = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={alice}
+          url={accessible}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
