@@ -279,7 +279,7 @@ const Library = (props) => {
             </Typography>
           </CardContent>
           <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
+            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
           </CardActions>
         </Card>
       ))}
@@ -294,8 +294,8 @@ const Library = (props) => {
         <Box sx={style}>
           <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='small' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
-            <Button size='small' style={{ color: '#0c6057' }} onClick={() => {
+            <Button size='large' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
+            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
               setRemoveBook({});
               setOpenRemove(false);
             }}>No</Button>
@@ -420,7 +420,7 @@ const Backdrop = styled('div')`
 
 const style = {
   width: 400,
-  bgcolor: '#fffa9f',
+  bgcolor: '#FFFDD0',
   border: '2px solid #000',
   p: 2,
   px: 4,

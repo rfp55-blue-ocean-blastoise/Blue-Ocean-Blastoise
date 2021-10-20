@@ -4,13 +4,21 @@ import axios from 'axios';
 import Button from '@mui/material/Button';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
+import FormatSizeIcon from '@mui/icons-material/FormatSize';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Box from '@mui/material/Box';
+import ModalUnstyled from '@mui/core/ModalUnstyled';
+import { styled } from '@mui/system';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -32,21 +40,48 @@ const Player = (props) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [volumeValue, setVolumeValue] = useState(30);
-
-  const handleSkipNext = (e) => {
-    e.preventDefault();
-    console.log('SKIP NEXT code');
-  }
-
-  const handleSkipPrevious = (e) => {
-    e.preventDefault();
-    console.log('SKIP PREVIOUS code');
-  }
+  const [speedValue, setSpeedValue] = useState(30);
+  const [pitchValue, setPitchValue] = useState(30);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [anchorElFont, setAnchorElFont] = useState(null);
+  const openFont = Boolean(anchorElFont);
+  const [anchorElVoice, setAnchorElVoice] = useState(null);
+  const openVoice = Boolean(anchorElVoice);
+  const handleClickFontSize = (e) => {
+    setAnchorElFont(e.currentTarget);
+  };
+  const handleCloseFontSize = () => {
+    setAnchorElFont(null);
+  };
+  const handleSelectFontSize = (size) => {
+    console.log('This is selected size: ', size);
+    handleCloseFontSize();
+  };
+  const handleClickVoiceOption = (e) => {
+    setAnchorElVoice(e.currentTarget);
+  };
+  const handleCloseVoiceOption = () => {
+    setAnchorElVoice(null);
+  };
+  const handleSelectVoiceOption = (voice) => {
+    console.log('This is selected voice option: ', voice);
+    handleCloseVoiceOption();
+  };
 
   const handleVolumeChange = (e) => {
     e.preventDefault();
     setVolumeValue(e.target.value);
     console.log('This is volume value', volumeValue);
+  }
+  const handleSpeedChange = (e) => {
+    e.preventDefault();
+    setSpeedValue(e.target.value);
+    console.log('This is speed value', volumeValue);
+  }
+  const handlePitchChange = (e) => {
+    e.preventDefault();
+    setPitchValue(e.target.value);
+    console.log('This is pitch value', volumeValue);
   }
 
   const handlePause = (e) => {
@@ -184,9 +219,9 @@ const Player = (props) => {
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
             variant='contained'
             type='button'
-            onClick={handleSkipPrevious}
+            onClick={() => setOpenSettings(true)}
           >
-            <SkipPreviousIcon />
+            <SettingsIcon />
           </Button>
           {isPlaying ? (
             <Button
@@ -208,26 +243,158 @@ const Player = (props) => {
             </Button>
           )}
           <Button
+            id="demo-positioned-button"
+            aria-controls="demo-positioned-menu"
+            aria-haspopup="true"
+            aria-expanded={openFont ? 'true' : undefined}
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
             variant='contained'
             type='button'
-            onClick={handleSkipNext}
+            onClick={handleClickFontSize}
           >
-            <SkipNextIcon />
+            <FormatSizeIcon />
           </Button>
+          <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorElFont}
+            open={openFont}
+            onClose={handleCloseFontSize}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+          {['25%', '50%', '100%', '125%', '150%', '175%', '200%'].map(item => (
+            <MenuItem style={{ fontSize: '1rem'}} onClick={() => handleSelectFontSize(item)}>{item}</MenuItem>
+          ))}
+          </Menu>
         </div>
-        <div style={{ display: 'inline-block', margin: '1rem 1rem 1rem 0'}}>
-          <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', margin: '0rem'}}>
-            <VolumeDown />
-            <Slider style={{ color: '#11A797', margin: '0 0.5rem'}} aria-label="Volume" value={volumeValue} onChange={handleVolumeChange} />
-            <VolumeUp />
-          </div>
-        </div>
-          {/* <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} /> */}
-          {/* <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} /> */}
       </div>
+      <StyledModal
+        aria-labelledby="unstyled-modal-title"
+        aria-describedby="unstyled-modal-description"
+        open={openSettings}
+        onClose={() => setOpenSettings(false)}
+        BackdropComponent={Backdrop}
+      >
+        <Box sx={style}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
+            <h2 style={{ textAlign: 'center' }}>Volume&nbsp;</h2>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+              <VolumeDown />
+              <Slider style={{ color: '#11A797', margin: '0 0.5rem'}} aria-label="Volume" value={volumeValue} onChange={handleVolumeChange} />
+              <VolumeUp />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
+            <h2 style={{ textAlign: 'center' }}>Speed&nbsp;</h2>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+              <RemoveIcon />
+              <Slider style={{ color: '#11A797', margin: '0 0.5rem'}} aria-label="Volume" value={speedValue} onChange={handleSpeedChange} />
+              <AddIcon />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
+            <h2 style={{ textAlign: 'center' }}>Pitch&nbsp;</h2>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+              <RemoveIcon />
+              <Slider style={{ color: '#11A797', margin: '0 0.5rem'}} aria-label="Volume" value={pitchValue} onChange={handlePitchChange} />
+              <AddIcon />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0'}}>
+          <h2 >Voice Options</h2>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls="long-menu"
+              aria-expanded={openVoice ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleClickVoiceOption}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            </div>
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                'aria-labelledby': 'long-button',
+              }}
+              anchorEl={anchorElVoice}
+              open={openVoice}
+              onClose={handleCloseVoiceOption}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              PaperProps={{
+                style: {
+                  maxHeight: '5rem',
+                  width: '8rem',
+                },
+              }}
+            >
+              {voiceOptions.map((option) => (
+                <MenuItem key={option} selected={option === 'Default'} onClick={() => handleSelectVoiceOption(option)}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+        </Box>
+      </StyledModal>
     </div>
   )
 };
+
+const StyledModal = styled(ModalUnstyled)`
+  position: fixed;
+  z-index: 1300;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Backdrop = styled('div')`
+  z-index: -1;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-tap-highlight-color: transparent;
+`;
+
+const style = {
+  width: 400,
+  bgcolor: '#FFFDD0',
+  border: '2px solid #000',
+  p: 2,
+  px: 4,
+  pb: 3,
+};
+
+const voiceOptions = [
+  'Default',
+  'Option1',
+  'Option2',
+  'Option3',
+  'Option4',
+  'Option5',
+  'Option6',
+];
 
 export default Player;
