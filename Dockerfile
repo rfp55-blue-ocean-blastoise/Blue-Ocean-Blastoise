@@ -1,8 +1,9 @@
 FROM node:14
-WORKDIR /usr/src/app
-COPY package*.json ./
+WORKDIR /app
+COPY package.json ./
 RUN npm install
-COPY . .
-EXPOSE 3001
+COPY . ./
+RUN npm run build:prod
+EXPOSE 4000
 # CMD ["node", "server/index.js"]
 CMD ["npm", "run", "start:prod"]
