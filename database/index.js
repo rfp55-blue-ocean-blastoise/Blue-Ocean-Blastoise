@@ -79,20 +79,18 @@ let deleteTheBrother = (body, callback) => {
   const { email, title} = body;
   // need to query by email
 
-  Brother.find({ email, "books.title": title })
-  .then((results) => {
-    // console.log(results[0].books)
-    const flamingo = results[0].books
-    // console.log({flamingo})
-    const lol = flamingo.filter((book) => book.title=== title)
-    console.log(lol[0]._id)
-    const id = lol[0]._id
-    console.log('id of object to remove', id)
-    Brother.updateOne({_id: id}, { $pull: { books: { t: ['link', 'title', 'cfi', 'remainingText']}}})
+  // Brother.find({ email, "books.title": title })
+  // .then((results) => {
+  //   // console.log(results[0].books)
+  //   const flamingo = results[0].books
+  //   const lol = flamingo.filter((book) => book.title=== title)
+  //   const id = lol[0]._id
+  //   console.log('id of object to remove', id)
+    Brother.updateOne({email}, { $pull: { books : {title: title}}})
       .then((results) => callback(results))
       .catch((err) => callback(err, 'lmao'))
-  })
-  .catch((err)=> console.log(err))
+  // })
+  // .catch((err)=> console.log(err))
 
 
   // Brother.findOneAndUpdate(
