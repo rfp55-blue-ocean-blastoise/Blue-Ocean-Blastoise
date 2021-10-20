@@ -23,9 +23,6 @@ let Brothers = mongoose.Schema({
 let Brother = mongoose.model('Brother', Brothers);
 
 
-// REST API
-
-
 let retrieveTheBrother = (email, callback) => {
   Brother.find({email})
   .then((results) => callback(null, results))
@@ -35,7 +32,6 @@ let retrieveTheBrother = (email, callback) => {
 let postTheBrother = (body, callback) => {
   const { email, books } = body;
   Brother.create({ email, books }, (err, data) => {
-    // ({Email: email, Books: books})
     if (err) {
       callback(err, null)
     } else {
