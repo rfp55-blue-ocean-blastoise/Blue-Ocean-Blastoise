@@ -1,7 +1,7 @@
 const S3 = require("aws-sdk/clients/s3");
 const config = require("../config.js");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
+// const multer = require("multer");
+// const multerS3 = require("multer-s3");
 const fs = require('fs')
 const path = require('path');
 
