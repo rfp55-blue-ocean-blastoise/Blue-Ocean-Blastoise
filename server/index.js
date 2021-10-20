@@ -12,11 +12,11 @@ const PORT = 3000;
 const upload = multer({ dest: "uploads/" });
 const {
   db,
-  postTheBrother,
-  retrieveTheBrother,
-  deleteTheBrother,
-  updateBooksArrayForUniqueUser,
-  updateTheCFIForUniqueBookForUniqueUser,
+  createUser,
+  retrieveUserDocument,
+  deleteBook,
+  addBookForUser,
+  updateBookmark,
 } = require("../database/index.js");
 const { uploadFile, listObjectsFromBucket } = require("../aws/s3.js");
 const {aws_bucket_name, aws_bucket_region} = require("../config.js");
@@ -35,7 +35,7 @@ app.listen(PORT, () => {
 // Post to MongoDB after successful account sign up
 app.post("/users", async (req, res) => {
   try {
-    const result = await postTheBrother(req.body);
+    const result = await createUser(req.body);
     res.status(201).send(result);
   } catch (err) {
     res.status(418).send(err);
@@ -48,7 +48,7 @@ app.post("/users", async (req, res) => {
 app.get("/library", async (req, res) => {
   try {
     const email = req.query.email;
-    const result = await retrieveTheBrother(email);
+    const result = await retrieveUserDocument(email);
     res.status(200).send(result[0].books);
   } catch (err) {
     res.status(418).send(err);
@@ -80,12 +80,20 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
       cfi: "",
       remainingText: "",
     };
-    const update = await updateBooksArrayForUniqueUser(user, book);
+    const update = await addBookForUser(user, book);
     res.status(201).send(update);
   } catch (err) {
     res.status(418).send(err);
   }
 });
+
+app.post('/library/cover', async (req, res) => {
+  try{
+
+  } catch(err) {
+
+  }
+})
 
 // update CFI and remainingText for book
 // req.body = { email, title, cfi, remainingText }
@@ -95,10 +103,11 @@ app.post("/upload", upload.single("epub"), async (req, res) => {
   UpdatedCFI: epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])
   remainingText:"These,are...words"
  */
+//update bookmark
 app.put("/library", async (req, res) => {
   try {
     const params = req.body;
-    const update = await updateTheCFIForUniqueBookForUniqueUser(params);
+    const update = await updateBookmark(params);
     res.status(201).send(update);
   } catch (err) {
     res.status(418).send(err);
@@ -108,9 +117,10 @@ app.put("/library", async (req, res) => {
 // delete book from library
 // req.body = { email , title}
 // returns modifiedCount = <num>
+// delete book from user library
 app.delete("/library", async (req, res) => {
   try {
-    const result = await deleteTheBrother(req.body);
+    const result = await deleteBook(req.body);
     res.status(200).send(result);
   } catch (err) {
     res.status(418).send(err);
@@ -129,6 +139,7 @@ app.delete("/library", async (req, res) => {
         "URL": "https://.....epub"
     }
 */
+// get all s3 objects
 app.get("/listObjects", async (req, res) => {
   try {
     const objects = await listObjectsFromBucket(req.query);

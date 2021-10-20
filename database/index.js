@@ -32,7 +32,7 @@ let Brothers = mongoose.Schema({
 
 let Brother = mongoose.model("Brother", Brothers);
 
-let postTheBrother = async (body) => {
+let createUser = async (body) => {
   try {
     const { email, books } = body;
     const result = await Brother.create({ email, books });
@@ -42,7 +42,7 @@ let postTheBrother = async (body) => {
   }
 };
 
-let retrieveTheBrother = async (email) => {
+let retrieveUserDocument = async (email) => {
   try {
     const result = await Brother.find({ email });
     return result;
@@ -51,7 +51,7 @@ let retrieveTheBrother = async (email) => {
   }
 };
 
-let updateBooksArrayForUniqueUser = async (email, book) => {
+let addBookForUser = async (email, book) => {
   try {
     const { link, title, cfi, remainingText } = book;
     // TODO : DOUBLE CHECK THE FUNCTION BELOW
@@ -71,7 +71,7 @@ let updateBooksArrayForUniqueUser = async (email, book) => {
   }
 };
 
-let updateTheCFIForUniqueBookForUniqueUser = async (params) => {
+let updateBookmark = async (params) => {
   try {
     const { email, title, cfi, remainingText } = params;
     const result = await Brother.findOneAndUpdate(
@@ -93,7 +93,7 @@ let updateTheCFIForUniqueBookForUniqueUser = async (params) => {
   }
 };
 
-let deleteTheBrother = async (body) => {
+let deleteBook = async (body) => {
   try {
     const { email, title } = body;
     const results = await Brother.updateOne(
@@ -113,9 +113,9 @@ let deleteTheBrother = async (body) => {
 
 module.exports = {
   db,
-  retrieveTheBrother,
-  postTheBrother,
-  updateBooksArrayForUniqueUser,
-  updateTheCFIForUniqueBookForUniqueUser,
-  deleteTheBrother,
+  retrieveUserDocument,
+  createUser,
+  addBookForUser,
+  updateBookmark,
+  deleteBook,
 };
