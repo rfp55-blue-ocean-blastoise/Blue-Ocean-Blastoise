@@ -32,80 +32,84 @@ let Brothers = mongoose.Schema({
 
 let Brother = mongoose.model("Brother", Brothers);
 
-let retrieveTheBrother = (email, callback) => {
-  Brother.find({ email })
-    .then((results) => callback(null, results))
-    .catch((err) => callback(err));
+let postTheBrother = async (body) => {
+  try {
+    const { email, books } = body;
+    const result = await Brother.create({ email, books });
+    return result;
+  } catch (err) {
+    return err;
+  }
 };
 
-let postTheBrother = (body, callback) => {
-  const { email, books } = body;
-  Brother.create({ email, books })
-    .then((results) => callback(null, results))
-    .catch((err) => callback(err));
+let retrieveTheBrother = async (email) => {
+  try {
+    const result = await Brother.find({ email });
+    return result;
+  } catch (err) {
+    return err;
+  }
 };
 
-let updateBooksArrayForUniqueUser = (email, book, callback) => {
-  const { link, title, cfi, remainingText } = book;
-  // TODO : DOUBLE CHECK THE FUNCTION BELOW
-  Brother.find({ email, "books.title": title })
-    .then((results) => {
-      if (results.length === 0) {
-        Brother.findOneAndUpdate({ email }, { $push: { books: book } })
-          .then((results) => callback(null, results))
-          .catch((err) =>
-            console.log(err, "err from updateBooksArrayForUniqueUser")
-          );
-      } else {
-        callback(null, "This book already exists");
-      }
-    })
-    .catch((err) => callback(err));
+let updateBooksArrayForUniqueUser = async (email, book) => {
+  try {
+    const { link, title, cfi, remainingText } = book;
+    // TODO : DOUBLE CHECK THE FUNCTION BELOW
+    const result = await Brother.find({ email, "books.title": title });
+    if (result.length === 0) {
+      const books = await Brother.findOneAndUpdate(
+        { email },
+        { $push: { books: book } }
+      );
+      return books;
+    } else {
+      return `Book: ${title} has already been uploaded`;
+    }
+  } catch (err) {
+    console.log(err, "err from updateBooksArray");
+    return err;
+  }
 };
 
-let updateTheCFIForUniqueBookForUniqueUser = (params, callback) => {
-  const { email, title, cfi, remainingText } = params;
-  Brother.findOneAndUpdate(
-    { email: email, "books.title": title },
-    { $set: { "books.$.cfi": cfi, "books.$.remainingText": remainingText } }
-  )
-    .then((results) => callback(null, results))
-    .catch((err) =>
-      console.log(err, "err from updateTheCFIForUniqueBookForUniqueUser")
+let updateTheCFIForUniqueBookForUniqueUser = async (params) => {
+  try {
+    const { email, title, cfi, remainingText } = params;
+    const result = await Brother.findOneAndUpdate(
+      { email: email, "books.title": title },
+      { $set: { "books.$.cfi": cfi, "books.$.remainingText": remainingText } }
     );
+    if (result === null) {
+      return `User ${email} does not have ${title} in their library. Results:${result}`;
+    } else {
+      const split = remainingText.split(" ");
+      return `User: ${email}
+      Books: ${email}
+      UpdatedCFI: ${cfi}
+      remainingText: ${split[0]}, ${split[1]}... ${split[split.length - 1]}`;
+    }
+  } catch (err) {
+    console.log(err, "err from updateTheCFIForUniqueBookForUniqueUser");
+    return err;
+  }
 };
 
-let deleteTheBrother = (body, callback) => {
-  const { email, title} = body;
-  // need to query by email
-
-  // Brother.find({ email, "books.title": title })
-  // .then((results) => {
-  //   // console.log(results[0].books)
-  //   const flamingo = results[0].books
-  //   const lol = flamingo.filter((book) => book.title=== title)
-  //   const id = lol[0]._id
-  //   console.log('id of object to remove', id)
-    Brother.updateOne({email}, { $pull: { books : {title: title}}})
-      .then((results) => callback(results))
-      .catch((err) => callback(err, 'lmao'))
-  // })
-  // .catch((err)=> console.log(err))
-
-
-  // Brother.findOneAndUpdate(
-  //   { email: email, "books.title": title },
-  //   { $pull : {
-  //     books : { $in:
-  //     }
-  //   }}
-  // )
-  // access books array
-  // pull book where query = title
-
-}
-
-
+let deleteTheBrother = async (body) => {
+  try {
+    const { email, title } = body;
+    const results = await Brother.updateOne(
+      { email },
+      { $pull: { books: { title: title } } }
+    );
+    if (results.modifiedCount === 0){
+      return `modifiedCount = ${results.modifiedCount}`
+    } else {
+      return `modifiedCount = ${results.modifiedCount}`;
+    }
+  } catch (err) {
+    console.log("err from delete bro");
+    return err;
+  }
+};
 
 module.exports = {
   db,

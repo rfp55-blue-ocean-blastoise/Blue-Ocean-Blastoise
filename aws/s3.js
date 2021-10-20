@@ -16,20 +16,6 @@ const s3 = new S3({
   secretAccessKey: secretKey,
 });
 
-// get object from s3
-function getObject (bucketParams, callback) {
-  s3.getObject(bucketParams, (err, data) => {
-    if (err) {
-      console.log("Error", err);
-      callback(err);
-    } else {
-      console.log("Successful Test Get");
-      callback(null, data);
-    }
-  });
-};
-exports.getObject = getObject;
-
 function uploadFile(file, title) {
   const fileStream = fs.createReadStream(file.path)
 

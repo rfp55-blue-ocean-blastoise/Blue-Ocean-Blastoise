@@ -31,90 +31,86 @@ app.listen(PORT, () => {
 });
 
 // Post to MongoDB after successful account sign up
-app.post("/users", (req, res) => {
-  // console.log(req.body);
-  postTheBrother(req.body, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+app.post("/users", async (req, res) => {
+  try {
+    const result = await postTheBrother(req.body);
+    res.status(201).send(result);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
 // gives back Book Array for unique user
-app.get("/library", (req, res) => {
-  const email = req.query.email;
-  retrieveTheBrother(email, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(200).send(data[0].books);
-    }
-  });
+// req.query = {email}
+// returns book array for user if exists.
+app.get("/library", async (req, res) => {
+  try {
+    const email = req.query.email;
+    const result = await retrieveTheBrother(email);
+    res.status(200).send(result[0].books);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
 // Upload to S3 and Post Book Title to MongoDB
+// req.file = {file}
+// req.body = {user}
+// returns user obj prior to post success
+/*
+          {
+              _id: new ObjectId("616f60bf69ef4a3f8dda2469"),
+              email: 'test@test.com',
+              books: [ [Object], [Object] ],
+              __v: 0
+            }
+          }
+*/
 app.post("/upload", upload.single("epub"), async (req, res) => {
-  const file = req.file;
-  const { user } = req.body;
-  const result = await uploadFile(file, file.originalname);
-  await unlinkFile(file.path);
-  // Post to MONGO after successful S3 upload!!
-  const book = {
-    link: result.Location,
-    title: result.Key,
-    cfi: "",
-    remainingText: "",
-  };
-  updateBooksArrayForUniqueUser(user, book, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+  try {
+    const file = req.file;
+    const { user } = req.body;
+    const result = await uploadFile(file, file.originalname);
+    await unlinkFile(file.path);
+    const book = {
+      link: result.Location,
+      title: result.Key,
+      cfi: "",
+      remainingText: "",
+    };
+    const update = await updateBooksArrayForUniqueUser(user, book);
+    res.status(201).send(update);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-app.put("/library", (req, res) => {
-  const params = req.body;
-  updateTheCFIForUniqueBookForUniqueUser(params, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+// update CFI and remainingText for book
+// req.body = { email, title, cfi, remainingText }
+/* returns:
+  User:test@test.com
+  Book:alice.epub
+  UpdatedCFI: epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])
+  remainingText:"These,are...words"
+ */
+app.put("/library", async (req, res) => {
+  try {
+    const params = req.body;
+    const update = await updateTheCFIForUniqueBookForUniqueUser(params);
+    res.status(201).send(update);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-app.delete("/library", (req, res) => {
-  deleteTheBrother(req.body, (err,data) => {
-    if (err) {
-      res.status(418).send(err)
-    } else {
-      res.status(204).send(data)
-    }
-  })
-
+// delete book from library
+// req.body = { email , title}
+// returns modifiedCount = <num>
+app.delete("/library", async (req, res) => {
+  try{
+    const result = await deleteTheBrother(req.body)
+    res.status(200).send(result);
+  } catch(err){
+    res.status(418).send(err);
+  }
 });
-
-// EXPERIMENTAL
-
-// Retrieves specific EPUB
-app.get("/epub", (req, res) => {
-  getObject(req.body, (err, data) => {
-    if (err) {
-      res.sendStatus(500).send(err);
-    } else {
-      res.status(200).send("Successful CFI update");
-    }
-  });
-});
-
-// app.get("/epub/:key", (req, res) => {
-//   console.log(req.params);
-//   const key = req.params.key;
-//   const readStream = getFileStream(key);
-
-//   readStream.pipe(res);
-// });
