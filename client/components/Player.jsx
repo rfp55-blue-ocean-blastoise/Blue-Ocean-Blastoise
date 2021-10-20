@@ -126,6 +126,17 @@ const Player = () => {
       // console.log('endRange', endRange);
       // console.log('cfiRange', cfiRange);
 
+      console.log('current book', renditionRef.current.book)
+      console.log(renditionRef.current.book.coverUrl()
+      .then((result) => {
+        console.log('cover url found', result)
+        document.getElementById('cover-image').src = result;
+      })
+      .catch((error) => {
+        // load default book cover
+        // save nothing?
+      }))
+
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
         let text = range.toString().trim()
@@ -255,6 +266,7 @@ const Player = () => {
         </ul> */}
         {/* <Controls handleResume={handleResume} handlePause={handlePause} handleIncrease={handleIncrease} handleDecrease={handleDecrease} /> */}
         <Controls handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} parameters={parameters}/>
+        <img id="cover-image" src="blank" />
       </div>
     </>
   )
