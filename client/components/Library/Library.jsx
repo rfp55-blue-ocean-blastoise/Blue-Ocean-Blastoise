@@ -337,57 +337,57 @@ const bookMockData = [
     id: 8
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Pinocchio',
+    link: "https://blueocean.s3.us-west-1.amazonaws.com/A Legacy of Darkness by J.M. Wallace.epub",
+    title: 'A Legacy of Darkness by J.M. Wallace',
     CFI: 'string',
     remainingText: '',
     id: 7
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Snow White and the Seven Dwarfs',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Nutcracker Christmas by Laurie Winter.epub',
+    title: 'A Nutcracker Christmas by Laurie Winter',
     CFI: 'string',
     remainingText: '',
     id: 6
   },
   {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Cinderella',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Wish for Father Christmas by Laura Rollins.epub',
+    title: 'A Wish for Father Christmas by Laura Rollins',
     CFI: 'string',
     remainingText: 'reading now',
     id: 5
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Peter Pan',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Dead Sound by Anise Eden.epub',
+    title: 'Dead Sound by Anise Eden',
     CFI: 'string',
     remainingText: 'reading now',
     id: 4
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Tangled',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Double Take by Elizabeth Breck.epub',
+    title: 'Double Take by Elizabeth Breck',
     CFI: 'string',
     remainingText: '',
     id: 3
   },
   {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Winnie-the-Pooh',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Evergreen Love by Amy Clipsto.epub',
+    title: 'Evergreen Love by Amy Clipsto',
     CFI: 'string',
     remainingText: '',
     id: 2
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Beauty and the Beast',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Going Once by Sharon Sala.epub',
+    title: 'Going Once by Sharon Sala',
     CFI: 'string',
     remainingText: 'reading now',
     id: 1
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Sleeping Beauty',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/His Interim Sweetheart by Aliyah Burke.epub',
+    title: 'His Interim Sweetheart by Aliyah Burke',
     CFI: 'string',
     remainingText: '',
     id: 0
