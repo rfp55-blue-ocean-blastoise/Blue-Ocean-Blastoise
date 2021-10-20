@@ -31,7 +31,7 @@ const Upload = (props) => {
         onChange={(e) => setFiles(e.target.files[0])}
       />
       <Button
-        style={{ backgroundColor: '#FFFDD0' }}
+        style={{ backgroundColor: '#0c6057' }}
         variant='contained'
         component='label'
         type='button'
