@@ -19,6 +19,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -83,6 +84,43 @@ const Player = (props) => {
     setPitchValue(e.target.value);
     console.log('This is pitch value', volumeValue);
   }
+
+  let voiceCommandError = '';
+
+  const commands = [
+    {
+      command: ['Play book'],
+      callback: () => {
+        handleResume();
+      }
+    },
+    {
+      command: ['Pause book'],
+      callback: (input) => {
+        handlePause();
+      }
+    },
+    {
+      command: ['Font size *'],
+      callback: (input) => {
+        if (fontSizeOptions.indexOf(input) !== -1) {
+          setAnchorElFont(input)
+        }
+      }
+    },
+    {
+      command: ['Open Settings'],
+      callback: (input) => {
+        setOpenSettings(true);
+      }
+    }
+  ];
+
+  const { transcript } = useSpeechRecognition({ commands });
+
+  if (!SpeechRecognition.browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  };
 
   const handlePause = (e) => {
     e.preventDefault();
@@ -269,7 +307,7 @@ const Player = (props) => {
               horizontal: 'left',
             }}
           >
-          {['25%', '50%', '100%', '125%', '150%', '175%', '200%'].map(item => (
+          {fontSizeOptions.map(item => (
             <MenuItem style={{ fontSize: '1rem'}} onClick={() => handleSelectFontSize(item)}>{item}</MenuItem>
           ))}
           </Menu>
@@ -396,5 +434,7 @@ const voiceOptions = [
   'Option5',
   'Option6',
 ];
+
+const fontSizeOptions = ['25%', '50%', '100%', '125%', '150%', '175%', '200%'];
 
 export default Player;
