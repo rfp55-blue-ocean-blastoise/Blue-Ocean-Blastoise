@@ -13,10 +13,18 @@ body {
   margin: 0;
 }
 
-#banner {
+.banner {
   width: 100%;
   height: 10rem;
   background: rgb(201,221,148);
   background: linear-gradient(61deg, rgba(201,221,148,1) 0%, rgba(143,198,144,1) 25%, rgba(109,184,141,1) 51%, rgba(143,198,144,1) 81%, rgba(201,221,148,1) 100%);
   padding: 0 2rem;
+}
+.login {
+  background: rgb(201,221,148);
+  background: linear-gradient(61deg, rgba(201,221,148,1) 0%, rgba(143,198,144,1) 25%, rgba(109,184,141,1) 51%, rgba(143,198,144,1) 81%, rgba(201,221,148,1) 100%);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

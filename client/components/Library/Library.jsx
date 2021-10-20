@@ -182,7 +182,7 @@ const Library = (props) => {
 
   return (
     <div>
-      <div id='banner' style={{ display: 'flex', alignItems: 'center' }}>
+      <div className='banner' style={{ display: 'flex', alignItems: 'center' }}>
         <h1 style={{ fontSize: '4rem', marginRight: '70%' }} > BookBrother</h1>
         <Button
           style={{ height: '2rem', backgroundColor: '#0c6057' }}
