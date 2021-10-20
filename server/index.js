@@ -123,10 +123,10 @@ app.delete("/library", async (req, res) => {
 // response =
 /*
     {
-        "Key": "09dc6a71a2bd87b6fb2a79a112a971d2.epub",
-        "Etag": "\"a0e1a481a9d2cd4a14444e3bc7ca3320\"",
+        "Key": "5a56asd9w5da6sda9sda.epub",
+        "Etag": "\"5a56asd9w5da6sda9sda\"",
         "size": 500133,
-        "URL": "https://blueocean.s3.us-west-1.amazonaws.com/09dc6a71a2bd87b6fb2a79a112a971d2.epub"
+        "URL": "https://.....epub"
     }
 */
 app.get("/listObjects", async (req, res) => {
