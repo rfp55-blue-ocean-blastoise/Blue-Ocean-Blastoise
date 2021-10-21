@@ -22,12 +22,15 @@ import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
 import Player from '../Player/Player';
 import Upload from './Upload';
+import Epub from 'epubjs/lib/index';
 
 const Library = (props) => {
   const [books, setBooks] = useState(bookMockData.slice().reverse());
   const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
   const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
-  const [email, setEmail] = useState('t@t.com');
+  // const [books, setBooks] = useState([]);
+  // const [displayBooks, setDisplayBooks] = useState([]);
+  // const [titles, setTitles] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
@@ -83,16 +86,16 @@ const Library = (props) => {
     {
       command: ['Remove *'],
       callback: (input) => {
-        let bookLink = '';
+        let bookTitle = '';
         for (var i = 0; i < books.length; i++) {
           if (books[i].title.toLowerCase() === input.toLowerCase()) {
-            bookLink = books[i].link;
+            bookTitle = books[i].title;
             break;
           }
         }
-        console.log('THIS IS BOOKLINK: ', bookLink);
-        if (bookLink.length) {
-          handleRemoveBook(bookLink);
+        console.log('THIS IS BOOKLINK: ', bookTitle);
+        if (bookTitle.length) {
+          handleRemoveBook(bookTitle);
         } else {
           voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
         }
@@ -107,7 +110,23 @@ const Library = (props) => {
   };
 
   useEffect(() => {
-    getUserData();
+    // getUserData();
+    const books = displayBooks.map((book, index) => {
+      let currBook = new Epub(book.link);
+      currBook.ready.then(function(){
+        currBook.coverUrl()
+        .then((results) => {
+          console.log(`${book.title} cover url: , ${results}`);
+          if(results) {
+            document.getElementById(book.link).src = results;
+          } else {
+            document.getElementById(book.link).src = '/book-cover.png';
+          }
+        })
+        .catch((err) => console.error(err));
+      });
+    });
+    setDisplayBooks(books);
   }, [])
 
   useEffect(() => {
@@ -131,17 +150,14 @@ const Library = (props) => {
     history.push('/player');
   };
 
-  const handleRemoveBook = (e) => {
-    console.log('TO DO handle remove', e.target.value);
-    /*
-    axios.put('', { email })
+  const handleRemoveBook = (bookTitle) => {
+    axios.delete('/library', { email: value, title: bookTitle })
     .then(res => {
       console.log(res);
     })
     .catch(err => {
       console.log('Error sending put request to remove book: ', err);
     });
-    */
   };
 
   const handleSearch = (searchedStr) => {
@@ -155,7 +171,7 @@ const Library = (props) => {
 
   const getUserData = () => {
     const params = {
-      email: email
+      email: value
     };
     axios.get('/library', { params })
       .then(response => {
@@ -163,6 +179,18 @@ const Library = (props) => {
         //expect data to be an array of book objects with 3 props: link, title, cfi
         console.log('This is data from get /library:', data);
         const orderedData = data.map((book, index) => {
+          let currBook = new Epub(book.link);
+          currBook.coverUrl()
+            .then((result) => {
+              console.log('cover url found', result)
+              // document.getElementById('cover-image').src = result;
+              // document.getElementById('cover-image-download').href = result;
+            })
+            .catch((error) => {
+              console.log('Error from cover url: ', error)
+              // load default book cover
+              // save nothing?
+            });
           book.id = index;
           return book;
         })
@@ -239,12 +267,7 @@ const Library = (props) => {
         <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
         : displayBooks.map(book => (
         <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <CardMedia
-            component='img'
-            width='30'
-            image='/book-cover.png'
-            alt='book cover'
-            />
+          <img id={book.link} src='' style={{ width: '100%'}} />
           <CardContent sx={{ height: '2.5rem' }}>
             <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
               {book.title}
@@ -258,7 +281,7 @@ const Library = (props) => {
             }}>Remove</Button>
           </CardActions>
         </Card>
-      ))}
+        ))}
       </div>
       <h1 style={{padding: '0 2rem'}}>Reading Now</h1>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
@@ -266,12 +289,7 @@ const Library = (props) => {
         <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
         : displayBooks.filter(book => book.remainingText !== '').map(book => (
         <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <CardMedia
-            component='img'
-            width='30'
-            image='/book-cover.png'
-            alt='book cover'
-            />
+          <img id={book.link} src='' style={{ width: '100%'}} />
           <CardContent sx={{ height: '2.5rem' }}>
             <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
               {book.title}
@@ -293,7 +311,7 @@ const Library = (props) => {
         <Box sx={style}>
           <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
+            <Button size='large' color='warning' value={removeBook.title} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
             <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
               setRemoveBook({});
               setOpenRemove(false);
@@ -337,57 +355,57 @@ const bookMockData = [
     id: 8
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Pinocchio',
+    link: "https://blueocean.s3.us-west-1.amazonaws.com/A Legacy of Darkness by J.M. Wallace.epub",
+    title: 'A Legacy of Darkness by J.M. Wallace',
     CFI: 'string',
     remainingText: '',
     id: 7
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Snow White and the Seven Dwarfs',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Nutcracker Christmas by Laurie Winter.epub',
+    title: 'A Nutcracker Christmas by Laurie Winter',
     CFI: 'string',
     remainingText: '',
     id: 6
   },
   {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Cinderella',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Wish for Father Christmas by Laura Rollins.epub',
+    title: 'A Wish for Father Christmas by Laura Rollins',
     CFI: 'string',
     remainingText: 'reading now',
     id: 5
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Peter Pan',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Dead Sound by Anise Eden.epub',
+    title: 'Dead Sound by Anise Eden',
     CFI: 'string',
     remainingText: 'reading now',
     id: 4
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Tangled',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Double Take by Elizabeth Breck.epub',
+    title: 'Double Take by Elizabeth Breck',
     CFI: 'string',
     remainingText: '',
     id: 3
   },
   {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Winnie-the-Pooh',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Evergreen Love by Amy Clipsto.epub',
+    title: 'Evergreen Love by Amy Clipsto',
     CFI: 'string',
     remainingText: '',
     id: 2
   },
   {
-    link: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-    title: 'Beauty and the Beast',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Going Once by Sharon Sala.epub',
+    title: 'Going Once by Sharon Sala',
     CFI: 'string',
     remainingText: 'reading now',
     id: 1
   },
   {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub',
-    title: 'Sleeping Beauty',
+    link: 'https://blueocean.s3.us-west-1.amazonaws.com/His Interim Sweetheart by Aliyah Burke.epub',
+    title: 'His Interim Sweetheart by Aliyah Burke',
     CFI: 'string',
     remainingText: '',
     id: 0

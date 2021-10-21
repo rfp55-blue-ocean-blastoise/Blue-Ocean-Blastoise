@@ -45,6 +45,7 @@ app.post("/users", (req, res) => {
 // gives back Book Array for unique user
 app.get("/library", (req, res) => {
   const email = req.query.email;
+  console.log('THIS IS EMAIL: ', email);
   retrieveTheBrother(email, (err, data) => {
     if (err) {
       res.status(418).send(err);
