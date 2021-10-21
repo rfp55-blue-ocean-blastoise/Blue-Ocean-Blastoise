@@ -68,7 +68,7 @@ const MyAccount = (props) => {
       callback: (input) => {
         let book = {};
         for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
+          if (books[i].title.toLowerCase().indexOf(input.toLowerCase()) !== -1) {
             book = books[i];
             break;
           }

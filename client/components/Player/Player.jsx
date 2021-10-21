@@ -37,32 +37,61 @@ const Player = (props) => {
   let voiceCommandError = '';
   const commands = [
     {
-      command: ['Play book'],
-      callback: () => {
-        handleResume();
-      }
-    },
-    {
-      command: ['Pause book'],
+      command: ['Text size *'],
       callback: (input) => {
-        handlePause();
-      }
-    },
-    {
-      command: ['Font size *'],
-      callback: (input) => {
-        if (fontSizeOptions.indexOf(input) !== -1) {
-          setAnchorElFont(input)
+        if (fontSizeOptions.indexOf(Number(input)) !== -1) {
+          setSize(Number(input));
         }
       }
     },
     {
-      command: ['Open Settings'],
+      command: ['Open settings'],
+      callback: () => {
+        setShowModal(true);
+      }
+    },
+    {
+      command: ['Volume *'],
       callback: (input) => {
-        setOpenSettings(true);
+        // TO DO: Volume 10 & below, need to convert to number
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: Number(input)/100,
+          rate: parameters.rate,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Speed *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: Number(input)/100,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Pitch *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: parameters.rate,
+          pitch: Number(input)/100,
+        });
       }
     }
   ];
+
   const { transcript } = useSpeechRecognition({ commands });
   if (!SpeechRecognition.browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -300,7 +329,10 @@ const Player = (props) => {
             variant='contained'
             style={{ backgroundColor: '#11A797' }}
             type='button'
-            onClick={SpeechRecognition.startListening}
+            onClick={() => {
+              handlePause();
+              SpeechRecognition.startListening();
+            }}
           >
             <SettingsVoiceIcon />
           </Button>
@@ -317,6 +349,8 @@ const Player = (props) => {
       </div>
     </>
   )
-}
+};
+
+const fontSizeOptions = [25, 50, 100, 125, 150, 175, 200];
 
 export default Player;
