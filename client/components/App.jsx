@@ -42,6 +42,7 @@
 
 import React, { useRef, useState, useEffect } from "react"
 import { ReactReader } from "react-reader"
+import Epub from 'epubjs/lib/index';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -83,23 +84,75 @@ const App = () => {
   //     console.log('does this work')
   // }, 1000);
 
-  function loop() {
-    console.log('does this work')
-    if (responsiveVoice) {
-      if (responsiveVoice.currentMsg) {
-        console.log('current message', responsiveVoice.currentMsg)
-        if (responsiveVoice.currentMsg.text) {
-          console.log('current message text', responsiveVoice.currentMsg.text)
-        }
-      }
-    }
-    setTimeout(function () {
-      // execute script
-      loop()
-    }, 1000); //9000 = 9000ms = 9s
-  };
+  // function loop() {
+  //   console.log('does this work')
+  //   if (responsiveVoice) {
+  //     if (responsiveVoice.currentMsg) {
+  //       console.log('current message', responsiveVoice.currentMsg)
+  //       if (responsiveVoice.currentMsg.text) {
+  //         console.log('current message text', responsiveVoice.currentMsg.text)
+  //       }
+  //     }
+  //   }
+  //   setTimeout(function () {
+  //     // execute script
+  //     loop()
+  //   }, 1000); //9000 = 9000ms = 9s
+  // };
 
-  loop();
+  // loop();
+
+  if (rangeRef.current) {
+    console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
+    console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
+    // console.log(rangeRef.current.childNodes)
+
+    var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+    var rangeRefValidChildren = [];
+    rangeRefCurrentChildren.forEach((child, index) => {
+      console.log(child, index);
+      // console.log('child.length', child.length);
+
+      // console.log('child.value', child.value);
+      // console.log('child.nodeValue', child.nodeValue);
+      console.log('child.innerHTML', child.innerHTML);
+      if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+        rangeRefValidChildren.push(child)
+      }
+    })
+    console.log('rangeRefValidChildren', rangeRefValidChildren)
+    rangeRefValidChildren.forEach((child, index) => {
+      console.log(child, index);
+      // console.log('child.length', child.length);
+
+      // console.log('child.value', child.value);
+      // console.log('child.nodeValue', child.nodeValue);
+      console.log('child.innerHTML', child.innerHTML);
+      if (child.innerHTML.indexOf("difficult") !== -1) {
+        // alert(child.innerHTML)
+        console.log('child.innerHTML', child.innerHTML)
+        // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
+        // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
+        var selectedChildRange = renditionRef.current.getContents();
+        console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
+        console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange[0].cfiFromNode(child))
+
+        // renditionRef.current.annotations.add("highlight", selectedChildRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
+        var mapping = new Mapping();
+        console.log('mapping', mapping)
+      }
+    })
+
+    // console.log('renditionRef.current', renditionRef.current)
+
+    // console.log('renditionRef.current.book', renditionRef.current.book)
+    // console.log('renditionRef.current.book.spine.spineItems', renditionRef.current.book.spine.spineItems)
+    // console.log('renditionRef.current.book.spine.spineItems[4]', renditionRef.current.book.spine.spineItems[4])
+    // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement', renditionRef.current.book.spine.spineItems[4].cfiFromElement)
+    // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
+
+    // console.log(renditionRef.current.book.cfiFromElement)
+  }
 
   console.log('does this work')
 
@@ -272,35 +325,45 @@ const App = () => {
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         rangeRef.current = range.commonAncestorContainer;
-        console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
-        console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
-        // console.log(rangeRef.current.childNodes)
+        // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
+        // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
+        // // console.log(rangeRef.current.childNodes)
 
-        var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
-        var rangeRefValidChildren = [];
-        rangeRefCurrentChildren.forEach((child, index) => {
-          console.log(child, index);
-          // console.log('child.length', child.length);
+        // var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+        // var rangeRefValidChildren = [];
+        // rangeRefCurrentChildren.forEach((child, index) => {
+        //   console.log(child, index);
+        //   // console.log('child.length', child.length);
 
-          // console.log('child.value', child.value);
-          // console.log('child.nodeValue', child.nodeValue);
-          console.log('child.innerHTML', child.innerHTML);
-          if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
-            rangeRefValidChildren.push(child)
-          }
-        })
-        console.log('rangeRefValidChildren', rangeRefValidChildren)
-        rangeRefValidChildren.forEach((child, index) => {
-          console.log(child, index);
-          // console.log('child.length', child.length);
+        //   // console.log('child.value', child.value);
+        //   // console.log('child.nodeValue', child.nodeValue);
+        //   console.log('child.innerHTML', child.innerHTML);
+        //   if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+        //     rangeRefValidChildren.push(child)
+        //   }
+        // })
+        // console.log('rangeRefValidChildren', rangeRefValidChildren)
+        // rangeRefValidChildren.forEach((child, index) => {
+        //   console.log(child, index);
+        //   // console.log('child.length', child.length);
 
-          // console.log('child.value', child.value);
-          // console.log('child.nodeValue', child.nodeValue);
-          console.log('child.innerHTML', child.innerHTML);
-          if (child.innerHTML.indexOf("difficult") !== -1) {
-            alert(child.innerHTML)
-          }
-        })
+        //   // console.log('child.value', child.value);
+        //   // console.log('child.nodeValue', child.nodeValue);
+        //   console.log('child.innerHTML', child.innerHTML);
+        //   if (child.innerHTML.indexOf("difficult") !== -1) {
+        //     alert(child.innerHTML)
+        //   }
+        // })
+
+        // console.log('renditionRef.current', renditionRef.current)
+
+        // console.log('renditionRef.current.book', renditionRef.current.book)
+        // console.log('renditionRef.current.book.spine.spineItems', renditionRef.current.book.spine.spineItems)
+        // console.log('renditionRef.current.book.spine.spineItems[4]', renditionRef.current.book.spine.spineItems[4])
+        // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement', renditionRef.current.book.spine.spineItems[4].cfiFromElement)
+        // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
+
+        // console.log(renditionRef.current.book.cfiFromElement)
 
         // var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
         // for (let item of rangeRefCurrentChildren) {
@@ -329,18 +392,18 @@ const App = () => {
     if (renditionRef.current) {
       function setRenderSelection(cfiRange, contents) {
         console.log('cfiRange', cfiRange)
-        console.log('contents', contents)
-        var range = contents.range(cfiRange);
-        console.log('range', range)
-        var text = renditionRef.current.getRange(cfiRange).toString();
-        console.log('text', text)
-        var rect = range.getBoundingClientRect();
-        console.log('rect', rect)
-        console.log('why')
-        setSelections(selections.concat({
-          text: renditionRef.current.getRange(cfiRange).toString(),
-          cfiRange
-        }))
+        // console.log('contents', contents)
+        // var range = contents.range(cfiRange);
+        // console.log('range', range)
+        // var text = renditionRef.current.getRange(cfiRange).toString();
+        // console.log('text', text)
+        // var rect = range.getBoundingClientRect();
+        // console.log('rect', rect)
+        // console.log('why')
+        // setSelections(selections.concat({
+        //   text: renditionRef.current.getRange(cfiRange).toString(),
+        //   cfiRange
+        // }))
         // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
         renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
         contents.window.getSelection().removeAllRanges()
