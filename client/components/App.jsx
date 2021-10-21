@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./Login";
-import Upload from "./Upload";
 import Signup from "./Signup";
 import Home from './Library/Home';
 
@@ -12,7 +11,7 @@ const App = () => {
       <BrowserRouter>
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/library" component={Home} />
+        <Route path="/home" component={Home} />
       </BrowserRouter>
     </div>
   );
