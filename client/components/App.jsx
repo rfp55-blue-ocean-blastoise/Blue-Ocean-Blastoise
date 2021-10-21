@@ -1,45 +1,3 @@
-// import React, { useState } from 'react';
-
-// const App = () => {
-//   const [name, setName] = useState('BROTHER');
-//   return (
-//   <div>
-//     <h1>HELLO {name}</h1>
-//   </div>
-//   )
-// }
-
-// export default App;
-
-// import React, { useState, useRef } from "react"
-// import { ReactReader } from "react-reader"
-
-// const App = () => {
-//   // And your own state logic to persist state
-//   const [location, setLocation] = useState(null)
-//   const locationChanged = (epubcifi) => {
-//     // epubcifi is a internal string used by epubjs to point to a location in an epub. It looks like this: epubcfi(/6/6[titlepage]!/4/2/12[pgepubid00003]/3:0)
-//     setLocation(epubcifi)
-//     // console.log('epubcifi', epubcifi)
-
-//     // book.getRange(epubcifi).then(function (range) {
-//     //   console.log('range', range);
-//     // }
-//   }
-
-//   return (
-//     <div style={{ height: "100vh" }}>
-//       <ReactReader
-//         location={location}
-//         locationChanged={locationChanged}
-//         url="https://gerhardsletten.github.io/react-reader/files/alice.epub"
-//       />
-//     </div>
-//   )
-// }
-
-// export default App;
-
 import React, { useRef, useState, useEffect } from "react"
 import { ReactReader } from "react-reader"
 import $ from "jquery";
@@ -56,14 +14,35 @@ console.log(responsiveVoice.enableEstimationTimeout);
 console.log(responsiveVoice);
 responsiveVoice.enableWindowClickHook();
 
+// function loop() {
+//   console.log('does this work')
+//   if (responsiveVoice) {
+//     if (responsiveVoice.currentMsg) {
+//        console.log('current message', responsiveVoice.currentMsg)
+//        if (responsiveVoice.currentMsg.text) { console.log('current message text', responsiveVoice.currentMsg.text) }
+//   }
+//   }
+//     setTimeout(function () {
+//     // execute script
+//     loop()
+//   }, 500);
+// };
+
+// loop();
+
+
+/**************************************************************************************************************
+Use getRangeFromEl on iframe section child
+***************************************************************************************************************/
+
 const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
   const [selections, setSelections] = useState([])
   // const [currentRenditionText, setCurrentRenditionText] = useState('');
   // const [remainingRenditionText, setRemainingRenditionText] = useState('');
-  // const currentRenditionText = useRef('');
-  // const remainingRenditionText = useRef('');
+  const currentRenditionText = useRef('');
+  const remainingRenditionText = useRef('');
 
   /**************************************************************************************************************
   NOTE: We need to keep track of a 'playing' state/ref which gets updated when whenever we click on the pause/resume buttons.
@@ -83,97 +62,93 @@ const App = () => {
   //     console.log('does this work')
   // }, 1000);
 
-  function loop() {
-    console.log('does this work')
-    if (responsiveVoice) {
-      if (responsiveVoice.currentMsg) {
-         console.log('current message', responsiveVoice.currentMsg)
-         if (responsiveVoice.currentMsg.text) { console.log('current message text', responsiveVoice.currentMsg.text) }
+
+
+  function searchAndHighlight(searchTerm, selector) {
+    if (searchTerm) {
+      //var wholeWordOnly = new RegExp("\\g"+searchTerm+"\\g","ig"); //matches whole word only
+      //var anyCharacter = new RegExp("\\g["+searchTerm+"]\\g","ig"); //matches any word with any of search chars characters
+      // var selector = selector || "#realTimeContents"; //use body as selector if none provided
+      var selector = selector || rangeRef.current; //use body as selector if none provided
+      var searchTermRegEx = new RegExp(searchTerm, "ig");
+      var matches = $(selector).text().match(searchTermRegEx);
+      console.log('first matches', matches)
+      console.log('$(selector)', $(selector))
+      console.log('test selector', $(rangeRef.current))
+
+      console.log('$(selector).children()', $(selector).children())
+
+
+      if (matches != null && matches.length > 0) {
+        $('.highlighted').removeClass('highlighted'); //Remove old search highlights
+
+        //Remove the previous matches
+        // const $span = $('#realTimeContents span');
+        // $span.replaceWith($span.html());
+
+        if (searchTerm === "&") {
+          searchTerm = "&amp;";
+          searchTermRegEx = new RegExp(searchTerm, "ig");
+        }
+        // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
+        $(selector).children().each((index, child) => {
+          console.log('before', index, child);
+          $(child).html($(child).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
+          console.log('after', index, child);
+        })
+        // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
+        // $(selector).children().each((index, child) => {
+        //   console.log('after', index, child);
+        // })
+
+        // $('.match:first').addClass('highlighted');
+        $(selector).querySelector('.match:last').addClass('highlighted');
+        console.log($('.match:last'))
+
+        var i = 0;
+
+        $('.next_h').off('click').on('click', function () {
+          i++;
+
+          if (i >= $('.match').length) i = 0;
+
+          $('.match').removeClass('highlighted');
+          $('.match').eq(i).addClass('highlighted');
+          $('.ui-mobile-viewport').animate({
+            scrollTop: $('.match').eq(i).offset().top
+          }, 300);
+        });
+        $('.previous_h').off('click').on('click', function () {
+
+          i--;
+
+          if (i < 0) i = $('.match').length - 1;
+
+          $('.match').removeClass('highlighted');
+          $('.match').eq(i).addClass('highlighted');
+          $('.ui-mobile-viewport').animate({
+            scrollTop: $('.match').eq(i).offset().top
+          }, 300);
+        });
+
+        if ($('.highlighted:first').length) { //if match found, scroll to where the first one appears
+          $(window).scrollTop($('.highlighted:first').position().top);
+        }
+        return true;
+      }
     }
+    return false;
+  }
+
+  $(document).on('click', '.searchButtonClickText_h', function (event) {
+
+    $(".highlighted").removeClass("highlighted").removeClass("match");
+    if (!searchAndHighlight($('.textSearchvalue_h').val())) {
+      alert("No results found");
     }
-      setTimeout(function () {
-      // execute script
-      loop()
-    }, 1000); //9000 = 9000ms = 9s
-  };
-
-  // loop();
-
-  // function searchAndHighlight(searchTerm, selector) {
-  //   if (searchTerm) {
-  //     //var wholeWordOnly = new RegExp("\\g"+searchTerm+"\\g","ig"); //matches whole word only
-  //     //var anyCharacter = new RegExp("\\g["+searchTerm+"]\\g","ig"); //matches any word with any of search chars characters
-  //     // var selector = selector || "#realTimeContents"; //use body as selector if none provided
-  //     var selector = selector || rangeRef.current; //use body as selector if none provided
-  //     var searchTermRegEx = new RegExp(searchTerm, "ig");
-  //     var matches = $(selector).text().match(searchTermRegEx);
-  //     console.log('first matches', matches)
-  //     console.log('$(selector)', $(selector))
-  //     console.log('test selector', $(rangeRef.current))
-
-  //     console.log('$(selector).children()', $(selector).children())
 
 
-  //     if (matches != null && matches.length > 0) {
-  //       $('.highlighted').removeClass('highlighted'); //Remove old search highlights
-
-  //       //Remove the previous matches
-  //       // const $span = $('#realTimeContents span');
-  //       // $span.replaceWith($span.html());
-
-  //       if (searchTerm === "&") {
-  //         searchTerm = "&amp;";
-  //         searchTermRegEx = new RegExp(searchTerm, "ig");
-  //       }
-  //       // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
-  //       // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
-  //       $(selector).children().each((index, child) => {console.log(index, child)})
-  //       $('.match:first').addClass('highlighted');
-
-  //       var i = 0;
-
-  //       $('.next_h').off('click').on('click', function () {
-  //         i++;
-
-  //         if (i >= $('.match').length) i = 0;
-
-  //         $('.match').removeClass('highlighted');
-  //         $('.match').eq(i).addClass('highlighted');
-  //         $('.ui-mobile-viewport').animate({
-  //           scrollTop: $('.match').eq(i).offset().top
-  //         }, 300);
-  //       });
-  //       $('.previous_h').off('click').on('click', function () {
-
-  //         i--;
-
-  //         if (i < 0) i = $('.match').length - 1;
-
-  //         $('.match').removeClass('highlighted');
-  //         $('.match').eq(i).addClass('highlighted');
-  //         $('.ui-mobile-viewport').animate({
-  //           scrollTop: $('.match').eq(i).offset().top
-  //         }, 300);
-  //       });
-
-  //       if ($('.highlighted:first').length) { //if match found, scroll to where the first one appears
-  //         $(window).scrollTop($('.highlighted:first').position().top);
-  //       }
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
-
-  // $(document).on('click', '.searchButtonClickText_h', function (event) {
-
-  //   $(".highlighted").removeClass("highlighted").removeClass("match");
-  //   if (!searchAndHighlight($('.textSearchvalue_h').val())) {
-  //     alert("No results found");
-  //   }
-
-
-  // });
+  });
 
 
 
@@ -396,7 +371,7 @@ const App = () => {
 
   return (
     <>
-      <div id="react-reader-wrapper" style={{ height: "100vh" }}>
+      <div id="react-reader-wrapper" style={{ height: "100vh" }} className="searchContend_h" >
         <ReactReader
           location={location}
           locationChanged={locationChanged}
@@ -433,7 +408,8 @@ const App = () => {
           <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} />
           <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} />
         </div>
-        {/* <div class="searchContend_h">
+        {/* <div class="searchContend_h"> */}
+        <div>
           <div class="ui-grid-c">
             <div class="ui-block-a">
               <input name="text-12" id="text-12" type="text" class="textSearchvalue_h" />
@@ -451,7 +427,7 @@ const App = () => {
               naveendf$dfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdnaveen jfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k naveen naveendfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdnaveen jfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k naveen
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   )
