@@ -66,39 +66,37 @@ let addBookForUser = async (email, book) => {
       return `Book: ${title} has already been uploaded`;
     }
   } catch (err) {
-    console.log(err, "err from updateBooksArray");
+    console.log(err, "err from addBookForUser");
     return err;
   }
 };
 
-let updateBookmark = async (params) => {
+let updateBookmark = async ({ email, id, cfi, remainingText }) => {
   try {
-    const { email, title, cfi, remainingText } = params;
     const result = await Brother.findOneAndUpdate(
-      { email: email, "books.title": title },
+      { email: email, "books._id": id },
       { $set: { "books.$.cfi": cfi, "books.$.remainingText": remainingText } }
     );
     if (result === null) {
-      return `User ${email} does not have ${title} in their library. Results:${result}`;
+      return `Email ${email} does not have the book in their library. Results:${result}`;
     } else {
       const split = remainingText.split(" ");
-      return `User: ${email}
-      Books: ${email}
+      return `Email: ${email}
       UpdatedCFI: ${cfi}
       remainingText: ${split[0]}, ${split[1]}... ${split[split.length - 1]}`;
     }
   } catch (err) {
-    console.log(err, "err from updateTheCFIForUniqueBookForUniqueUser");
+    console.log(err, "err from updateBookmark");
     return err;
   }
 };
 
-let deleteBook = async (body) => {
+let deleteBook = async ({email, id}) => {
   try {
-    const { email, title } = body;
+    // const { email, id } = body;
     const results = await Brother.updateOne(
       { email },
-      { $pull: { books: { title: title } } }
+      { $pull: { books: { '_id': id } } }
     );
     if (results.modifiedCount === 0){
       return `modifiedCount = ${results.modifiedCount}`
@@ -106,10 +104,11 @@ let deleteBook = async (body) => {
       return `modifiedCount = ${results.modifiedCount}`;
     }
   } catch (err) {
-    console.log("err from delete bro");
+    console.log("err from deleteBook");
     return err;
   }
 };
+
 
 module.exports = {
   db,
