@@ -68,7 +68,7 @@ const MyAccount = (props) => {
       callback: (input) => {
         let book = {};
         for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
+          if (books[i].title.toLowerCase().indexOf(input.toLowerCase()) !== -1) {
             book = books[i];
             break;
           }
@@ -188,8 +188,10 @@ const MyAccount = (props) => {
               // console.log(`${book.title} cover url: , ${results}`);
               if(results) {
                 document.getElementById(book.link).src = results;
+                book.coverURL = results;
               } else {
                 document.getElementById(book.link).src = '/book-cover.png';
+                book.coverURL = '/book-cover.png'
               }
             })
             .catch((err) => console.error(err));

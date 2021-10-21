@@ -104,8 +104,10 @@ const Library = (props) => {
             .then((results) => {
               if(results) {
                 document.getElementById(book.URL).src = results;
+                book.coverURL = results;
               } else {
                 document.getElementById(book.URL).src = '/book-cover.png';
+                book.coverURL = '/book-cover.png';
               }
             })
             .catch((err) => console.error(err));
@@ -125,6 +127,21 @@ const Library = (props) => {
   const handleLogOut = () => {
     setValue('');
     history.push('/');
+  };
+
+  const handleAddBook = (book) => {
+    console.log('BODY FOR REQ: ', value, book.URL, book.title);
+    axios.post('/account/library', {
+      email: value,
+      link: book.URL,
+      title: book.title
+    })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.log(err);
+      })
   };
 
   return (
@@ -183,11 +200,7 @@ const Library = (props) => {
               </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-              <Button size='medium' value={book} color='warning' onClick={() => {
-                setRemoveBook(book);
-                setOpenRemove(true);
-              }}>Remove</Button>
+              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleAddBook(JSON.parse(e.target.value))}>Add to My Books</Button>
             </CardActions>
           </Card>
         ))}

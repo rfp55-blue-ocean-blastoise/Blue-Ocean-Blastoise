@@ -7,6 +7,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { GlobalContext } from "../GlobalContextProvider";
 import Button from '@mui/material/Button';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
+import { useHistory } from 'react-router-dom';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -36,32 +37,61 @@ const Player = (props) => {
   let voiceCommandError = '';
   const commands = [
     {
-      command: ['Play book'],
-      callback: () => {
-        handleResume();
-      }
-    },
-    {
-      command: ['Pause book'],
+      command: ['Text size *'],
       callback: (input) => {
-        handlePause();
-      }
-    },
-    {
-      command: ['Font size *'],
-      callback: (input) => {
-        if (fontSizeOptions.indexOf(input) !== -1) {
-          setAnchorElFont(input)
+        if (fontSizeOptions.indexOf(Number(input)) !== -1) {
+          setSize(Number(input));
         }
       }
     },
     {
-      command: ['Open Settings'],
+      command: ['Open settings'],
+      callback: () => {
+        setShowModal(true);
+      }
+    },
+    {
+      command: ['Volume *'],
       callback: (input) => {
-        setOpenSettings(true);
+        // TO DO: Volume 10 & below, need to convert to number
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: Number(input)/100,
+          rate: parameters.rate,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Speed *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: Number(input)/100,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Pitch *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: parameters.rate,
+          pitch: Number(input)/100,
+        });
       }
     }
   ];
+
   const { transcript } = useSpeechRecognition({ commands });
   if (!SpeechRecognition.browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -264,6 +294,14 @@ const Player = (props) => {
     }
   }, [setSelections, selections])
 
+  // go back button
+  const history = useHistory();
+
+  const handleBackToAccount = () => {
+    handlePause();
+    history.push('/home');
+  };
+
   return (
     <>
       <div style={{ height: "80vh" }}>
@@ -291,15 +329,28 @@ const Player = (props) => {
             variant='contained'
             style={{ backgroundColor: '#11A797' }}
             type='button'
-            onClick={SpeechRecognition.startListening}
+            onClick={() => {
+              handlePause();
+              SpeechRecognition.startListening();
+            }}
           >
             <SettingsVoiceIcon />
           </Button>
           <p id="transcript">Transcript: {transcript}</p>
+          <Button
+            style={{ height: '2rem', backgroundColor: '#0c6057' }}
+            variant='contained'
+            type='button'
+            onClick={handleBackToAccount}
+          >
+          Back to Account
+        </Button>
         </div>
       </div>
     </>
   )
-}
+};
+
+const fontSizeOptions = [25, 50, 100, 125, 150, 175, 200];
 
 export default Player;

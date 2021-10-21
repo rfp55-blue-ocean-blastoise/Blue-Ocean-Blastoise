@@ -136,7 +136,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
-            <h2 style={{ textAlign: 'center' }}>Rate&nbsp;</h2>
+            <h2 style={{ textAlign: 'center' }}>Speed&nbsp;</h2>
             <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
               <RemoveIcon />
               <Slider

@@ -29,7 +29,7 @@ const Login = () => {
     signInWithEmail(email, password)
       .then((res) => {
         setValue(email);
-        history.push('/account/library');
+        history.push('/home');
       })
       .catch((err) => console.log(err, "err from firebase"));
   };
