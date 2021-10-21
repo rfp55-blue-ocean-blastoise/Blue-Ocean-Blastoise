@@ -25,7 +25,40 @@ const Player = (props) => {
   const [showModal, setShowModal] = useState(false);
   const voiceOptions = responsiveVoice.getVoices();
   const [voice, setVoice] = useState(voiceOptions[0].name)
-
+  //Voice Command
+  let voiceCommandError = '';
+  const commands = [
+    {
+      command: ['Play book'],
+      callback: () => {
+        handleResume();
+      }
+    },
+    {
+      command: ['Pause book'],
+      callback: (input) => {
+        handlePause();
+      }
+    },
+    {
+      command: ['Font size *'],
+      callback: (input) => {
+        if (fontSizeOptions.indexOf(input) !== -1) {
+          setAnchorElFont(input)
+        }
+      }
+    },
+    {
+      command: ['Open Settings'],
+      callback: (input) => {
+        setOpenSettings(true);
+      }
+    }
+  ];
+  const { transcript } = useSpeechRecognition({ commands });
+  if (!SpeechRecognition.browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  };
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
 
@@ -232,6 +265,17 @@ const Player = (props) => {
       </div>
       <div style={{height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10}}>
         <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice}/>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+          <Button
+            variant='contained'
+            style={{ backgroundColor: '#11A797' }}
+            type='button'
+            onClick={SpeechRecognition.startListening}
+          >
+            <SettingsVoiceIcon />
+          </Button>
+          <p id="transcript">Transcript: {transcript}</p>
+        </div>
       </div>
     </>
   )

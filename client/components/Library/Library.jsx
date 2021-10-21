@@ -25,12 +25,12 @@ import Upload from './Upload';
 import Epub from 'epubjs/lib/index';
 
 const Library = (props) => {
-  const [books, setBooks] = useState(bookMockData.slice().reverse());
-  const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
-  const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
-  // const [books, setBooks] = useState([]);
-  // const [displayBooks, setDisplayBooks] = useState([]);
-  // const [titles, setTitles] = useState([]);
+  // const [books, setBooks] = useState(bookMockData.slice().reverse());
+  // const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
+  // const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
+  const [books, setBooks] = useState([]);
+  const [displayBooks, setDisplayBooks] = useState([]);
+  const [titles, setTitles] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
@@ -66,7 +66,7 @@ const Library = (props) => {
       }
     },
     {
-      command: ['Read *'],
+      command: ['Play *'],
       callback: (input) => {
         let book = {};
         for (var i = 0; i < books.length; i++) {
@@ -93,7 +93,7 @@ const Library = (props) => {
             break;
           }
         }
-        console.log('THIS IS BOOKLINK: ', bookTitle);
+        console.log('THIS IS TITLE: ', bookTitle);
         if (bookTitle.length) {
           handleRemoveBook(bookTitle);
         } else {
@@ -110,23 +110,25 @@ const Library = (props) => {
   };
 
   useEffect(() => {
-    // getUserData();
-    const books = displayBooks.map((book, index) => {
-      let currBook = new Epub(book.link);
-      currBook.ready.then(function(){
-        currBook.coverUrl()
-        .then((results) => {
-          console.log(`${book.title} cover url: , ${results}`);
-          if(results) {
-            document.getElementById(book.link).src = results;
-          } else {
-            document.getElementById(book.link).src = '/book-cover.png';
-          }
-        })
-        .catch((err) => console.error(err));
-      });
-    });
-    setDisplayBooks(books);
+    getUserData();
+    // const books = displayBooks.map((book, index) => {
+    //   let currBook = new Epub(book.link);
+    //   currBook.ready.then(() => {
+    //     currBook.coverUrl()
+    //     .then((results) => {
+    //       console.log(`${book.title} cover url: , ${results}`);
+    //       if(results) {
+    //         document.getElementById(book.link).src = results;
+    //         book.coverURL = results;
+    //       } else {
+    //         document.getElementById(book.link).src = '/book-cover.png';
+    //         book.coverURL = '/book-cover.png';
+    //       }
+    //     })
+    //     .catch((err) => console.error(err));
+    //   });
+    // });
+    // setDisplayBooks(books);
   }, [])
 
   useEffect(() => {
@@ -180,17 +182,19 @@ const Library = (props) => {
         console.log('This is data from get /library:', data);
         const orderedData = data.map((book, index) => {
           let currBook = new Epub(book.link);
-          currBook.coverUrl()
-            .then((result) => {
-              console.log('cover url found', result)
-              // document.getElementById('cover-image').src = result;
-              // document.getElementById('cover-image-download').href = result;
+          currBook.ready.then(() => {
+            currBook.coverUrl()
+            .then((results) => {
+              console.log(`${book.title} cover url: , ${results}`);
+              if(results) {
+                document.getElementById(book.link).src = results;
+              } else {
+                document.getElementById(book.link).src = '/book-cover.png';
+              }
             })
-            .catch((error) => {
-              console.log('Error from cover url: ', error)
-              // load default book cover
-              // save nothing?
-            });
+            .catch((err) => console.error(err));
+          });
+          book.title = book.title.slice(0, book.title.length - 5);
           book.id = index;
           return book;
         })
@@ -247,7 +251,7 @@ const Library = (props) => {
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <h1>My Books</h1>
+        <h1>Reading Now</h1>
         <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
@@ -256,50 +260,54 @@ const Library = (props) => {
             label='Sort'
             value={sortOption}
             onChange={handleSortOptionChange}
-          >
+            >
             <MenuItem value={'recent'}>Recent</MenuItem>
             <MenuItem value={'title'}>Title</MenuItem>
           </Select>
         </FormControl>
       </div>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-      {displayBooks.length === 0 ?
-        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
-        : displayBooks.map(book => (
-        <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <img id={book.link} src='' style={{ width: '100%'}} />
-          <CardContent sx={{ height: '2.5rem' }}>
-            <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-              {book.title}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
-            <Button size='medium' value={book} color='warning' onClick={() => {
-              setRemoveBook(book);
-              setOpenRemove(true);
-            }}>Remove</Button>
-          </CardActions>
-        </Card>
+        {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
+          <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
+          : displayBooks.filter(book => book.remainingText !== '').map(book => (
+          <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
+            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
+            <CardContent sx={{ height: '2.5rem' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+                {book.title}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
+              <Button size='medium' value={book} color='warning' onClick={() => {
+                setRemoveBook(book);
+                setOpenRemove(true);
+              }}>Remove</Button>
+            </CardActions>
+          </Card>
         ))}
       </div>
-      <h1 style={{padding: '0 2rem'}}>Reading Now</h1>
+      <h1 style={{padding: '0 2rem'}}>My Books</h1>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-      {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
-        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
-        : displayBooks.filter(book => book.remainingText !== '').map(book => (
-        <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <img id={book.link} src='' style={{ width: '100%'}} />
-          <CardContent sx={{ height: '2.5rem' }}>
-            <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-              {book.title}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-          </CardActions>
-        </Card>
-      ))}
+        {displayBooks.filter(book => book.remainingText === '').length === 0  ?
+          <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
+          : displayBooks.filter(book => book.remainingText === '').map(book => (
+          <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
+            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
+            <CardContent sx={{ height: '2.5rem' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+                {book.title}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
+              <Button size='medium' value={book} color='warning' onClick={() => {
+                setRemoveBook(book);
+                setOpenRemove(true);
+              }}>Remove</Button>
+            </CardActions>
+          </Card>
+          ))}
       </div>
       <StyledModal
         aria-labelledby="unstyled-modal-title"
@@ -327,7 +335,7 @@ const Library = (props) => {
         BackdropComponent={Backdrop}
       >
         <Box sx={style}>
-          <Upload handleCloseUpload={handleCloseUpload}/>
+          <Upload handleCloseUpload={handleCloseUpload} getUserData={getUserData}/>
         </Box>
       </StyledModal>
     </div>
