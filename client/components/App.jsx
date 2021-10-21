@@ -42,6 +42,7 @@
 
 import React, { useRef, useState, useEffect } from "react"
 import { ReactReader } from "react-reader"
+import $ from "jquery";
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -75,29 +76,108 @@ const App = () => {
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
+  const rangeRef = useRef('')
 
-//   setInterval(function(){
-//     //this code runs every second
-//     console.log('does this work')
-// }, 1000);
+  //   setInterval(function(){
+  //     //this code runs every second
+  //     console.log('does this work')
+  // }, 1000);
 
-// function loop() {
-//   console.log('does this work')
-//   if (responsiveVoice) {
-//     if (responsiveVoice.currentMsg) {
-//        console.log('current message', responsiveVoice.currentMsg)
-//        if (responsiveVoice.currentMsg.text) { console.log('current message text', responsiveVoice.currentMsg.text) }
-//   }
-//   }
-//     setTimeout(function () {
-//     // execute script
-//     loop()
-//   }, 1000); //9000 = 9000ms = 9s
-// };
+  function loop() {
+    console.log('does this work')
+    if (responsiveVoice) {
+      if (responsiveVoice.currentMsg) {
+         console.log('current message', responsiveVoice.currentMsg)
+         if (responsiveVoice.currentMsg.text) { console.log('current message text', responsiveVoice.currentMsg.text) }
+    }
+    }
+      setTimeout(function () {
+      // execute script
+      loop()
+    }, 1000); //9000 = 9000ms = 9s
+  };
 
-// loop();
+  // loop();
 
-console.log('does this work')
+  // function searchAndHighlight(searchTerm, selector) {
+  //   if (searchTerm) {
+  //     //var wholeWordOnly = new RegExp("\\g"+searchTerm+"\\g","ig"); //matches whole word only
+  //     //var anyCharacter = new RegExp("\\g["+searchTerm+"]\\g","ig"); //matches any word with any of search chars characters
+  //     // var selector = selector || "#realTimeContents"; //use body as selector if none provided
+  //     var selector = selector || rangeRef.current; //use body as selector if none provided
+  //     var searchTermRegEx = new RegExp(searchTerm, "ig");
+  //     var matches = $(selector).text().match(searchTermRegEx);
+  //     console.log('first matches', matches)
+  //     console.log('$(selector)', $(selector))
+  //     console.log('test selector', $(rangeRef.current))
+
+  //     console.log('$(selector).children()', $(selector).children())
+
+
+  //     if (matches != null && matches.length > 0) {
+  //       $('.highlighted').removeClass('highlighted'); //Remove old search highlights
+
+  //       //Remove the previous matches
+  //       // const $span = $('#realTimeContents span');
+  //       // $span.replaceWith($span.html());
+
+  //       if (searchTerm === "&") {
+  //         searchTerm = "&amp;";
+  //         searchTermRegEx = new RegExp(searchTerm, "ig");
+  //       }
+  //       // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
+  //       // $(selector).html($(selector).html().replace(searchTermRegEx, "<span class='match'>" + searchTerm + "</span>"));
+  //       $(selector).children().each((index, child) => {console.log(index, child)})
+  //       $('.match:first').addClass('highlighted');
+
+  //       var i = 0;
+
+  //       $('.next_h').off('click').on('click', function () {
+  //         i++;
+
+  //         if (i >= $('.match').length) i = 0;
+
+  //         $('.match').removeClass('highlighted');
+  //         $('.match').eq(i).addClass('highlighted');
+  //         $('.ui-mobile-viewport').animate({
+  //           scrollTop: $('.match').eq(i).offset().top
+  //         }, 300);
+  //       });
+  //       $('.previous_h').off('click').on('click', function () {
+
+  //         i--;
+
+  //         if (i < 0) i = $('.match').length - 1;
+
+  //         $('.match').removeClass('highlighted');
+  //         $('.match').eq(i).addClass('highlighted');
+  //         $('.ui-mobile-viewport').animate({
+  //           scrollTop: $('.match').eq(i).offset().top
+  //         }, 300);
+  //       });
+
+  //       if ($('.highlighted:first').length) { //if match found, scroll to where the first one appears
+  //         $(window).scrollTop($('.highlighted:first').position().top);
+  //       }
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
+
+  // $(document).on('click', '.searchButtonClickText_h', function (event) {
+
+  //   $(".highlighted").removeClass("highlighted").removeClass("match");
+  //   if (!searchAndHighlight($('.textSearchvalue_h').val())) {
+  //     alert("No results found");
+  //   }
+
+
+  // });
+
+
+
+  console.log('does this work')
 
   function longestBaseString(str1, str2) {
     let shorterString;
@@ -268,12 +348,18 @@ console.log('does this work')
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
+        console.log('range commonAncestorContainer', range.commonAncestorContainer);
+        console.log('range commonAncestorContainer selector', range.commonAncestorContainer.querySelectorAll("*"));
+        // console.log('range start', range.startContainer.parentNode);
+        // console.log('range end', range.endContainer.parentNode);
+        rangeRef.current = range.commonAncestorContainer;
+        console.log('rangeRef.current', rangeRef.current)
         let text = range.toString()
         remainingText.current = text;
         console.log('text', text);
         // console.log(text === "\n  ")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n  ") {
-          // currentRenditionText.current = text;
+          currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
           setPlaying(true);
         }
@@ -299,11 +385,18 @@ console.log('does this work')
         renditionRef.current.off("selected", setRenderSelection)
       }
     }
+    // const matches = document.querySelectorAll("div");
+    // console.log('matches', matches)
+    // const match = document.querySelector(".epub-container");
+    var match = document.querySelector(".epub-container");
+    const wrapper = document.getElementById("react-reader-wrapper");
+    console.log('wrapper', wrapper)
+    console.log('match', match)
   }, [setSelections, selections])
 
   return (
     <>
-      <div style={{ height: "100vh" }}>
+      <div id="react-reader-wrapper" style={{ height: "100vh" }}>
         <ReactReader
           location={location}
           locationChanged={locationChanged}
@@ -340,6 +433,25 @@ console.log('does this work')
           <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} />
           <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} />
         </div>
+        {/* <div class="searchContend_h">
+          <div class="ui-grid-c">
+            <div class="ui-block-a">
+              <input name="text-12" id="text-12" type="text" class="textSearchvalue_h" />
+            </div>
+            <div class="ui-block-b"> <a href="#" data-role="button" data-corners="false" data-inline="true" class="searchButtonClickText_h">Search</a>
+
+            </div>
+            <div class="ui-block-c"> <a href="#" data-role="button" data-corners="false" data-inline="true" class="next_h">Next</a>
+
+            </div>
+            <div class="ui-block-d"> <a href="#" data-role="button" data-corners="false" data-inline="true" class="previous_h">Previous</a>
+
+            </div>
+            <div id="realTimeContents">
+              naveendf$dfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdnaveen jfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k naveen naveendfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdnaveen jfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k dfdfsdmfjhjjdsjjdsjkjkaskakskkdsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdfsjkdfjksjkdfsjkjkjkdfsfjkdfjksjkdfsjkjkdfsjkdfsjkjkdjkds kfskdjfksd; k dl;kfs;kf ;ks;kf;k;lkkkklll;k naveen
+            </div>
+          </div>
+        </div> */}
       </div>
     </>
   )
