@@ -69,10 +69,10 @@ Update User's Bookmark
     - remainingText: String
   - Returns a string response with:
     ```javascript
-    Email:"test@test.com", 
-    Book:"alice.epub", 
+    Email: "test@test.com", 
+    Book: "alice.epub", 
     UpdatedCFI: "epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])", 
-    remainingText:“These,are...words"
+    remainingText: "These,are...words"
     ```
     
 Delete Book From User's Library
