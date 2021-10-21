@@ -1,35 +1,68 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
+import { GlobalContext } from "../GlobalContextProvider";
 import Library from './Library';
 import MyAccount from './MyAccount';
 import Player from '../Player/Player';
 import Login from '../Login';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 const Home = () => {
   const [book, setBook] = useState({});
+  const [tab, setTab] = useState('My Account');
+  const history = useHistory();
+  const { value, setValue } = useContext(GlobalContext);
 
   const handleReadBook = (book) => {
     setBook(book);
   };
 
+  const handleLogOut = () => {
+    setValue('');
+    history.push('/');
+  };
+
   return (
     <BrowserRouter>
-        <div id="links">
-          <Link to='/home'>My Account</Link>
-          <Link to='/freelibrary'>Library</Link>
-        </div>
-        <Route path='/home'>
-          <MyAccount handleReadBook={handleReadBook} />
-        </Route>
-        <Route path='/freelibrary'>
-          <Library />
-        </Route>
-        <Route path='/player'>
-          <Player book={book}/>
-        </Route>
-        <Route exact path='/'>
-          <Login />
-        </Route>
+      <div className='banner' style={{ display: 'flex', alignItems: 'center' }}>
+        <h1 style={{ fontSize: '4rem', marginRight: '60%' }} > BookBrother</h1>
+        <Button
+          style={{ height: '2rem', backgroundColor: '#0c6057' }}
+          variant='contained'
+          type='button'
+          onClick={handleLogOut}
+        >
+          Sign Out
+        </Button>
+      </div>
+      <Box sx={{ width: '100%' }}>
+        <Tabs
+          value={tab}
+          onChange={(e, newVal) => setTab(newVal)}
+          textColor='secondary'
+          indicatorColor='secondary'
+          aria-label="secondary tabs example"
+          centered
+        >
+          <Tab label='My Account' value='My Account' component={Link} to={'/home'}/>
+          <Tab label='Library' value='Library' component={Link} to={'/freelibrary'}/>
+        </Tabs>
+      </Box>
+      <Route path='/home'>
+        <MyAccount handleReadBook={handleReadBook} />
+      </Route>
+      <Route path='/freelibrary'>
+        <Library />
+      </Route>
+      <Route path='/player'>
+        <Player book={book}/>
+      </Route>
+      <Route exact path='/'>
+        <Login />
+      </Route>
     </BrowserRouter>
   )
 };

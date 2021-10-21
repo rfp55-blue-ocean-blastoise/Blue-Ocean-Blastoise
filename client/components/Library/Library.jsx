@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -27,8 +27,6 @@ const Library = (props) => {
   const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
   const { value, setValue } = useContext(GlobalContext);
-
-  const history = useHistory();
 
   let voiceCommandError = '';
 
@@ -124,11 +122,6 @@ const Library = (props) => {
       });
   };
 
-  const handleLogOut = () => {
-    setValue('');
-    history.push('/');
-  };
-
   const handleAddBook = (book) => {
     console.log('BODY FOR REQ: ', value, book.URL, book.title);
     axios.post('/account/library', {
@@ -146,17 +139,6 @@ const Library = (props) => {
 
   return (
     <div>
-      <div className='banner' style={{ display: 'flex', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '4rem', marginRight: '70%' }} > BookBrother</h1>
-        <Button
-          style={{ height: '2rem', backgroundColor: '#0c6057' }}
-          variant='contained'
-          type='button'
-          onClick={handleLogOut}
-        >
-          Sign Out
-        </Button>
-      </div>
       <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
         <Search handleSearch={handleSearch} />
       </div>
@@ -210,8 +192,8 @@ const Library = (props) => {
 };
 
 const sortByTitle = (a, b) => {
-  if (a.title > b.title) return 1;
-  if (a.title < b.title) return -1;
+  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
   return 0;
 };
 

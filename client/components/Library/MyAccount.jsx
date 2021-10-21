@@ -196,7 +196,9 @@ const MyAccount = (props) => {
             })
             .catch((err) => console.error(err));
           });
-          book.title = book.title.slice(0, book.title.length - 5);
+          if (book.title.slice(book.title.length - 5, book.title.length) === '.epub') {
+            book.title = book.title.slice(0, book.title.length - 5);
+          }
           book.id = index;
           return book;
         })
@@ -208,24 +210,8 @@ const MyAccount = (props) => {
       });
   };
 
-  const handleLogOut = () => {
-    setValue('');
-    history.push('/');
-  };
-
   return (
     <div>
-      <div className='banner' style={{ display: 'flex', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '4rem', marginRight: '70%' }} > BookBrother</h1>
-        <Button
-          style={{ height: '2rem', backgroundColor: '#0c6057' }}
-          variant='contained'
-          type='button'
-          onClick={handleLogOut}
-        >
-          Sign Out
-        </Button>
-      </div>
       <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
         <Search handleSearch={handleSearch} />
         <Button
@@ -251,6 +237,7 @@ const MyAccount = (props) => {
         <p id="transcript">Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
+      <h1>{JSON.stringify(displayBooks)}</h1>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
         <h1>Reading Now</h1>
         <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
@@ -344,8 +331,8 @@ const MyAccount = (props) => {
 };
 
 const sortByTitle = (a, b) => {
-  if (a.title > b.title) return 1;
-  if (a.title < b.title) return -1;
+  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
   return 0;
 };
 

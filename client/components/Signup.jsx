@@ -48,11 +48,11 @@ const Signup = () => {
   return (
     <BrowserRouter>
       <div className="login">
-        <h1 style={{ fontSize: '8rem', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
-        <h2>The Premier Mobile Audio Experience to Listen to Your Books</h2>
+        <h1 style={{ fontSize: '5vw', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
+        <h2 style={{ fontSize: '3vw'}} >The Premier Mobile Audio Experience to Listen to Your Books</h2>
         <form type="submit" onSubmit={createUser}>
         <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', p: '0', border: '1px solid #212121', padding: '2rem', borderRadius: '5px 5px 5px', boxShadow: '0px 0px 3px 2px rgba(0, 0, 0, 0.2)', mt: '5rem' }}>
-            <h2>Sign-Up</h2>
+            <h2 style={{ fontSize: '2.5vw' }} >Sign-Up</h2>
             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
               <FormControl sx={{ m: 1, width: '20em' }} variant="standard" required>
                 <InputLabel htmlFor="email">Email</InputLabel>
@@ -91,7 +91,7 @@ const Signup = () => {
                   />
               </FormControl>
             </Box>
-            <Button variant='contained' color='primary' type='submit' onSubmit={createUser}>
+            <Button variant='contained' style={{ backgroundColor: '#0c6057', fontSize: '1vw' }} type='submit' onSubmit={createUser}>
               Create Account
             </Button>
           </Box>
