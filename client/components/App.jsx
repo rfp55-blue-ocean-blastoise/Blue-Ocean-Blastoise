@@ -140,8 +140,12 @@ const App = () => {
                 // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
                 if (child.innerText.length > 0) {
                   // console.log(child.innerHTML, index)
-                  // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
-                  if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
+                  // // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
+                  // if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
+                  //   rangeRefValidChildren.push(child)
+                  // }
+                  // Instead of removing italic, emphasized, bold tags; add only <p> and <header> tags
+                  if (child.outerHTML.substring(0, 2) === '<p' || child.outerHTML.substring(0, 2) === '<h') {
                     rangeRefValidChildren.push(child)
                   }
                 }
