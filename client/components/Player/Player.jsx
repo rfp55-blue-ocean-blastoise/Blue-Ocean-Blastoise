@@ -1,8 +1,12 @@
-import React, { useRef, useState, useEffect } from "react"
-import { ReactReader } from "react-reader"
-import Controls from "./Controls.jsx"
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { ReactReader } from "react-reader";
+import Controls from "./Controls.jsx";
+import axios from 'axios';
 // import Modal from './Modal.jsx';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { GlobalContext } from "../GlobalContextProvider";
+import Button from '@mui/material/Button';
+import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -25,6 +29,9 @@ const Player = (props) => {
   const [showModal, setShowModal] = useState(false);
   const voiceOptions = responsiveVoice.getVoices();
   const [voice, setVoice] = useState(voiceOptions[0].name)
+
+  const { value, setValue } = useContext(GlobalContext);
+
   //Voice Command
   let voiceCommandError = '';
   const commands = [
@@ -116,6 +123,20 @@ const Player = (props) => {
       console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
       console.log('remainingText.current', remainingText.current);
       setPlaying(false);
+      //Send cfi
+      console.log(value);
+      axios.put('/account/bookmark', {
+        email: value,
+        id: props.book['_id'],
+        cfi: 'test cfi',
+        remainingText: 'test remaining text'
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        })
     }
   }
 

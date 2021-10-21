@@ -13,8 +13,8 @@ const Upload = (props) => {
     console.log('upload clicked!')
     const formData = new FormData();
     formData.append("epub", files);
-    formData.append("user", value);
-    axios.post('/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    formData.append("email", value);
+    axios.post('/account/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .then((response) => {
         console.log('This is response from upload: ', response);
         props.handleCloseUpload();

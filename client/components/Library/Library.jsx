@@ -17,24 +17,15 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 import { styled } from '@mui/system';
-import ModalUnstyled from '@mui/core/ModalUnstyled';
 import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
-import Player from '../Player/Player';
 import Upload from './Upload';
 import Epub from 'epubjs/lib/index';
 
 const Library = (props) => {
-  // const [books, setBooks] = useState(bookMockData.slice().reverse());
-  // const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
-  // const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
   const [books, setBooks] = useState([]);
   const [displayBooks, setDisplayBooks] = useState([]);
-  const [titles, setTitles] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
-  const [openRemove, setOpenRemove] = useState(false);
-  const [openUpload, setOpenUpload] = useState(false);
-  const [removeBook, setRemoveBook] = useState({});
   const { value, setValue } = useContext(GlobalContext);
 
   const history = useHistory();
@@ -64,42 +55,6 @@ const Library = (props) => {
           voiceCommandError = <p>Sort option not found</p>;
         }
       }
-    },
-    {
-      command: ['Play *'],
-      callback: (input) => {
-        let book = {};
-        for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
-            book = books[i];
-            break;
-          }
-        }
-        if (Object.keys(book).length) {
-          console.log('THIS IS BOOK: ', book);
-          handleReadBook(book);
-        } else {
-          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
-        }
-      }
-    },
-    {
-      command: ['Remove *'],
-      callback: (input) => {
-        let bookTitle = '';
-        for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
-            bookTitle = books[i].title;
-            break;
-          }
-        }
-        console.log('THIS IS TITLE: ', bookTitle);
-        if (bookTitle.length) {
-          handleRemoveBook(bookTitle);
-        } else {
-          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
-        }
-      }
     }
   ];
 
@@ -110,25 +65,7 @@ const Library = (props) => {
   };
 
   useEffect(() => {
-    getUserData();
-    // const books = displayBooks.map((book, index) => {
-    //   let currBook = new Epub(book.link);
-    //   currBook.ready.then(() => {
-    //     currBook.coverUrl()
-    //     .then((results) => {
-    //       console.log(`${book.title} cover url: , ${results}`);
-    //       if(results) {
-    //         document.getElementById(book.link).src = results;
-    //         book.coverURL = results;
-    //       } else {
-    //         document.getElementById(book.link).src = '/book-cover.png';
-    //         book.coverURL = '/book-cover.png';
-    //       }
-    //     })
-    //     .catch((err) => console.error(err));
-    //   });
-    // });
-    // setDisplayBooks(books);
+    getBookLibrary();
   }, [])
 
   useEffect(() => {
@@ -145,23 +82,6 @@ const Library = (props) => {
     }
   },[sortOption])
 
-  const handleCloseUpload = () => setOpenUpload(false);
-
-  const handleReadBook = (book) => {
-    props.handleReadBook(book);
-    history.push('/player');
-  };
-
-  const handleRemoveBook = (bookTitle) => {
-    axios.delete('/library', { email: value, title: bookTitle })
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.log('Error sending put request to remove book: ', err);
-    });
-  };
-
   const handleSearch = (searchedStr) => {
     const searchBooks = books.filter(book => book.title.toLowerCase().indexOf(searchedStr) !== -1);
     setDisplayBooks(searchBooks);
@@ -171,36 +91,31 @@ const Library = (props) => {
     setSortOption(e.target.value);
   };
 
-  const getUserData = () => {
-    const params = {
-      email: value
-    };
-    axios.get('/library', { params })
+  const getBookLibrary = () => {
+    axios.get('/library')
       .then(response => {
         const data = response.data.reverse();
-        //expect data to be an array of book objects with 3 props: link, title, cfi
+        //expect data to be an array of book objects with 5 props: Key, Etag, size, URL
         console.log('This is data from get /library:', data);
         const orderedData = data.map((book, index) => {
-          let currBook = new Epub(book.link);
+          let currBook = new Epub(book.URL);
           currBook.ready.then(() => {
             currBook.coverUrl()
             .then((results) => {
-              console.log(`${book.title} cover url: , ${results}`);
               if(results) {
-                document.getElementById(book.link).src = results;
+                document.getElementById(book.URL).src = results;
               } else {
-                document.getElementById(book.link).src = '/book-cover.png';
+                document.getElementById(book.URL).src = '/book-cover.png';
               }
             })
             .catch((err) => console.error(err));
           });
-          book.title = book.title.slice(0, book.title.length - 5);
+          book.title = book.Key.slice(0, book.Key.length - 5);
           book.id = index;
           return book;
         })
         setBooks(orderedData);
         setDisplayBooks(orderedData);
-        setTitles(orderedData.map(book => book.title).sort());
       })
       .catch(err => {
         console.log('Error from sending get request /library: ', err);
@@ -226,17 +141,7 @@ const Library = (props) => {
         </Button>
       </div>
       <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
-        <Search titles={titles} handleSearch={handleSearch} />
-        <Button
-          style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
-          variant='contained'
-          type='button'
-          onClick={() => setOpenUpload(true)}
-        >
-          <AddIcon />
-          &nbsp;
-          new ebook
-        </Button>
+        <Search handleSearch={handleSearch} />
       </div>
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
         <Button
@@ -251,7 +156,7 @@ const Library = (props) => {
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <h1>Reading Now</h1>
+        <h1>Library</h1>
         <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
@@ -271,7 +176,7 @@ const Library = (props) => {
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
           : displayBooks.filter(book => book.remainingText !== '').map(book => (
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
-            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
+            <img id={book.URL} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
             <CardContent sx={{ height: '2.5rem' }}>
               <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
                 {book.title}
@@ -287,57 +192,6 @@ const Library = (props) => {
           </Card>
         ))}
       </div>
-      <h1 style={{padding: '0 2rem'}}>My Books</h1>
-      <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-        {displayBooks.filter(book => book.remainingText === '').length === 0  ?
-          <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
-          : displayBooks.filter(book => book.remainingText === '').map(book => (
-          <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
-            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
-            <CardContent sx={{ height: '2.5rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-                {book.title}
-              </Typography>
-            </CardContent>
-            <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
-              <Button size='medium' value={book} color='warning' onClick={() => {
-                setRemoveBook(book);
-                setOpenRemove(true);
-              }}>Remove</Button>
-            </CardActions>
-          </Card>
-          ))}
-      </div>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openRemove}
-        onClose={() => setOpenRemove(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook.title} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
-            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
-              setRemoveBook({});
-              setOpenRemove(false);
-            }}>No</Button>
-          </div>
-        </Box>
-      </StyledModal>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openUpload}
-        onClose={() => setOpenUpload(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <Upload handleCloseUpload={handleCloseUpload} getUserData={getUserData}/>
-        </Box>
-      </StyledModal>
     </div>
   );
 };
@@ -352,104 +206,6 @@ const sortById = (a, b) => {
   if (a.id > b.id) return 1;
   if (a.id < b.id) return -1;
   return 0;
-};
-
-const bookMockData = [
-  {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Alice in Wonderland',
-    CFI: 'string',
-    remainingText: 'reading now',
-    id: 8
-  },
-  {
-    link: "https://blueocean.s3.us-west-1.amazonaws.com/A Legacy of Darkness by J.M. Wallace.epub",
-    title: 'A Legacy of Darkness by J.M. Wallace',
-    CFI: 'string',
-    remainingText: '',
-    id: 7
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Nutcracker Christmas by Laurie Winter.epub',
-    title: 'A Nutcracker Christmas by Laurie Winter',
-    CFI: 'string',
-    remainingText: '',
-    id: 6
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Wish for Father Christmas by Laura Rollins.epub',
-    title: 'A Wish for Father Christmas by Laura Rollins',
-    CFI: 'string',
-    remainingText: 'reading now',
-    id: 5
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Dead Sound by Anise Eden.epub',
-    title: 'Dead Sound by Anise Eden',
-    CFI: 'string',
-    remainingText: 'reading now',
-    id: 4
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Double Take by Elizabeth Breck.epub',
-    title: 'Double Take by Elizabeth Breck',
-    CFI: 'string',
-    remainingText: '',
-    id: 3
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Evergreen Love by Amy Clipsto.epub',
-    title: 'Evergreen Love by Amy Clipsto',
-    CFI: 'string',
-    remainingText: '',
-    id: 2
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Going Once by Sharon Sala.epub',
-    title: 'Going Once by Sharon Sala',
-    CFI: 'string',
-    remainingText: 'reading now',
-    id: 1
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/His Interim Sweetheart by Aliyah Burke.epub',
-    title: 'His Interim Sweetheart by Aliyah Burke',
-    CFI: 'string',
-    remainingText: '',
-    id: 0
-  }
-];
-
-const StyledModal = styled(ModalUnstyled)`
-  position: fixed;
-  z-index: 1300;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Backdrop = styled('div')`
-  z-index: -1;
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-tap-highlight-color: transparent;
-`;
-
-const style = {
-  width: 400,
-  bgcolor: '#FFFDD0',
-  border: '2px solid #000',
-  p: 2,
-  px: 4,
-  pb: 3,
 };
 
 export default Library;

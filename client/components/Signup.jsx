@@ -26,11 +26,11 @@ const Signup = () => {
     e.preventDefault();
     signUpWithEmail(email, password) //firebase
       .then(({ user }) => {
-        history.push("/library");
+        history.push("/account/library");
         axios({
           // mongo
           method: "POST",
-          url: "/users",
+          url: "/account",
           data: {
             email: user.email,
             books: [],

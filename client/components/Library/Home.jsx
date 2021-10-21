@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import Library from './Library';
+import MyAccount from './MyAccount';
 import Player from '../Player/Player';
 import Login from '../Login';
 
@@ -13,8 +14,15 @@ const Home = () => {
 
   return (
     <BrowserRouter>
+        <div id="links">
+          <Link to='/account/library'>My Account</Link>
+          <Link to='/library'>Library</Link>
+        </div>
+        <Route path='/account/library'>
+          <MyAccount handleReadBook={handleReadBook} />
+        </Route>
         <Route path='/library'>
-          <Library handleReadBook={handleReadBook} />
+          <Library />
         </Route>
         <Route path='/player'>
           <Player book={book}/>
