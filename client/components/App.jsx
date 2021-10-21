@@ -78,7 +78,6 @@ const App = () => {
   const rangeRef = useRef('')
   const _cfiRangeRef = useRef(null)
   const highlightedRef = useRef(false)
-  const highlightMode = useRef(true)
 
 
 
@@ -204,7 +203,6 @@ const App = () => {
 
                       // console.log(_cfiRange !== _cfiRangeRef.current)
 
-                      if (highlightMode.current) {
                         if (_cfiRange !== _cfiRangeRef.current) {
                           renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
                           _cfiRangeRef.current = _cfiRange;
@@ -215,20 +213,10 @@ const App = () => {
                         // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
                         if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
                           if (!highlightedRef.current) {
-                            renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                            renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
                           }
                         }
                         highlightedRef.current = true;
-                      } else {
-                        console.log('_cfiRange', _cfiRange)
-                        console.log('_cfiRangeRef.current', _cfiRangeRef.current)
-                        if (_cfiRange) {
-                          renditionRef.current.annotations.remove(_cfiRange, 'highlight');
-                        } else if (_cfiRangeRef.current) {
-                          renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
-                        }
-                      }
-
                     }
 
 
@@ -360,10 +348,6 @@ const App = () => {
       console.log('remainingText.current', remainingText.current);
       setPlaying(true);
     }
-  }
-
-  const handleHighlightMode = () => {
-    highlightMode.current = !highlightMode.current;
   }
 
   const locationChanged = (epubcifi) => {
@@ -589,7 +573,6 @@ const App = () => {
         <div id="audio-controls">
           <img id="resume-button" className="audio-button" src="../assets/icons8-play-100.png" onClick={handleResume} />
           <img id="pause-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handlePause} />
-          <img id="text-highlight-button" className="audio-button" src="../assets/icons8-pause-100.png" onClick={handleHighlightMode} />
         </div>
       </div>
     </>
