@@ -7,7 +7,7 @@ const fs = require("fs");
 const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 const upload = multer({ dest: "uploads/" });
 const {
