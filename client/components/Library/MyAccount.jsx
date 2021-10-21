@@ -188,8 +188,10 @@ const MyAccount = (props) => {
               // console.log(`${book.title} cover url: , ${results}`);
               if(results) {
                 document.getElementById(book.link).src = results;
+                book.coverURL = results;
               } else {
                 document.getElementById(book.link).src = '/book-cover.png';
+                book.coverURL = '/book-cover.png'
               }
             })
             .catch((err) => console.error(err));

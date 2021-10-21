@@ -26,7 +26,7 @@ const Signup = () => {
     e.preventDefault();
     signUpWithEmail(email, password) //firebase
       .then(({ user }) => {
-        history.push("/account/library");
+        history.push("/home");
         axios({
           // mongo
           method: "POST",

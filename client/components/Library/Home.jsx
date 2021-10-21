@@ -15,13 +15,13 @@ const Home = () => {
   return (
     <BrowserRouter>
         <div id="links">
-          <Link to='/account/library'>My Account</Link>
-          <Link to='/library'>Library</Link>
+          <Link to='/home'>My Account</Link>
+          <Link to='/freelibrary'>Library</Link>
         </div>
-        <Route path='/account/library'>
+        <Route path='/home'>
           <MyAccount handleReadBook={handleReadBook} />
         </Route>
-        <Route path='/library'>
+        <Route path='/freelibrary'>
           <Library />
         </Route>
         <Route path='/player'>

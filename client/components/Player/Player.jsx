@@ -7,6 +7,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { GlobalContext } from "../GlobalContextProvider";
 import Button from '@mui/material/Button';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
+import { useHistory } from 'react-router-dom';
 
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
@@ -264,6 +265,14 @@ const Player = (props) => {
     }
   }, [setSelections, selections])
 
+  // go back button
+  const history = useHistory();
+
+  const handleBackToAccount = () => {
+    handlePause();
+    history.push('/home');
+  };
+
   return (
     <>
       <div style={{ height: "80vh" }}>
@@ -296,6 +305,14 @@ const Player = (props) => {
             <SettingsVoiceIcon />
           </Button>
           <p id="transcript">Transcript: {transcript}</p>
+          <Button
+            style={{ height: '2rem', backgroundColor: '#0c6057' }}
+            variant='contained'
+            type='button'
+            onClick={handleBackToAccount}
+          >
+          Back to Account
+        </Button>
         </div>
       </div>
     </>
