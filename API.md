@@ -81,7 +81,7 @@ Get All s3 Objects
   - GET "/listObjects"
   - Send request through Query Paramters
   - Query Parameters:
-    - Bucket: <s3-bucket-name>
+    - Bucket: "s3-bucket-name"
   - Returns a JSON Object:
     ```json
     [{
