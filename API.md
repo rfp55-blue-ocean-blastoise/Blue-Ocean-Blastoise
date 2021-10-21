@@ -74,8 +74,8 @@ Delete Book
   - DELETE "/library"
   - Send request through JSON Object Body
   - Body Parameters:
-    - Email: String
-    - Body: String
+    - email: String
+    - title: String
 
 Get All s3 Objects
   - GET "/listObjects"
