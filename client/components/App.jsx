@@ -112,121 +112,131 @@ const App = () => {
 
           // console.log('current message text', responsiveVoiceCurrentMsgText)
           // console.log('rangeRef.current', rangeRef.current)
-          if (rangeRef.current) {
-            // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
-            // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
-            // console.log('rangeRef.current.childNodes', rangeRef.current.childNodes)
+          if (rangeRef.current && renditionRef.current) {
+            if (renditionRef.current.location) {
+              console.log('renditionRef.current.location.atStart', renditionRef.current.location.atStart)
+              if (!renditionRef.current.location.atStart) {
+                // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
+                // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
+                // console.log('rangeRef.current.childNodes', rangeRef.current.childNodes)
 
-            var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
-            var rangeRefValidChildren = [];
-            // console.log('rangeRefCurrentChildren', rangeRefCurrentChildren)
-            rangeRefCurrentChildren.forEach((child, index) => {
-              if (child) {
-                // console.log(child, index);
-                // console.log('child.length', child.length);
+                var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+                var rangeRefValidChildren = [];
+                // console.log('rangeRefCurrentChildren', rangeRefCurrentChildren)
+                rangeRefCurrentChildren.forEach((child, index) => {
+                  if (child) {
+                    // console.log(child, index);
+                    // console.log('child.length', child.length);
 
-                // console.log('child.value', child.value);
-                // console.log('child.nodeValue', child.nodeValue);
-                // console.log('child.innerHTML', child.innerHTML, index);
-                // console.log('child.innerText', child.innerText, index);
+                    // console.log('child.value', child.value);
+                    // console.log('child.nodeValue', child.nodeValue);
+                    // console.log('child.innerHTML', child.innerHTML, index);
+                    // console.log('child.innerText', child.innerText, index);
 
-                // // Only push valid children to our array
-                // console.log('--------------------------------------------------------child.childNodes', child.childNodes, index)
-                // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
-                //   rangeRefValidChildren.push(child)
-                // }
+                    // // Only push valid children to our array
+                    // console.log('--------------------------------------------------------child.childNodes', child.childNodes, index)
+                    // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+                    //   rangeRefValidChildren.push(child)
+                    // }
 
-                // Only push valid children to our array
-                // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
-                if (child.innerText.length > 0) {
-                  // console.log(child.innerHTML, index)
-                  // // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
-                  // if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
-                  //   rangeRefValidChildren.push(child)
-                  // }
-                  // Instead of removing italic, emphasized, bold tags; add only <p> and <header> tags
-                  if (child.outerHTML.substring(0, 2) === '<p' || child.outerHTML.substring(0, 2) === '<h') {
-                    rangeRefValidChildren.push(child)
-                  }
-                }
-              }
-            })
-            // console.log('rangeRefValidChildren', rangeRefValidChildren)
-            rangeRefValidChildren.forEach((child, index) => {
-              // rangeRefCurrentChildren.forEach((child, index) => {
-              if (child) {
-                // console.log(child, index);
-                // console.log('child.length', child.length);
-
-                // console.log('child.value', child.value);
-                // console.log('child.nodeValue', child.nodeValue);
-                // console.log('child.innerHTML', child.innerHTML);
-                // if (child.innerHTML.indexOf("is") !== -1) {
-                // if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
-                if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
-                  // alert(child.innerHTML)
-                  // console.log(child.innerHTML)
-                  console.log('inner text of child element (child.innerText)', child.innerText)
-                  console.log('current message text', responsiveVoiceCurrentMsgText)
-                  var foundChild = child;
-                  var foundChildNext = rangeRefValidChildren[index + 1]
-                  console.log('foundChild', foundChild)
-                  console.log('foundChildNext', foundChildNext)
-                  console.log('foundChildNext.outerHTML', foundChildNext.outerHTML)
-                  // console.log('foundChild.innerHTML', foundChild.innerHTML)
-                  // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
-                  // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
-                  // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
-                  var renditionRefContents = renditionRef.current.getContents();
-                  var foundChildCFI = renditionRefContents[0].cfiFromNode(foundChild)
-                  var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
-                  // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents', renditionRefContents)
-                  // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildCFI)
-                  // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
-
-                  const _breakpoint = foundChildCFI.indexOf('!') + 1;
-                  const _base = foundChildCFI.substring(0, _breakpoint);
-                  const _startRange = foundChildCFI.substring(_breakpoint, foundChildCFI.length - 1);
-                  const _endRange = foundChildNextCFI.substring(_breakpoint, foundChildNextCFI.length);
-                  const _cfiRange = `${_base},${_startRange},${_endRange}`;
-
-                  // console.log('_base', _base);
-                  // console.log('_startRange', _startRange);
-                  // console.log('_endRange', _endRange);
-                  // console.log('_cfiRange', _cfiRange);
-
-                  // console.log(_cfiRange !== _cfiRangeRef.current)
-                  if (_cfiRange !== _cfiRangeRef.current) {
-                    renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
-                    _cfiRangeRef.current = _cfiRange;
-                    console.log(_cfiRangeRef.current)
-                    highlightedRef.current = false;
-                    console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
-                  }
-
-                  // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
-                  if (highlightedRef.current !== null & highlightedRef !== undefined) {
-                    if (!highlightedRef.current) {
-                      renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                    // Only push valid children to our array
+                    // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
+                    if (child.innerText.length > 0) {
+                      // console.log(child.innerHTML, index)
+                      // // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
+                      // if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
+                      //   rangeRefValidChildren.push(child)
+                      // }
+                      // Instead of removing italic, emphasized, bold tags; add only <p> and <header> and <img> and <figure> tags
+                      if (child.outerHTML.substring(0, 2) === '<p'
+                        || child.outerHTML.substring(0, 2) === '<h'
+                        || child.outerHTML.substring(0, 4) === '<img'
+                        || child.outerHTML.substring(0, 7) === '<figure') {
+                        rangeRefValidChildren.push(child)
+                      }
                     }
                   }
-                  highlightedRef.current = true;
+                })
+                // console.log('rangeRefValidChildren', rangeRefValidChildren)
+                rangeRefValidChildren.forEach((child, index) => {
+                  // rangeRefCurrentChildren.forEach((child, index) => {
+                  if (child) {
+                    // console.log(child, index);
+                    // console.log('child.length', child.length);
 
-                }
+                    // console.log('child.value', child.value);
+                    // console.log('child.nodeValue', child.nodeValue);
+                    // console.log('child.innerHTML', child.innerHTML);
+                    // if (child.innerHTML.indexOf("is") !== -1) {
+                    // if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                    if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                      // alert(child.innerHTML)
+                      // console.log(child.innerHTML)
+                      console.log('inner text of child element (child.innerText)', child.innerText)
+                      console.log('current message text', responsiveVoiceCurrentMsgText)
+                      var foundChild = child;
+                      var foundChildNext = rangeRefValidChildren[index + 1]
+                      console.log('foundChild', foundChild)
+                      console.log('foundChildNext', foundChildNext)
+                      console.log('foundChildNext.outerHTML', foundChildNext.outerHTML)
+                      // console.log('foundChild.innerHTML', foundChild.innerHTML)
+                      // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
+                      // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
+                      // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
+                      var renditionRefContents = renditionRef.current.getContents();
+                      var foundChildCFI = renditionRefContents[0].cfiFromNode(foundChild)
+                      var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
+                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents', renditionRefContents)
+                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildCFI)
+                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
+
+                      const _breakpoint = foundChildCFI.indexOf('!') + 1;
+                      const _base = foundChildCFI.substring(0, _breakpoint);
+                      const _startRange = foundChildCFI.substring(_breakpoint, foundChildCFI.length - 1);
+                      const _endRange = foundChildNextCFI.substring(_breakpoint, foundChildNextCFI.length);
+                      const _cfiRange = `${_base},${_startRange},${_endRange}`;
+
+                      // console.log('_base', _base);
+                      // console.log('_startRange', _startRange);
+                      // console.log('_endRange', _endRange);
+                      // console.log('_cfiRange', _cfiRange);
+
+                      // console.log(_cfiRange !== _cfiRangeRef.current)
+                      if (_cfiRange !== _cfiRangeRef.current) {
+                        renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                        _cfiRangeRef.current = _cfiRange;
+                        console.log(_cfiRangeRef.current)
+                        highlightedRef.current = false;
+                        console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                      }
+
+                      // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
+                      if (highlightedRef.current !== null & highlightedRef !== undefined) {
+                        if (!highlightedRef.current) {
+                          renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                        }
+                      }
+                      highlightedRef.current = true;
+
+                    }
 
 
+                  }
+                })
+
+                // console.log('renditionRef.current', renditionRef.current)
+
+                // console.log('renditionRef.current.book', renditionRef.current.book)
+                // console.log('renditionRef.current.book.spine.spineItems', renditionRef.current.book.spine.spineItems)
+                // console.log('renditionRef.current.book.spine.spineItems[4]', renditionRef.current.book.spine.spineItems[4])
+                // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement', renditionRef.current.book.spine.spineItems[4].cfiFromElement)
+                // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
+
+                // console.log(renditionRef.current.book.cfiFromElement)
               }
-            })
 
-            // console.log('renditionRef.current', renditionRef.current)
+            }
 
-            // console.log('renditionRef.current.book', renditionRef.current.book)
-            // console.log('renditionRef.current.book.spine.spineItems', renditionRef.current.book.spine.spineItems)
-            // console.log('renditionRef.current.book.spine.spineItems[4]', renditionRef.current.book.spine.spineItems[4])
-            // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement', renditionRef.current.book.spine.spineItems[4].cfiFromElement)
-            // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
-
-            // console.log(renditionRef.current.book.cfiFromElement)
           }
         }
       }
