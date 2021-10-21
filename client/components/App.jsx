@@ -205,20 +205,30 @@ const App = () => {
 
                       // console.log(_cfiRange !== _cfiRangeRef.current)
 
-                      if (_cfiRange !== _cfiRangeRef.current) {
-                        renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
-                        _cfiRangeRef.current = _cfiRange;
-                        console.log(_cfiRangeRef.current)
-                        highlightedRef.current = false;
-                        console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
-                      }
-                      // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
-                      if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
-                        if (!highlightedRef.current) {
-                          renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                      // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
+
+                      renditionRef.current.book.getRange(_cfiRange).then(function (range) {
+                        // console.log('_cfiRange', _cfiRange)
+                        if (_cfiRange !== _cfiRangeRef.current) {
+                          // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
+                          renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                          _cfiRangeRef.current = _cfiRange;
+                          console.log(_cfiRangeRef.current)
+                          highlightedRef.current = false;
+                          console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
                         }
-                      }
-                      highlightedRef.current = true;
+                        // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
+                        if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
+                          if (!highlightedRef.current) {
+                            renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                          }
+                        }
+                        highlightedRef.current = true;
+                      })
+                        .catch((error) => {
+                          console.log(error)
+                        }
+                        );
                     }
 
 
