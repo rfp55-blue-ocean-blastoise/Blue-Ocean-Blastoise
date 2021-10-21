@@ -12,13 +12,15 @@ const PORT = 3001;
 const upload = multer({ dest: "uploads/" });
 const {
   db,
-  postTheBrother,
-  retrieveTheBrother,
-  deleteTheBrother,
-  updateBooksArrayForUniqueUser,
-  updateTheCFIForUniqueBookForUniqueUser,
+  createUser,
+  retrieveUserDocument,
+  deleteBook,
+  addBookForUser,
+  updateBookmark,
 } = require("../database/index.js");
-const { getObject, uploadFile, getFileStream } = require("../aws/s3.js");
+const { uploadFile, listObjectsFromBucket } = require("../aws/s3.js");
+const {aws_bucket_name, aws_bucket_region} = require("../config.js");
+
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: "50mb" }));
@@ -30,91 +32,109 @@ app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
-// Post to MongoDB after successful account sign up
-app.post("/users", (req, res) => {
-  // console.log(req.body);
-  postTheBrother(req.body, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+app.get('/signup', (req, res) => {
+  res.redirect('/');
+});
+app.get('/home', (req, res) => {
+  res.redirect('/');
+});
+app.get('/freelibrary', (req, res) => {
+  res.redirect('/');
+});
+app.get('/player', (req, res) => {
+  res.redirect('/');
 });
 
-// gives back Book Array for unique user
-app.get("/library", (req, res) => {
-  const email = req.query.email;
-  retrieveTheBrother(email, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(200).send(data[0].books);
-    }
-  });
+app.post("/account", async (req, res) => {
+  try {
+    const result = await createUser(req.body);
+    res.status(201).send(result);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-// Upload to S3 and Post Book Title to MongoDB
-app.post("/upload", upload.single("epub"), async (req, res) => {
-  const file = req.file;
-  const { user } = req.body;
-  const result = await uploadFile(file, file.originalname);
-  await unlinkFile(file.path);
-  // Post to MONGO after successful S3 upload!!
-  const book = {
-    link: result.Location,
-    title: result.Key,
-    cfi: "",
-    remainingText: "",
-  };
-  updateBooksArrayForUniqueUser(user, book, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+
+app.get("/account/library", async (req, res) => {
+  try {
+    const email = req.query.email;
+    const result = await retrieveUserDocument(email);
+    res.status(200).send(result[0].books);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-app.put("/library", (req, res) => {
-  const params = req.body;
-  updateTheCFIForUniqueBookForUniqueUser(params, (err, data) => {
-    if (err) {
-      res.status(418).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
+
+app.post("/account/upload", upload.single("epub"), async (req, res) => {
+  try {
+    const file = req.file;
+    const { email } = req.body;
+    const result = await uploadFile(file, file.originalname);
+    await unlinkFile(file.path);
+    const book = {
+      link: result.Location,
+      title: result.Key,
+      cfi: "",
+      remainingText: "",
+    };
+    const update = await addBookForUser(email, book);
+    res.status(201).send(update);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-app.delete("/library", (req, res) => {
-  deleteTheBrother(req.body, (err,data) => {
-    if (err) {
-      res.status(418).send(err)
-    } else {
-      res.status(204).send(data)
-    }
-  })
 
+app.put("/account/bookmark", async (req, res) => {
+  try {
+    const update = await updateBookmark(req.body);
+    res.status(201).send(update);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-// EXPERIMENTAL
 
-// Retrieves specific EPUB
-app.get("/epub", (req, res) => {
-  getObject(req.body, (err, data) => {
-    if (err) {
-      res.sendStatus(500).send(err);
-    } else {
-      res.status(200).send("Successful CFI update");
-    }
-  });
+app.delete("/account/library", async (req, res) => {
+  try {
+    const result = await deleteBook(req.body);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(418).send(err);
+  }
 });
 
-// app.get("/epub/:key", (req, res) => {
-//   console.log(req.params);
-//   const key = req.params.key;
-//   const readStream = getFileStream(key);
 
-//   readStream.pipe(res);
-// });
+app.get("/library", async (req, res) => {
+  try {
+    const objects = await listObjectsFromBucket({"Bucket": aws_bucket_name});
+    const list = objects.Contents.map((epub) => {
+      return {
+        Key: epub.Key,
+        Etag: epub.ETag,
+        size: epub.Size,
+        URL: `https://${aws_bucket_name}.s3.${aws_bucket_region}.amazonaws.com/${epub.Key}`,
+      };
+    });
+    res.status(200).send(list);
+  } catch (err) {
+    res.status(418).send(err);
+  }
+});
+
+app.post("/account/library", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const book = {
+      link: req.body.link,
+      title: req.body.title,
+      cfi: "",
+      remainingText: "",
+    };
+    const update = await addBookForUser(email, book);
+    res.status(201).send(update);
+  } catch (err) {
+    res.status(418).send(err);
+  }
+})

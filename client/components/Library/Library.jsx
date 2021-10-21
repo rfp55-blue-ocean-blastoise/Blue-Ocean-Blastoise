@@ -17,21 +17,15 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 import { styled } from '@mui/system';
-import ModalUnstyled from '@mui/core/ModalUnstyled';
 import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
-import Player from '../Player/Player';
 import Upload from './Upload';
+import Epub from 'epubjs/lib/index';
 
 const Library = (props) => {
-  const [books, setBooks] = useState(bookMockData.slice().reverse());
-  const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
-  const [titles, setTitles] = useState(bookMockData.map(book => book.title).sort());
-  const [email, setEmail] = useState('t@t.com');
+  const [books, setBooks] = useState([]);
+  const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
-  const [openRemove, setOpenRemove] = useState(false);
-  const [openUpload, setOpenUpload] = useState(false);
-  const [removeBook, setRemoveBook] = useState({});
   const { value, setValue } = useContext(GlobalContext);
 
   const history = useHistory();
@@ -61,42 +55,6 @@ const Library = (props) => {
           voiceCommandError = <p>Sort option not found</p>;
         }
       }
-    },
-    {
-      command: ['Read *'],
-      callback: (input) => {
-        let book = {};
-        for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
-            book = books[i];
-            break;
-          }
-        }
-        if (Object.keys(book).length) {
-          console.log('THIS IS BOOK: ', book);
-          handleReadBook(book);
-        } else {
-          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
-        }
-      }
-    },
-    {
-      command: ['Remove *'],
-      callback: (input) => {
-        let bookLink = '';
-        for (var i = 0; i < books.length; i++) {
-          if (books[i].title.toLowerCase() === input.toLowerCase()) {
-            bookLink = books[i].link;
-            break;
-          }
-        }
-        console.log('THIS IS BOOKLINK: ', bookLink);
-        if (bookLink.length) {
-          handleRemoveBook(bookLink);
-        } else {
-          voiceCommandError = <p>{`Can't find book with title: ${input}. Please try again`}</p>;
-        }
-      }
     }
   ];
 
@@ -107,7 +65,7 @@ const Library = (props) => {
   };
 
   useEffect(() => {
-    getUserData();
+    getBookLibrary();
   }, [])
 
   useEffect(() => {
@@ -124,26 +82,6 @@ const Library = (props) => {
     }
   },[sortOption])
 
-  const handleCloseUpload = () => setOpenUpload(false);
-
-  const handleReadBook = (book) => {
-    props.handleReadBook(book);
-    history.push('/player');
-  };
-
-  const handleRemoveBook = (e) => {
-    console.log('TO DO handle remove', e.target.value);
-    /*
-    axios.put('', { email })
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.log('Error sending put request to remove book: ', err);
-    });
-    */
-  };
-
   const handleSearch = (searchedStr) => {
     const searchBooks = books.filter(book => book.title.toLowerCase().indexOf(searchedStr) !== -1);
     setDisplayBooks(searchBooks);
@@ -153,22 +91,33 @@ const Library = (props) => {
     setSortOption(e.target.value);
   };
 
-  const getUserData = () => {
-    const params = {
-      email: email
-    };
-    axios.get('/library', { params })
+  const getBookLibrary = () => {
+    axios.get('/library')
       .then(response => {
         const data = response.data.reverse();
-        //expect data to be an array of book objects with 3 props: link, title, cfi
+        //expect data to be an array of book objects with 5 props: Key, Etag, size, URL
         console.log('This is data from get /library:', data);
         const orderedData = data.map((book, index) => {
+          let currBook = new Epub(book.URL);
+          currBook.ready.then(() => {
+            currBook.coverUrl()
+            .then((results) => {
+              if(results) {
+                document.getElementById(book.URL).src = results;
+                book.coverURL = results;
+              } else {
+                document.getElementById(book.URL).src = '/book-cover.png';
+                book.coverURL = '/book-cover.png';
+              }
+            })
+            .catch((err) => console.error(err));
+          });
+          book.title = book.Key.slice(0, book.Key.length - 5);
           book.id = index;
           return book;
         })
         setBooks(orderedData);
         setDisplayBooks(orderedData);
-        setTitles(orderedData.map(book => book.title).sort());
       })
       .catch(err => {
         console.log('Error from sending get request /library: ', err);
@@ -178,6 +127,21 @@ const Library = (props) => {
   const handleLogOut = () => {
     setValue('');
     history.push('/');
+  };
+
+  const handleAddBook = (book) => {
+    console.log('BODY FOR REQ: ', value, book.URL, book.title);
+    axios.post('/account/library', {
+      email: value,
+      link: book.URL,
+      title: book.title
+    })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.log(err);
+      })
   };
 
   return (
@@ -194,17 +158,7 @@ const Library = (props) => {
         </Button>
       </div>
       <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
-        <Search titles={titles} handleSearch={handleSearch} />
-        <Button
-          style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
-          variant='contained'
-          type='button'
-          onClick={() => setOpenUpload(true)}
-        >
-          <AddIcon />
-          &nbsp;
-          new ebook
-        </Button>
+        <Search handleSearch={handleSearch} />
       </div>
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
         <Button
@@ -219,7 +173,7 @@ const Library = (props) => {
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <h1>My Books</h1>
+        <h1>Library</h1>
         <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
@@ -228,90 +182,29 @@ const Library = (props) => {
             label='Sort'
             value={sortOption}
             onChange={handleSortOptionChange}
-          >
+            >
             <MenuItem value={'recent'}>Recent</MenuItem>
             <MenuItem value={'title'}>Title</MenuItem>
           </Select>
         </FormControl>
       </div>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-      {displayBooks.length === 0 ?
-        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
-        : displayBooks.map(book => (
-        <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <CardMedia
-            component='img'
-            width='30'
-            image='/book-cover.png'
-            alt='book cover'
-            />
-          <CardContent sx={{ height: '2.5rem' }}>
-            <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-              {book.title}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
-            <Button size='medium' value={book} color='warning' onClick={() => {
-              setRemoveBook(book);
-              setOpenRemove(true);
-            }}>Remove</Button>
-          </CardActions>
-        </Card>
-      ))}
+        {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
+          <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
+          : displayBooks.filter(book => book.remainingText !== '').map(book => (
+          <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
+            <img id={book.URL} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
+            <CardContent sx={{ height: '2.5rem' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+                {book.title}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleAddBook(JSON.parse(e.target.value))}>Add to My Books</Button>
+            </CardActions>
+          </Card>
+        ))}
       </div>
-      <h1 style={{padding: '0 2rem'}}>Reading Now</h1>
-      <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-      {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
-        <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
-        : displayBooks.filter(book => book.remainingText !== '').map(book => (
-        <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-          <CardMedia
-            component='img'
-            width='30'
-            image='/book-cover.png'
-            alt='book cover'
-            />
-          <CardContent sx={{ height: '2.5rem' }}>
-            <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-              {book.title}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-          </CardActions>
-        </Card>
-      ))}
-      </div>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openRemove}
-        onClose={() => setOpenRemove(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
-            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
-              setRemoveBook({});
-              setOpenRemove(false);
-            }}>No</Button>
-          </div>
-        </Box>
-      </StyledModal>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openUpload}
-        onClose={() => setOpenUpload(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <Upload handleCloseUpload={handleCloseUpload}/>
-        </Box>
-      </StyledModal>
     </div>
   );
 };
@@ -326,104 +219,6 @@ const sortById = (a, b) => {
   if (a.id > b.id) return 1;
   if (a.id < b.id) return -1;
   return 0;
-};
-
-const bookMockData = [
-  {
-    link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
-    title: 'Alice in Wonderland',
-    CFI: '',
-    remainingText: '',
-    id: 8
-  },
-  {
-    link: "https://blueocean.s3.us-west-1.amazonaws.com/A Legacy of Darkness by J.M. Wallace.epub",
-    title: 'A Legacy of Darkness by J.M. Wallace',
-    CFI: '',
-    remainingText: '',
-    id: 7
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Nutcracker Christmas by Laurie Winter.epub',
-    title: 'A Nutcracker Christmas by Laurie Winter',
-    CFI: 'epubcfi(/6/44[section-0020_xhtml]!/4/12/2/1:0)',
-    remainingText: 'Before coming down, Kort showered, something he normally did during the early morning hours when the world around him slept.',
-    id: 6
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Wish for Father Christmas by Laura Rollins.epub',
-    title: 'A Wish for Father Christmas by Laura Rollins',
-    CFI: 'epubcfi(/6/44[id37]!/4[J2B80-37ed8c6c313c4afebc73a62dd2f8cf33]/2[uncategorized-3]/2[uncategorized-3-heading]/2/2/4/2[calibre_pb_0]/1:0)',
-    remainingText: '',
-    id: 5
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Dead Sound by Anise Eden.epub',
-    title: 'Dead Sound by Anise Eden',
-    CFI: '',
-    remainingText: 'reading now',
-    id: 4
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Double Take by Elizabeth Breck.epub',
-    title: 'Double Take by Elizabeth Breck',
-    CFI: '',
-    remainingText: '',
-    id: 3
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Evergreen Love by Amy Clipsto.epub',
-    title: 'Evergreen Love by Amy Clipsto',
-    CFI: '',
-    remainingText: '',
-    id: 2
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/Going Once by Sharon Sala.epub',
-    title: 'Going Once by Sharon Sala',
-    CFI: '',
-    remainingText: 'reading now',
-    id: 1
-  },
-  {
-    link: 'https://blueocean.s3.us-west-1.amazonaws.com/His Interim Sweetheart by Aliyah Burke.epub',
-    title: 'His Interim Sweetheart by Aliyah Burke',
-    CFI: '',
-    remainingText: '',
-    id: 0
-  }
-];
-
-const StyledModal = styled(ModalUnstyled)`
-  position: fixed;
-  z-index: 1300;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Backdrop = styled('div')`
-  z-index: -1;
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-tap-highlight-color: transparent;
-`;
-
-const style = {
-  width: 400,
-  bgcolor: '#FFFDD0',
-  border: '2px solid #000',
-  p: 2,
-  px: 4,
-  pb: 3,
 };
 
 export default Library;

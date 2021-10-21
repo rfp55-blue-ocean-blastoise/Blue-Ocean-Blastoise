@@ -10,13 +10,15 @@ const Upload = (props) => {
 
   const handleUpload = (e) => {
     e.preventDefault();
+    console.log('upload clicked!')
     const formData = new FormData();
-    formData.append("epub", files)
-    formData.append("user", value)
-    axios.post('/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    formData.append("epub", files);
+    formData.append("email", value);
+    axios.post('/account/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .then((response) => {
         console.log('This is response from upload: ', response);
         props.handleCloseUpload();
+        props.getUserData();
       })
       .catch((err) => console.log(err));
   };
@@ -24,22 +26,24 @@ const Upload = (props) => {
   return (
     <div>
       <h1>Upload Your eBook (EPUB)</h1>
-      <input
-        name='epub'
-        type='file'
-        accept='.epub'
-        onChange={(e) => setFiles(e.target.files[0])}
-      />
-      <Button
-        style={{ backgroundColor: '#0c6057' }}
-        variant='contained'
-        component='label'
-        type='button'
-        onClick={handleUpload}
-      >
-        Upload&nbsp;
-        <FileUploadIcon />
-      </Button>
+      <form onSubmit={handleUpload} encType="multipart/form-data">
+        <input
+          name='epub'
+          type='file'
+          accept='.epub'
+          onChange={(e) => setFiles(e.target.files[0])}
+        />
+        <input
+          // style={{ backgroundColor: '#0c6057' }}
+          // variant='contained'
+          // component='label'
+          type='submit'
+          // onClick={handleUpload}
+        >
+          {/* Upload&nbsp; */}
+          {/* <FileUploadIcon /> */}
+        </input>
+      </form>
     </div>
   );
 };

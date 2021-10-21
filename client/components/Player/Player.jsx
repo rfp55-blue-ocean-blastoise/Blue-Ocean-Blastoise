@@ -1,8 +1,13 @@
-import React, { useRef, useState, useEffect } from "react"
-import { ReactReader } from "react-reader"
-import Controls from "./Controls.jsx"
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { ReactReader } from "react-reader";
+import Controls from "./Controls.jsx";
+import axios from 'axios';
 // import Modal from './Modal.jsx';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { GlobalContext } from "../GlobalContextProvider";
+import Button from '@mui/material/Button';
+import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
+import { useHistory } from 'react-router-dom';
 
 
 // Books
@@ -34,6 +39,72 @@ const Player = (props) => {
   const [voice, setVoice] = useState(voiceOptions[0].name);
   const [backgroundV, setBackgroundV] = useState(0.15);
   const backgroundS = document.getElementById('fire');
+
+  const { value, setValue } = useContext(GlobalContext);
+
+  //Voice Command
+  let voiceCommandError = '';
+  const commands = [
+    {
+      command: ['Text size *'],
+      callback: (input) => {
+        if (fontSizeOptions.indexOf(Number(input)) !== -1) {
+          setSize(Number(input));
+        }
+      }
+    },
+    {
+      command: ['Open settings'],
+      callback: () => {
+        setShowModal(true);
+      }
+    },
+    {
+      command: ['Volume *'],
+      callback: (input) => {
+        // TO DO: Volume 10 & below, need to convert to number
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: Number(input)/100,
+          rate: parameters.rate,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Speed *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: Number(input)/100,
+          pitch: parameters.pitch,
+        });
+      }
+    },
+    {
+      command: ['Pitch *'],
+      callback: (input) => {
+        handlePause();
+        setParameters({
+          onstart: parameters.onstart,
+          onend: parameters.onend,
+          volume: parameters.volume,
+          rate: parameters.rate,
+          pitch: Number(input)/100,
+        });
+      }
+    }
+  ];
+
+  const { transcript } = useSpeechRecognition({ commands });
+  if (!SpeechRecognition.browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  };
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
 
@@ -92,6 +163,20 @@ const Player = (props) => {
       console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
       console.log('remainingText.current', remainingText.current);
       setPlaying(false);
+      //Send cfi
+      console.log(value);
+      axios.put('/account/bookmark', {
+        email: value,
+        id: props.book['_id'],
+        cfi: 'test cfi',
+        remainingText: 'test remaining text'
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        })
     }
   }
 
@@ -236,6 +321,14 @@ const Player = (props) => {
     }
   }, [setSelections, selections])
 
+  // go back button
+  const history = useHistory();
+
+  const handleBackToAccount = () => {
+    handlePause();
+    history.push('/home');
+  };
+
   return (
     <div>
       <div style={{ height: "80vh" }}>
@@ -256,11 +349,37 @@ const Player = (props) => {
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div style={{ height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10 }}>
-        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} />
+      {/* <div style={{ height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10 }}>
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} /> */}
+      <div style={{height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10}}>
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice}/>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+          <Button
+            variant='contained'
+            style={{ backgroundColor: '#11A797' }}
+            type='button'
+            onClick={() => {
+              handlePause();
+              SpeechRecognition.startListening();
+            }}
+          >
+            <SettingsVoiceIcon />
+          </Button>
+          <p id="transcript">Transcript: {transcript}</p>
+          <Button
+            style={{ height: '2rem', backgroundColor: '#0c6057' }}
+            variant='contained'
+            type='button'
+            onClick={handleBackToAccount}
+          >
+          Back to Account
+        </Button>
+        </div>
       </div>
     </div>
   )
-}
+};
+
+const fontSizeOptions = [25, 50, 100, 125, 150, 175, 200];
 
 export default Player;
