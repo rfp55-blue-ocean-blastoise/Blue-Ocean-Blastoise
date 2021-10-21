@@ -55,24 +55,6 @@ console.log(responsiveVoice.enableEstimationTimeout);
 console.log(responsiveVoice);
 responsiveVoice.enableWindowClickHook();
 
-function loop() {
-  console.log('does this work')
-  if (responsiveVoice) {
-    if (responsiveVoice.currentMsg) {
-      console.log('current message', responsiveVoice.currentMsg)
-      if (responsiveVoice.currentMsg.text) {
-        console.log('current message text', responsiveVoice.currentMsg.text)
-      }
-    }
-  }
-  setTimeout(function () {
-    // execute script
-    loop()
-  }, 1000); //9000 = 9000ms = 9s
-};
-
-loop();
-
 const App = () => {
   const [page, setPage] = useState('')
   const [location, setLocation] = useState(null)
@@ -93,11 +75,31 @@ const App = () => {
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
+  const rangeRef = useRef('')
+
 
   //   setInterval(function(){
   //     //this code runs every second
   //     console.log('does this work')
   // }, 1000);
+
+  function loop() {
+    console.log('does this work')
+    if (responsiveVoice) {
+      if (responsiveVoice.currentMsg) {
+        console.log('current message', responsiveVoice.currentMsg)
+        if (responsiveVoice.currentMsg.text) {
+          console.log('current message text', responsiveVoice.currentMsg.text)
+        }
+      }
+    }
+    setTimeout(function () {
+      // execute script
+      loop()
+    }, 1000); //9000 = 9000ms = 9s
+  };
+
+  loop();
 
   console.log('does this work')
 
@@ -269,6 +271,46 @@ const App = () => {
       // }
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
+        rangeRef.current = range.commonAncestorContainer;
+        console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
+        console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
+        // console.log(rangeRef.current.childNodes)
+
+        var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+        var rangeRefValidChildren = [];
+        rangeRefCurrentChildren.forEach((child, index) => {
+          console.log(child, index);
+          // console.log('child.length', child.length);
+
+          // console.log('child.value', child.value);
+          // console.log('child.nodeValue', child.nodeValue);
+          console.log('child.innerHTML', child.innerHTML);
+          if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+            rangeRefValidChildren.push(child)
+          }
+        })
+        console.log('rangeRefValidChildren', rangeRefValidChildren)
+        rangeRefValidChildren.forEach((child, index) => {
+          console.log(child, index);
+          // console.log('child.length', child.length);
+
+          // console.log('child.value', child.value);
+          // console.log('child.nodeValue', child.nodeValue);
+          console.log('child.innerHTML', child.innerHTML);
+          if (child.innerHTML.indexOf("difficult") !== -1) {
+            alert(child.innerHTML)
+          }
+        })
+
+        // var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+        // for (let item of rangeRefCurrentChildren) {
+        //   console.log('item', item)
+        //     console.log('item.length', item.length);
+        //     console.log('item.value', item.value);
+        //     console.log('item.nodeValue', item.nodeValue);
+        // }
+
+
         console.log('range', range);
         let text = range.toString()
         remainingText.current = text;
@@ -276,8 +318,8 @@ const App = () => {
         // console.log(text === "\n  ")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n  ") {
           // currentRenditionText.current = text;
-          responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-          setPlaying(true);
+          // responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+          // setPlaying(true);
         }
       })
     }
@@ -288,6 +330,13 @@ const App = () => {
       function setRenderSelection(cfiRange, contents) {
         console.log('cfiRange', cfiRange)
         console.log('contents', contents)
+        var range = contents.range(cfiRange);
+        console.log('range', range)
+        var text = renditionRef.current.getRange(cfiRange).toString();
+        console.log('text', text)
+        var rect = range.getBoundingClientRect();
+        console.log('rect', rect)
+        console.log('why')
         setSelections(selections.concat({
           text: renditionRef.current.getRange(cfiRange).toString(),
           cfiRange
