@@ -38,7 +38,9 @@ const Player = (props) => {
   const voiceOptions = responsiveVoice.getVoices();
   const [voice, setVoice] = useState(voiceOptions[0].name);
   const [backgroundV, setBackgroundV] = useState(0.15);
+  const [firstPage, setFirstPage] = useState(true);
   const backgroundS = document.getElementById('fire');
+
 
   const { value, setValue } = useContext(GlobalContext);
 
@@ -135,11 +137,13 @@ const Player = (props) => {
   // Callback stuff
   function voiceStartCallback() {
     console.log("Voice started");
+    // handlePause();
+    // handleResume();
   }
 
   // page flip doesn't work anymore :(
   function voiceEndCallback() {
-    console.log("Voice ended");
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Voice ended");
     var audio = document.getElementById('audio');
     audio.play();
     setTimeout(() => {
@@ -164,12 +168,12 @@ const Player = (props) => {
       console.log('remainingText.current', remainingText.current);
       setPlaying(false);
       //Send cfi
-      console.log(value);
+      // console.log(value);
       axios.put('/account/bookmark', {
         email: value,
         id: props.book['_id'],
-        cfi: 'test cfi',
-        remainingText: 'test remaining text'
+        cfi: `${location}`,
+        remainingText: remainingText.current,
       })
         .then(response => {
           console.log(response);
@@ -194,10 +198,20 @@ const Player = (props) => {
       const { displayed, href } = renditionRef.current.location.start
       const chapter = tocRef.current.find((item) => item.href === href)
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
-      if (props.book.CFI) {
-        setLocation(props.book.CFI)
-        // props.book.CFI = '';
-      } else {
+      if (firstPage && props.book.cfi && props.book.cfi.indexOf('\n') !== -1 && props.book.cfi !== 'null') {
+        setFirstPage(false);
+        console.log('+=====================================================================', props.book.cfi)
+        setLocation(props.book.cfi.substring(0, props.book.cfi.length -2 ));
+
+      } else if (firstPage && props.book.cfi && props.book.cfi.indexOf('\n') === -1 && props.book.cfi !== 'null') {
+        setFirstPage(false);
+        setLocation(props.book.cfi);
+      } else  {
+        // const thisBugMustDie = 'epubcfi(/6/6[item6]!,/4/2[pgepubid00003]/4[link2H_INTR]/10/1:808,/4/2[pgepubid00003]/4[link2H_INTR]/14/1:1218)';
+        // const thisBugMustDie = 'epubcfi(/6/4[item5]!/4/2/1:0)';
+        console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~', epubcfi);
+        // data: "{\"email\":\"jb@jb.com\",\"id\":\"6171b97cc84e7d1b07d37ad2\",\"cfi\":\"epubcfi(/6/4[item5]!/4/2/1:0)\",\"remainingText\":\"INTRODUCTION AND ANALYSIS.\"}"
+
         setLocation(epubcfi)
       }
       // console.log('----------------------------------------------------------------------------------------', epubcfi)
@@ -226,6 +240,8 @@ const Player = (props) => {
       const endRange = locationEndCfi.substring(breakpoint, locationEndCfi.length);
       const cfiRange = `${base},${startRange},${endRange}`;
 
+
+
       // console.log('base', base);
       // console.log('startRange', startRange);
       // console.log('endRange', endRange);
@@ -237,11 +253,25 @@ const Player = (props) => {
         remainingText.current = props.book.remainingText || text;
         console.log('text', text);
         // console.log(text === "\n  ")
-        console.log('on rendeer', remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n")
+
+        axios.put('/account/bookmark', {
+          email: value,
+          id: props.book['_id'],
+          cfi: epubcfi,
+          remainingText: remainingText.current,
+        })
+          .then(response => {
+            console.log(response);
+          })
+          .catch(err => {
+            console.log(err);
+          })
+
+        console.log('on render', remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n") {
           // currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, voice, parameters);
-          props.book.remainingText = undefined;
+          // props.book.remainingText = '';
           setPlaying(true);
           // console.log('did if fire')
         } else {
@@ -352,7 +382,7 @@ const Player = (props) => {
       {/* <div style={{ height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10 }}>
         <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} /> */}
       <div style={{height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10}}>
-        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice}/>
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV}/>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
           <Button
             variant='contained'
