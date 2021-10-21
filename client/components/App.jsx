@@ -91,8 +91,26 @@ const App = () => {
     if (responsiveVoice) {
       if (responsiveVoice.currentMsg) {
         // console.log('current message', responsiveVoice.currentMsg)
-        if (responsiveVoice.currentMsg.text) {
-          // console.log('current message text', responsiveVoice.currentMsg.text)
+        // if (responsiveVoice.currentMsg.text) {
+        // Put additional contraint that text must be over 5 letters long
+        if (responsiveVoice.currentMsg.text && responsiveVoice.currentMsg.text.trim().length > 5) {
+          let responsiveVoiceCurrentMsgText = responsiveVoice.currentMsg.text.trim();
+          // Remove quote if there's a quote as 1st character, then trim
+          if (responsiveVoiceCurrentMsgText[0] === "'" || responsiveVoiceCurrentMsgText[0] === '"') {
+            responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.substring(1);
+            responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.trim();
+          }
+          // Remove punctuation from the end if there's punctuation, then trim
+          if (responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === ","
+            || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "."
+            || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === ";"
+            || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "!"
+            || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "?") {
+            responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.substring(0, responsiveVoiceCurrentMsgText.length);
+            responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.trim();
+          }
+
+          // console.log('current message text', responsiveVoiceCurrentMsgText)
           // console.log('rangeRef.current', rangeRef.current)
           if (rangeRef.current) {
             // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
@@ -108,14 +126,22 @@ const App = () => {
 
                 // console.log('child.value', child.value);
                 // console.log('child.nodeValue', child.nodeValue);
-                // console.log('child.innerHTML', child.innerHTML);
-                if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+                // console.log('child.innerHTML', child.innerHTML, index);
+                // console.log('child.innerText', child.innerText, index);
+
+                // // Only push valid children to our array
+                // console.log('--------------------------------------------------------child.childNodes', child.childNodes, index)
+                // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+                //   rangeRefValidChildren.push(child)
+                // }
+                if (child.innerText.length > 0) {
                   rangeRefValidChildren.push(child)
                 }
               }
             })
             // console.log('rangeRefValidChildren', rangeRefValidChildren)
             rangeRefValidChildren.forEach((child, index) => {
+              // rangeRefCurrentChildren.forEach((child, index) => {
               if (child) {
                 // console.log(child, index);
                 // console.log('child.length', child.length);
@@ -124,8 +150,12 @@ const App = () => {
                 // console.log('child.nodeValue', child.nodeValue);
                 // console.log('child.innerHTML', child.innerHTML);
                 // if (child.innerHTML.indexOf("is") !== -1) {
-                if (child.innerHTML.indexOf(responsiveVoice.currentMsg.text) !== -1) {
+                // if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
                   // alert(child.innerHTML)
+                  // console.log(child.innerHTML)
+                  console.log('inner text of child element (child.innerText)', child.innerText)
+                  console.log('current message text', responsiveVoiceCurrentMsgText)
                   var foundChild = child;
                   var foundChildNext = rangeRefValidChildren[index + 1]
                   // console.log('foundChild.innerHTML', foundChild.innerHTML)
@@ -150,11 +180,14 @@ const App = () => {
                   // console.log('_endRange', _endRange);
                   // console.log('_cfiRange', _cfiRange);
 
-                  console.log(_cfiRange !== _cfiRangeRef.current)
-                  _cfiRangeRef.current = _cfiRange;
-                  console.log(_cfiRangeRef.current)
-
-
+                  // console.log(_cfiRange !== _cfiRangeRef.current)
+                  if (_cfiRange !== _cfiRangeRef.current) {
+                    renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                    _cfiRangeRef.current = _cfiRange;
+                    console.log(_cfiRangeRef.current)
+                    highlightedRef.current = false;
+                    console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                  }
 
                   // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
                   if (highlightedRef.current !== null & highlightedRef !== undefined) {
@@ -484,7 +517,7 @@ const App = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={accessible}
+          url={alice}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
