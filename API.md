@@ -59,7 +59,7 @@ Update Bookmark
   - Send request through JSON Object Body
   - Body Parameters:
     - email: String
-    - title: String
+    - id: String
     - cfi: String
     - remainingText: String
   - Returns a string response with:
