@@ -5,26 +5,26 @@
     <li>
       <a href="#Usage">Server Routes</a>
       <ul>
-        <li><a href="#post">Post Users</a></li>
+        <li><a href="#post">Post New User</a></li>
       </ul>
        <ul>
-        <li><a href="#get">Get Library</a></li>
+        <li><a href="#get">Get User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#upload">Upload EPUB</a></li>
+        <li><a href="#upload">Upload EPUB to User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#put">Update Bookmark</a></li>
+        <li><a href="#put">Update User's Bookmark</a></li>
       </ul>
       <ul>
-        <li><a href="#remove">Delete Book</a></li>
+        <li><a href="#remove">Delete Book From User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#s3">Get All s3 Objects</a></li>
+        <li><a href="#s3">Get s3 Library</a></li>
       </ul>
       <ul>
-        <li><a href="#suggested">Get All s3 Objects</a></li>
-      </ul>   
+        <li><a href="#suggested">Add Book From Library</a></li>
+      </ul>
     </li>
   </ol>
 
@@ -35,10 +35,10 @@
 
 ### Server Routes
 
-Post New User: 
- - POST "/account" 
+Post New User:
+ - POST "/account"
  - Send request through JSON Object Body
- - Body Parameters: 
+ - Body Parameters:
     - email: String
 
 
@@ -69,12 +69,12 @@ Update User's Bookmark
     - remainingText: String
   - Returns a string response with:
     ```javascript
-    Email: "test@test.com", 
-    Book: "alice.epub", 
-    UpdatedCFI: "epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])", 
+    Email: "test@test.com",
+    Book: "alice.epub",
+    UpdatedCFI: "epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])",
     remainingText: "These,are...words"
     ```
-    
+
 Delete Book From User's Library
   - DELETE "/account/library"
   - Send request through JSON Object Body
@@ -104,8 +104,8 @@ Add Book From Library
   - Body Parameters:
     - email: String
     - link: String
-    - title: String 
-  
+    - title: String
+
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
