@@ -332,63 +332,63 @@ const bookMockData = [
   {
     link: 'https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf',
     title: 'Alice in Wonderland',
-    CFI: 'string',
-    remainingText: 'reading now',
+    CFI: '',
+    remainingText: '',
     id: 8
   },
   {
     link: "https://blueocean.s3.us-west-1.amazonaws.com/A Legacy of Darkness by J.M. Wallace.epub",
     title: 'A Legacy of Darkness by J.M. Wallace',
-    CFI: 'string',
+    CFI: '',
     remainingText: '',
     id: 7
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Nutcracker Christmas by Laurie Winter.epub',
     title: 'A Nutcracker Christmas by Laurie Winter',
-    CFI: 'string',
-    remainingText: '',
+    CFI: 'epubcfi(/6/44[section-0020_xhtml]!/4/12/2/1:0)',
+    remainingText: 'Before coming down, Kort showered, something he normally did during the early morning hours when the world around him slept.',
     id: 6
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/A Wish for Father Christmas by Laura Rollins.epub',
     title: 'A Wish for Father Christmas by Laura Rollins',
-    CFI: 'string',
-    remainingText: 'reading now',
+    CFI: 'epubcfi(/6/44[id37]!/4[J2B80-37ed8c6c313c4afebc73a62dd2f8cf33]/2[uncategorized-3]/2[uncategorized-3-heading]/2/2/4/2[calibre_pb_0]/1:0)',
+    remainingText: '',
     id: 5
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/Dead Sound by Anise Eden.epub',
     title: 'Dead Sound by Anise Eden',
-    CFI: 'string',
+    CFI: '',
     remainingText: 'reading now',
     id: 4
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/Double Take by Elizabeth Breck.epub',
     title: 'Double Take by Elizabeth Breck',
-    CFI: 'string',
+    CFI: '',
     remainingText: '',
     id: 3
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/Evergreen Love by Amy Clipsto.epub',
     title: 'Evergreen Love by Amy Clipsto',
-    CFI: 'string',
+    CFI: '',
     remainingText: '',
     id: 2
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/Going Once by Sharon Sala.epub',
     title: 'Going Once by Sharon Sala',
-    CFI: 'string',
+    CFI: '',
     remainingText: 'reading now',
     id: 1
   },
   {
     link: 'https://blueocean.s3.us-west-1.amazonaws.com/His Interim Sweetheart by Aliyah Burke.epub',
     title: 'His Interim Sweetheart by Aliyah Burke',
-    CFI: 'string',
+    CFI: '',
     remainingText: '',
     id: 0
   }

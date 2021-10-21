@@ -4,6 +4,7 @@ import Controls from "./Controls.jsx"
 // import Modal from './Modal.jsx';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
+
 // Books
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
@@ -19,15 +20,23 @@ console.log(responsiveVoice);
 responsiveVoice.enableWindowClickHook();
 
 const Player = (props) => {
-  const [page, setPage] = useState('')
-  const [location, setLocation] = useState(null)
-  const [selections, setSelections] = useState([])
+  const [page, setPage] = useState('');
+  // let currentCFI;
+  // if (props.book.CFI !== '') {
+  //   currentCFI = props.book.CFI;
+  // } else {
+  //   currentCFI = null;
+  // }
+  const [location, setLocation] = useState(null);
+  const [selections, setSelections] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const voiceOptions = responsiveVoice.getVoices();
-  const [voice, setVoice] = useState(voiceOptions[0].name)
-
+  const [voice, setVoice] = useState(voiceOptions[0].name);
+  const [backgroundV, setBackgroundV] = useState(0.15);
+  const backgroundS = document.getElementById('fire');
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
+
 
   /**************************************************************************************************************
   NOTE: We need to keep track of a 'playing' state/ref which gets updated when whenever we click on the pause/resume buttons.
@@ -90,24 +99,23 @@ const Player = (props) => {
     if (!isPlaying) {
       responsiveVoice.clickEvent();
       responsiveVoice.speak(remainingText.current, voice, parameters);
-      console.log('clicked to resume');
-      console.log('current responsiveVoice', responsiveVoice)
-      console.log('current message', responsiveVoice.currentMsg)
-      console.log('current message text', responsiveVoice.currentMsg.text)
-      console.log('responsiveVoiceTextArray.current', responsiveVoiceTextArray.current);
-      console.log('responsiveVoiceCurrentMsgIndex.current', responsiveVoiceCurrentMsgIndex.current);
-      console.log('remainingText.current', remainingText.current);
       setPlaying(true);
     }
   }
 
-  const locationChanged = (epubcifi) => {
+  const locationChanged = (epubcfi) => {
     responsiveVoice.cancel();
     if (renditionRef.current && tocRef.current) {
       const { displayed, href } = renditionRef.current.location.start
       const chapter = tocRef.current.find((item) => item.href === href)
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
-      setLocation(epubcifi)
+      if (props.book.CFI) {
+        setLocation(props.book.CFI)
+        // props.book.CFI = '';
+      } else {
+        setLocation(epubcfi)
+      }
+      // console.log('----------------------------------------------------------------------------------------', epubcfi)
 
       // console.log('current rendition', renditionRef.current)
       // console.log('current book', renditionRef.current.book)
@@ -136,22 +144,24 @@ const Player = (props) => {
       // console.log('base', base);
       // console.log('startRange', startRange);
       // console.log('endRange', endRange);
-      // console.log('cfiRange', cfiRange);
+      console.log('cfiRange', cfiRange);
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
         console.log('range', range);
         let text = range.toString().trim()
-        remainingText.current = text;
-        console.log('text', text.length);
+        remainingText.current = props.book.remainingText || text;
+        console.log('text', text);
         // console.log(text === "\n  ")
+        console.log('on rendeer', remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n") {
           // currentRenditionText.current = text;
           responsiveVoice.speak(remainingText.current, voice, parameters);
+          props.book.remainingText = undefined;
           setPlaying(true);
           // console.log('did if fire')
         } else {
           // console.log('did else fire')
-          setTimeout(() => {renditionRef.current.next()}, 4269);
+          // setTimeout(() => { renditionRef.current.next() }, 4269);
         }
       })
     }
@@ -172,15 +182,31 @@ const Player = (props) => {
     handlePause();
   }
 
+
+  backgroundS.onended = function () {
+    backgroundS.play()
+  };
+
   useEffect(() => {
-    if (responsiveVoice.multipartText && responsiveVoice.currentMsg) {
-      console.log('new volume', parameters.volume);
-      responsiveVoiceTextArray.current = responsiveVoice.multipartText;
-      responsiveVoiceCurrentMsgIndex.current = responsiveVoice.currentMsg.rvIndex;
-      remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
-      handleResume()
+    backgroundS.play();
+    backgroundS.volume = backgroundV;
+  }, []);
+
+  useEffect(() => {
+    if (!showModal) {
+      if (responsiveVoice.multipartText && responsiveVoice.currentMsg) {
+        if (backgroundV === 0) {
+          backgroundS.pause();
+        } else {
+          backgroundS.play();
+          backgroundS.volume = backgroundV;
+        }
+        console.log('new volume', parameters.volume);
+        remainingText.current = responsiveVoiceTextArray.current.slice(responsiveVoiceCurrentMsgIndex.current).join('');
+        handleResume();
+      }
     }
-  }, [parameters]);
+  }, [backgroundV, showModal]);
 
   useEffect(() => {
     if (renditionRef.current) {
@@ -211,7 +237,7 @@ const Player = (props) => {
   }, [setSelections, selections])
 
   return (
-    <>
+    <div>
       <div style={{ height: "80vh" }}>
         <ReactReader
           location={location}
@@ -230,10 +256,10 @@ const Player = (props) => {
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div style={{height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10}}>
-        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice}/>
+      <div style={{ height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10 }}>
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} />
       </div>
-    </>
+    </div>
   )
 }
 
