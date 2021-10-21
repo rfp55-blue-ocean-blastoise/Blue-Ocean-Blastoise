@@ -151,7 +151,8 @@ const App = () => {
                       if (child.outerHTML.substring(0, 2) === '<p'
                         || child.outerHTML.substring(0, 2) === '<h'
                         || child.outerHTML.substring(0, 4) === '<img'
-                        || child.outerHTML.substring(0, 7) === '<figure') {
+                        || child.outerHTML.substring(0, 7) === '<figure'
+                        || child.outerHTML.substring(0, 2) === '<a') {
                         rangeRefValidChildren.push(child)
                       }
                     }
@@ -178,7 +179,7 @@ const App = () => {
                       var foundChildNext = rangeRefValidChildren[index + 1]
                       console.log('foundChild', foundChild)
                       console.log('foundChildNext', foundChildNext)
-                      console.log('foundChildNext.outerHTML', foundChildNext.outerHTML)
+                      if (foundChildNext) { console.log('foundChildNext.outerHTML', foundChildNext.outerHTML) }
                       // console.log('foundChild.innerHTML', foundChild.innerHTML)
                       // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
                       // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
@@ -188,7 +189,8 @@ const App = () => {
                       var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
                       // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents', renditionRefContents)
                       // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildCFI)
-                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
+                      console.log('renditionRef.current.location', renditionRef.current.location)
+                      console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
 
                       const _breakpoint = foundChildCFI.indexOf('!') + 1;
                       const _base = foundChildCFI.substring(0, _breakpoint);
@@ -199,24 +201,24 @@ const App = () => {
                       // console.log('_base', _base);
                       // console.log('_startRange', _startRange);
                       // console.log('_endRange', _endRange);
-                      // console.log('_cfiRange', _cfiRange);
+                      console.log('_cfiRange', _cfiRange);
 
                       // console.log(_cfiRange !== _cfiRangeRef.current)
 
-                        if (_cfiRange !== _cfiRangeRef.current) {
-                          renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
-                          _cfiRangeRef.current = _cfiRange;
-                          console.log(_cfiRangeRef.current)
-                          highlightedRef.current = false;
-                          console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                      if (_cfiRange !== _cfiRangeRef.current) {
+                        renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                        _cfiRangeRef.current = _cfiRange;
+                        console.log(_cfiRangeRef.current)
+                        highlightedRef.current = false;
+                        console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                      }
+                      // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
+                      if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
+                        if (!highlightedRef.current) {
+                          renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
                         }
-                        // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
-                        if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
-                          if (!highlightedRef.current) {
-                            renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
-                          }
-                        }
-                        highlightedRef.current = true;
+                      }
+                      highlightedRef.current = true;
                     }
 
 
