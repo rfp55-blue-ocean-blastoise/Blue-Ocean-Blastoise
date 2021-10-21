@@ -115,10 +115,11 @@ const App = () => {
           if (rangeRef.current) {
             // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
             // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
-            // console.log(rangeRef.current.childNodes)
+            // console.log('rangeRef.current.childNodes', rangeRef.current.childNodes)
 
             var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
             var rangeRefValidChildren = [];
+            // console.log('rangeRefCurrentChildren', rangeRefCurrentChildren)
             rangeRefCurrentChildren.forEach((child, index) => {
               if (child) {
                 // console.log(child, index);
@@ -134,8 +135,15 @@ const App = () => {
                 // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
                 //   rangeRefValidChildren.push(child)
                 // }
+
+                // Only push valid children to our array
+                // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
                 if (child.innerText.length > 0) {
-                  rangeRefValidChildren.push(child)
+                  // console.log(child.innerHTML, index)
+                  // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
+                  if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
+                    rangeRefValidChildren.push(child)
+                  }
                 }
               }
             })
@@ -158,6 +166,9 @@ const App = () => {
                   console.log('current message text', responsiveVoiceCurrentMsgText)
                   var foundChild = child;
                   var foundChildNext = rangeRefValidChildren[index + 1]
+                  console.log('foundChild', foundChild)
+                  console.log('foundChildNext', foundChildNext)
+                  console.log('foundChildNext.outerHTML', foundChildNext.outerHTML)
                   // console.log('foundChild.innerHTML', foundChild.innerHTML)
                   // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
                   // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
