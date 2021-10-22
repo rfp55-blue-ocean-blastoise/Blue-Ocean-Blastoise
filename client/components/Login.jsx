@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { GlobalContext } from "./GlobalContextProvider";
 import { signInWithEmail, googleSignIn, makeNewSession } from "../firebase.js";
-import { onAuthStateChanged, getAuth } from "firebase/auth"
+import { onAuthStateChanged, getAuth } from "firebase/auth";
 import axios from "axios";
 import { BrowserRouter, Link, useHistory } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -24,35 +24,44 @@ const Login = () => {
   const { value, setValue } = useContext(GlobalContext);
   const history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const auth = getAuth()
-  const user = auth.currentUser
+  const auth = getAuth();
+  const user = auth.currentUser;
   onAuthStateChanged(auth, (user) => {
     return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
   });
   if (isLoggedIn) {
-    console.log(user, 'from login ')
     setValue(user.email);
-    history.push('/home')
+    history.push("/home");
   }
-  const loginUser = (e) => {
+  const loginUser = async (e) => {
     e.preventDefault();
-    // makeNewSession(email, password)
-    //   .then((res) => {
-    //     setValue(email);
-    //     history.push("/home");
-    //   })
-    //   .catch((err) => console.log(err, "err from firebase"));
+    try {
+      await makeNewSession(email, password);
+      setValue(email);
+      history.push("/home");
+    } catch (err) {
+      console.log(err, "err from firebase");
+    }
   };
 
   const handleLoginForGoogle = async (e) => {
-    e.preventDefault()
-    try{
-      const result = await googleSignIn()
-      console.log({result}, 'from google')
-    } catch(err){
-      console.log(err, 'from handleLoginForGoogle')
+    e.preventDefault();
+    try {
+      const email = await googleSignIn();
+      const result = await axios({
+        method: "POST",
+        url: "/account",
+        data: {
+          email: email,
+          books: [],
+        },
+      });
+      setValue(email);
+      history.push("/home");
+    } catch (err) {
+      console.log(err, "from handleLoginForGoogle");
     }
-  }
+  };
 
   return (
     <div className="login">
@@ -147,7 +156,10 @@ const Login = () => {
               Sign In
             </Button>
             <div className="login-buttons">
-              <button className="login-provider-button" onClick={handleLoginForGoogle}>
+              <button
+                className="login-provider-button"
+                onClick={handleLoginForGoogle}
+              >
                 <img
                   src="https://img.icons8.com/ios-filled/50/000000/google-logo.png"
                   alt="google icon"

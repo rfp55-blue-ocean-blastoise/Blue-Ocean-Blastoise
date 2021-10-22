@@ -8,7 +8,6 @@ import {
   signInWithPopup,
   browserSessionPersistence,
   setPersistence,
-  inMemoryPersistence,
 } from "firebase/auth";
 import config from "../config.js";
 
@@ -25,52 +24,30 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-export const googleSignIn = () => {
-  setPersistence(auth, inMemoryPersistence)
-    .then(() => {
-      const provider = new GoogleAuthProvider();
-      // In memory persistence will be applied to the signed in Google user
-      // even though the persistence was set to 'none' and a page redirect
-      // occurred.
-      signInWithPopup(auth, provider)
-      .then((res)=> {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(res);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const user = res.user;
-      console.log({user},{token}, 'from firebase')
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
-    })
-    .catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
+export const googleSignIn = async () => {
+  try {
+    setPersistence(auth, browserSessionPersistence);
+    const provider = new GoogleAuthProvider();
+    const res = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(res);
+    const token = credential.accessToken;
+    const email = res.user.email;
+    return email;
+  } catch (error) {
+    const { errorCode, errorMessage, email } = error;
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    return errorMessage;
+  }
 };
 
-export const makeNewSession = (email, password) => {
-  console.log("session", browserSessionPersistence);
-  setPersistence(auth, browserSessionPersistence)
-    .then(() => {
-      console.log("then block of make newSession");
-      return signInWithEmailAndPassword(auth, email, password);
-    })
-    .catch((err) => {
-      console.log(err, "err from make new session");
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log({ errorCode, errorMessage });
-    });
+export const makeNewSession = async (email, password) => {
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    return signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    const {code, message} = error;
+    return message
+  }
 };
 
 export const signInWithEmail = (email, password) =>

@@ -16,14 +16,11 @@ const App = () => {
 
   const auth = getAuth();
   const user = auth.currentUser;
-  console.log('user', user)
 
   onAuthStateChanged(auth, (user) => {
-    console.log('triggered')
     return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
   });
   if (isLoggedIn) {
-    console.log('islogged in ')
     setValue(user.email);
   }
 
