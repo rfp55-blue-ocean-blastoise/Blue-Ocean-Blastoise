@@ -4,7 +4,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { GlobalContext } from "./GlobalContextProvider";
 import Login from "./Login";
 import Signup from "./Signup";
-import Home from './Library/Home';
 import MyAccount from './Library/MyAccount';
 import Library from './Library/Library';
 import Player from './Player/Player';

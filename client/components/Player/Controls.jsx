@@ -41,10 +41,11 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
     <div>
       <div style={{ textAlign: 'center', padding: '2rem' }}>
         {page}
-        <h1 style={{ fontSize: '2vw'}}>{book.title}</h1>
+        <h1 style={{ fontSize: '3vh'}}>{book.title}</h1>
         <div id="audio-controls">
           <Button
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+            size='small'
             variant='contained'
             type='button'
             onClick={() => {setShowModal(true); handlePause()}}
@@ -54,6 +55,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
           {isPlaying ? (
             <Button
               style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+              size='small'
               variant='contained'
               type='button'
               onClick={handlePause}
@@ -63,6 +65,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
           ) : (
             <Button
               style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+              size='small'
               variant='contained'
               type='button'
               onClick={handleResume}
@@ -76,6 +79,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             aria-haspopup="true"
             aria-expanded={openFont ? 'true' : undefined}
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+            size='small'
             variant='contained'
             type='button'
             onClick={handleClickFontSize}
@@ -98,7 +102,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             }}
           >
             {fontSizeOptions.map(item => (
-              <MenuItem style={{ fontSize: '1rem' }} onClick={() => {
+              <MenuItem style={{ fontSize: '1.5vh' }} onClick={() => {
                 console.log('THIS IS SELECTED FONT SIZE: ', item);
                 setSize(item);
                 handlePause();
@@ -118,8 +122,8 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
       >
         <Box sx={style}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
-            <h2 style={{ textAlign: 'center' }}>Voice Volume&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
+            <h2 style={{ textAlign: 'center', fontSize: '2vh' }}>Voice&nbsp;</h2>
+            <div style={{ width: '20vh', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
               <VolumeDown />
               <Slider
                 style={{ color: '#11A797', margin: '0 0.5rem' }}
@@ -136,8 +140,8 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
-            <h2 style={{ textAlign: 'center' }}>Speed&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+            <h2 style={{ textAlign: 'center', fontSize: '2vh'  }}>Speed&nbsp;</h2>
+            <div style={{ width: '20vh', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
               <RemoveIcon />
               <Slider
                 min={0.1}
@@ -162,8 +166,8 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
-            <h2 style={{ textAlign: 'center' }}>Pitch&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
+            <h2 style={{ textAlign: 'center', fontSize: '2vh' }}>Pitch&nbsp;</h2>
+            <div style={{ width: '20vh', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
               <RemoveIcon />
               <Slider
                 min={0.1}
@@ -188,8 +192,8 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
-            <h2 style={{ textAlign: 'center' }}>Background Volume&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
+            <h2 style={{ textAlign: 'center', fontSize: '2vh' }}>Background&nbsp;</h2>
+            <div style={{ width: '20vh', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
               <VolumeDown />
               <Slider
                 style={{ color: '#11A797', margin: '0 0.5rem' }}
@@ -208,7 +212,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0' }}>
-            <h2 >Voice Options</h2>
+            <h2 style={{ fontSize: '2vh'}} >Voice Options</h2>
             <IconButton
               aria-label="more"
               id="long-button"
@@ -238,13 +242,13 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             }}
             PaperProps={{
               style: {
-                maxHeight: '5rem',
-                width: '13rem',
+                maxHeight: '8vh',
+                width: '16vh',
               },
             }}
           >
             {voiceOptions.map((option) => (
-              <MenuItem key={option.name} selected={option.name === voice} onClick={() => setVoice(option.name)}>
+              <MenuItem key={option.name} selected={option.name === voice} onClick={() => setVoice(option.name)} sx={{ fontSize: '1.5vh' }}>
                 {option.name}
               </MenuItem>
             ))}
@@ -279,12 +283,14 @@ const Backdrop = styled('div')`
 `;
 
 const style = {
-  width: 400,
-  bgcolor: '#FFFDD0',
-  border: '2px solid #000',
-  p: 2,
-  px: 4,
-  pb: 3,
+  width: '35vh',
+  bgcolor: '#eaf4d2',
+  border: '1px solid #000',
+  p: 1,
+  px: 1,
+  pb: 1,
+  'box-shadow': '0px 0px 3px 2px rgba(0, 0, 0, 0.5)',
+  'border-radius': '5px 5px 5px',
 };
 
 const fontSizeOptions = [25, 50, 100, 125, 150, 175, 200];

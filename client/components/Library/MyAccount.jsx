@@ -207,6 +207,7 @@ const MyAccount = (props) => {
         <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
         <Button
           style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
+          size='small'
           variant='contained'
           type='button'
           onClick={handleLogOut}
@@ -234,6 +235,7 @@ const MyAccount = (props) => {
         <Search handleSearch={handleSearch} />
         <Button
           sx={{ backgroundColor: '#11A797' }}
+          size='small'
           variant='contained'
           type='button'
           onClick={() => setOpenUpload(true)}
@@ -245,6 +247,7 @@ const MyAccount = (props) => {
         <Button
           variant='contained'
           sx={{ backgroundColor: '#11A797' }}
+          size='small'
           type='button'
           onClick={SpeechRecognition.startListening}
         >
@@ -321,10 +324,10 @@ const MyAccount = (props) => {
         BackdropComponent={Backdrop}
       >
         <Box sx={style}>
-          <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
+          <h2 id="unstyled-modal-title" style={{textAlign: 'center', fontSize: '2vh'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook['_id']} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
-            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
+            <Button size='small' color='warning' value={removeBook['_id']} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
+            <Button size='small' style={{ color: '#0c6057' }} onClick={() => {
               setRemoveBook({});
               setOpenRemove(false);
             }}>No</Button>
@@ -448,12 +451,14 @@ const Backdrop = styled('div')`
 `;
 
 const style = {
-  width: 400,
-  bgcolor: 'rgba(201,221,148,1)',
-  border: '2px solid #000',
-  p: 2,
-  px: 4,
-  pb: 3,
+  width: '45vh',
+  bgcolor: '#eaf4d2',
+  border: '1px solid #000',
+  p: 1,
+  px: 1,
+  pb: 1,
+  'box-shadow': '0px 0px 3px 2px rgba(0, 0, 0, 0.5)',
+  'border-radius': '5px 5px 5px',
 };
 
 export default MyAccount;

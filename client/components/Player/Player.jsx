@@ -73,6 +73,7 @@ const Player = (props) => {
           rate: parameters.rate,
           pitch: parameters.pitch,
         });
+        handleResume();
       }
     },
     {
@@ -86,6 +87,7 @@ const Player = (props) => {
           rate: Number(input)/100,
           pitch: parameters.pitch,
         });
+        handleResume();
       }
     },
     {
@@ -99,6 +101,7 @@ const Player = (props) => {
           rate: parameters.rate,
           pitch: Number(input)/100,
         });
+        handleResume();
       }
     }
   ];
@@ -367,7 +370,7 @@ const Player = (props) => {
 
   return (
     <div>
-      <div style={{ zIndex: 20, position: 'absolute', top: '0%', left: '0%', width: '100%', height: "80%" }}>
+      <div style={{ zIndex: 20, position: 'absolute', top: '0%', left: '0%', width: '100%', height: "80vh" }}>
         <ReactReader
           location={location}
           locationChanged={locationChanged}
@@ -385,11 +388,12 @@ const Player = (props) => {
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div sstyle={{height: '20%', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
+      <div style={{height: '20vh', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
         <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV}/>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
           <Button
             variant='contained'
+            size='small'
             style={{ backgroundColor: '#11A797' }}
             type='button'
             onClick={() => {
