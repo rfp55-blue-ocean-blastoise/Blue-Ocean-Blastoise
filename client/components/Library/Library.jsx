@@ -35,7 +35,6 @@ const Library = (props) => {
   let urls = ["https://s3.amazonaws.com/moby-dick/OPS/package.opf", "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub"];
 
   const history = useHistory();
-  // const { value, setValue, signUserOut } = useContext(GlobalContext);
   const [tab, setTab] = useState('Library');
 
   let voiceCommandError = '';

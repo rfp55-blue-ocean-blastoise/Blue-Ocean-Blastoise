@@ -26,13 +26,6 @@ const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
-  onAuthStateChanged(auth, (user) => {
-    return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
-  });
-  if (isLoggedIn) {
-    setValue(user.email);
-    history.push("/home");
-  }
   const loginUser = async (e) => {
     e.preventDefault();
     try {
