@@ -46,6 +46,11 @@ const Player = (props) => {
 
   const { value, setValue } = useContext(GlobalContext);
 
+  // useEffect(() => {
+  //   backgroundS.pause();
+  //   backgroundS.load();
+  // }, [selectedSong]);
+
   //Voice Command
   let voiceCommandError = '';
   const commands = [

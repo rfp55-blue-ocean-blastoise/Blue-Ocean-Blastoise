@@ -261,7 +261,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
               </MenuItem>
             ))}
           </Menu>
-          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0' }}>
+          {/* <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0' }}>
             <h2 style={{ fontSize: '2vh'}} >Music Options</h2>
             <IconButton
               aria-label="more"
@@ -302,7 +302,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
                 {option}
               </MenuItem>
             ))}
-          </Menu>
+          </Menu> */}
         </Box>
       </StyledModal>
     </div>
