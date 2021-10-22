@@ -4,6 +4,11 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  browserSessionPersistence,
+  setPersistence,
+  inMemoryPersistence,
 } from "firebase/auth";
 import config from "../config.js";
 
@@ -20,19 +25,52 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-export const makeNewSession = (email, password) => {
-  console.log('session', browserSessionPersistence)
-  setPersistence(auth, browserSessionPersistence)
-    .then(()=> {
-      console.log('then block of make newSession')
-      return signInWithEmailAndPassword(auth, email, password)
+export const googleSignIn = () => {
+  setPersistence(auth, inMemoryPersistence)
+    .then(() => {
+      const provider = new GoogleAuthProvider();
+      // In memory persistence will be applied to the signed in Google user
+      // even though the persistence was set to 'none' and a page redirect
+      // occurred.
+      signInWithPopup(auth, provider)
+      .then((res)=> {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(res);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = res.user;
+      console.log({user},{token}, 'from firebase')
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
     })
-    .catch((err)=>{
-      console.log(err, 'err from make new session')
+    .catch((error) => {
+      // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log({errorCode, errorMessage})
+    });
+};
+
+export const makeNewSession = (email, password) => {
+  console.log("session", browserSessionPersistence);
+  setPersistence(auth, browserSessionPersistence)
+    .then(() => {
+      console.log("then block of make newSession");
+      return signInWithEmailAndPassword(auth, email, password);
     })
+    .catch((err) => {
+      console.log(err, "err from make new session");
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log({ errorCode, errorMessage });
+    });
 };
 
 export const signInWithEmail = (email, password) =>
@@ -40,5 +78,4 @@ export const signInWithEmail = (email, password) =>
 
 export const signUpWithEmail = (email, password) =>
   createUserWithEmailAndPassword(auth, email, password);
-
 export default firebaseApp;

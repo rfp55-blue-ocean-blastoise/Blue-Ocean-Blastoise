@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
 import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -28,18 +28,15 @@ const Library = (props) => {
   const [books, setBooks] = useState([]);
   const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
-<<<<<<< HEAD
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
-  const { value, setValue } = useContext(GlobalContext);
+  const { value, setValue, signUserOut } = useContext(GlobalContext);
   let urls = ["https://s3.amazonaws.com/moby-dick/OPS/package.opf", "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub"];
 
   const history = useHistory();
-=======
-  const { value, setValue, signUserOut } = useContext(GlobalContext);
+  // const { value, setValue, signUserOut } = useContext(GlobalContext);
   const [tab, setTab] = useState('Library');
->>>>>>> aba78e9b6cf1fa4f9fe778d1d6ec05817ad33891
 
   let voiceCommandError = '';
 
@@ -76,44 +73,7 @@ const Library = (props) => {
   };
 
   useEffect(() => {
-<<<<<<< HEAD
-    // getUserData()
-    // .then(() => {
-    //   console.log('got user data')
-    //   let book = new Epub("https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub");
-    //   book.loaded.then(() => {
-    //     console.log('book loaded')
-    //   })
-    // });
-
-    urls.forEach(url => {
-      console.log(url)
-      // let book = new Epub("https://s3.amazonaws.com/moby-dick/OPS/package.opf");
-      // let book = new Epub("https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub");
-      let book = new Epub(url);
-      book.ready.then((result) => {
-        // console.log('book ready')
-        // console.log('book', book)
-        // console.log('result', result)
-        // console.log('result Resources', result[3])
-        // console.log('result Cover Image', result[5])
-        // console.log('result Cover URL Index', result[5].urls.indexOf(result[3]))
-
-        book.coverUrl()
-          .then((result) => {
-            console.log('cover url found', result)
-            document.getElementById(url).src = result;
-          })
-          .catch((error) => {
-            // load default book cover
-            // save nothing?
-          })
-      })
-    })
-
-=======
     getBookLibrary();
->>>>>>> aba78e9b6cf1fa4f9fe778d1d6ec05817ad33891
   }, [])
 
   useEffect(() => {
@@ -206,15 +166,6 @@ const Library = (props) => {
           Sign Out
         </Button>
       </div>
-<<<<<<< HEAD
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
-        <Search titles={titles} handleSearch={handleSearch} />
-        <Button
-          style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
-          variant='contained'
-          type='button'
-          onClick={() => setOpenUpload(true)}
-=======
       <Box sx={{ width: '100%' }}>
         <Tabs
           value={tab}
@@ -226,7 +177,6 @@ const Library = (props) => {
           }}}
           aria-label="secondary tabs example"
           centered
->>>>>>> aba78e9b6cf1fa4f9fe778d1d6ec05817ad33891
         >
           <Tab label='My Account' value='My Account' sx={{ fontWeight: 'bold', fontSize: '2vh' }} component={Link} to={'/home'}/>
           <Tab label='Library' value='Library' sx={{ fontWeight: 'bold', fontSize: '2vh' }}  component={Link} to={'/freelibrary'}/>
@@ -249,15 +199,9 @@ const Library = (props) => {
       <img id={urls[0]} src="" style={{ width: '10%' }} />
       <img id={urls[1]} src="" style={{ width: '10%' }} />
       {voiceCommandError}
-<<<<<<< HEAD
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
-        <h1>My Books</h1>
-        <FormControl sx={{ width: '10%', maxheight: '1rem' }}>
-=======
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
         <h1 style={{ fontSize: '3vh' }} >Library</h1>
         <FormControl sx={{ width: '10%', minWidth: '7rem', height: '1vw', minheight: '5px', marginRight: '1rem' }}>
->>>>>>> aba78e9b6cf1fa4f9fe778d1d6ec05817ad33891
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
@@ -273,85 +217,6 @@ const Library = (props) => {
         </FormControl>
       </div>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-<<<<<<< HEAD
-        {displayBooks.length === 0 ?
-          <p style={{ margin: '1rem', fontSize: '1.2rem' }}>No Books</p>
-          : displayBooks.map(book => (
-            <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-              <CardMedia
-                component='img'
-                width='30'
-                image='/book-cover.png'
-                alt='book cover'
-              />
-              <CardContent sx={{ height: '2.5rem' }}>
-                <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-                  {book.title}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button size='medium' style={{ color: '#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Read</Button>
-                <Button size='medium' value={book} color='warning' onClick={() => {
-                  setRemoveBook(book);
-                  setOpenRemove(true);
-                }}>Remove</Button>
-              </CardActions>
-            </Card>
-          ))}
-      </div>
-      <h1 style={{ padding: '0 2rem' }}>Reading Now</h1>
-      <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
-        {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
-          <p style={{ margin: '1rem', fontSize: '1.2rem' }}>No Books</p>
-          : displayBooks.filter(book => book.remainingText !== '').map(book => (
-            <Card sx={{ maxWidth: '15rem', margin: '1rem' }}>
-              <CardMedia
-                component='img'
-                width='30'
-                image='/book-cover.png'
-                alt='book cover'
-              />
-              <CardContent sx={{ height: '2.5rem' }}>
-                <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
-                  {book.title}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button size='medium' style={{ color: '#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-              </CardActions>
-            </Card>
-          ))}
-      </div>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openRemove}
-        onClose={() => setOpenRemove(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <h2 id="unstyled-modal-title" style={{ textAlign: 'center' }} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook.url} onClick={handleRemoveBook}>Yes</Button>
-            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
-              setRemoveBook({});
-              setOpenRemove(false);
-            }}>No</Button>
-          </div>
-        </Box>
-      </StyledModal>
-      <StyledModal
-        aria-labelledby="unstyled-modal-title"
-        aria-describedby="unstyled-modal-description"
-        open={openUpload}
-        onClose={() => setOpenUpload(false)}
-        BackdropComponent={Backdrop}
-      >
-        <Box sx={style}>
-          <Upload handleCloseUpload={handleCloseUpload} />
-        </Box>
-      </StyledModal>
-=======
         {displayBooks.filter(book => book.remainingText !== '').length === 0 ?
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
           : displayBooks.filter(book => book.remainingText !== '').map(book => (
@@ -368,7 +233,6 @@ const Library = (props) => {
           </Card>
         ))}
       </div>
->>>>>>> aba78e9b6cf1fa4f9fe778d1d6ec05817ad33891
     </div>
   );
 };
