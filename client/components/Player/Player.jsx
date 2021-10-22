@@ -38,6 +38,7 @@ const Player = (props) => {
   const voiceOptions = responsiveVoice.getVoices();
   const [voice, setVoice] = useState(voiceOptions[0].name);
   const [backgroundV, setBackgroundV] = useState(0);
+  const [voiceBackgroundV, setVoiceBackgroundV] = useState(0);
   const [firstPage, setFirstPage] = useState(true);
   const backgroundS = document.getElementById('fire');
 
@@ -66,42 +67,46 @@ const Player = (props) => {
       callback: (input) => {
         // TO DO: Volume 10 & below, need to convert to number
         handlePause();
-        setParameters({
-          onstart: parameters.onstart,
-          onend: parameters.onend,
+        setVoiceParameters({
+          onstart: voiceParameters.onstart,
+          onend: voiceParameters.onend,
           volume: Number(input)/100,
-          rate: parameters.rate,
-          pitch: parameters.pitch,
+          rate: voiceParameters.rate,
+          pitch: voiceParameters.pitch,
         });
-        handleResume();
       }
     },
     {
       command: ['Speed *'],
       callback: (input) => {
         handlePause();
-        setParameters({
-          onstart: parameters.onstart,
-          onend: parameters.onend,
-          volume: parameters.volume,
+        setVoiceParameters({
+          onstart: voiceParameters.onstart,
+          onend: voiceParameters.onend,
+          volume: voiceParameters.volume,
           rate: Number(input)/100,
-          pitch: parameters.pitch,
+          pitch: voiceParameters.pitch,
         });
-        handleResume();
       }
     },
     {
       command: ['Pitch *'],
       callback: (input) => {
         handlePause();
-        setParameters({
-          onstart: parameters.onstart,
-          onend: parameters.onend,
-          volume: parameters.volume,
-          rate: parameters.rate,
+        setVoiceParameters({
+          onstart: voiceParameters.onstart,
+          onend: voiceParameters.onend,
+          volume: voiceParameters.volume,
+          rate: voiceParameters.rate,
           pitch: Number(input)/100,
         });
-        handleResume();
+      }
+    },
+    {
+      command: ['Background Music *'],
+      callback: (input) => {
+        handlePause();
+        setVoiceBackgroundV(Number(input)/100);
       }
     }
   ];
@@ -110,6 +115,33 @@ const Player = (props) => {
   if (!SpeechRecognition.browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
   };
+
+  const [voiceParameters, setVoiceParameters] = useState({
+    onstart: voiceStartCallback,
+    onend: voiceEndCallback,
+    volume: 0.5,
+    pitch: 1,
+    rate: 1
+  });
+
+  useEffect(() => {
+    if (!isPlaying) {
+      responsiveVoice.clickEvent();
+      responsiveVoice.speak(remainingText.current, voice, voiceParameters);
+      setPlaying(true);
+      backgroundS.play();
+    }
+  }, [voiceParameters])
+
+  useEffect(() => {
+    if (voiceBackgroundV === 0) {
+      backgroundS.pause();
+    } else {
+      backgroundS.play();
+      backgroundS.volume = voiceBackgroundV;
+    }
+    handleResume();
+  }, [voiceBackgroundV]);
   // const currentRenditionText = useRef('');
   // const remainingRenditionText = useRef('');
 
@@ -398,6 +430,7 @@ const Player = (props) => {
             type='button'
             onClick={() => {
               handlePause();
+              backgroundS.pause();
               SpeechRecognition.startListening();
             }}
           >
