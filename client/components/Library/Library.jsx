@@ -16,6 +16,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { styled } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
@@ -26,7 +28,8 @@ const Library = (props) => {
   const [books, setBooks] = useState([]);
   const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
-  const { value, setValue } = useContext(GlobalContext);
+  const { value, setValue, signUserOut } = useContext(GlobalContext);
+  const [tab, setTab] = useState('Library');
 
   let voiceCommandError = '';
 
@@ -114,6 +117,7 @@ const Library = (props) => {
           book.id = index;
           return book;
         })
+        console.log(orderedData)
         setBooks(orderedData);
         setDisplayBooks(orderedData);
       })
@@ -137,8 +141,40 @@ const Library = (props) => {
       })
   };
 
+  const handleLogOut = () => {
+    signUserOut()
+    history.push('/login');
+  };
+
   return (
     <div>
+      <div className='banner' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+        <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
+        <Button
+          style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
+          variant='contained'
+          type='button'
+          onClick={handleLogOut}
+        >
+          Sign Out
+        </Button>
+      </div>
+      <Box sx={{ width: '100%' }}>
+        <Tabs
+          value={tab}
+          onChange={(e, newVal) => setTab(newVal)}
+          textColor='inherit'
+          TabIndicatorProps={{ style: {
+            background: 'linear-gradient(61deg, rgba(201,221,148,1) 0%, rgba(143,198,144,1) 25%, rgba(109,184,141,1) 51%, rgba(143,198,144,1) 81%, rgba(201,221,148,1) 100%)',
+            height: '5px'
+          }}}
+          aria-label="secondary tabs example"
+          centered
+        >
+          <Tab label='My Account' value='My Account' sx={{ fontWeight: 'bold', fontSize: '2vh' }} component={Link} to={'/home'}/>
+          <Tab label='Library' value='Library' sx={{ fontWeight: 'bold', fontSize: '2vh' }}  component={Link} to={'/freelibrary'}/>
+        </Tabs>
+      </Box>
       <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
         <Search handleSearch={handleSearch} />
       </div>
@@ -151,17 +187,18 @@ const Library = (props) => {
         >
           <SettingsVoiceIcon />
         </Button>
-        <p id="transcript">Transcript: {transcript}</p>
+        <p id="transcript" style={{ fontSize: '2vh' }}>Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
-        <h1>Library</h1>
+        <h1 style={{ fontSize: '3vh' }} >Library</h1>
         <FormControl sx={{ width: '10%', minWidth: '7rem', height: '1vw', minheight: '5px', marginRight: '1rem' }}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
             id='sort-select'
             label='Sort'
+            style={{ fontSize: '2vh' }}
             value={sortOption}
             onChange={handleSortOptionChange}
             >

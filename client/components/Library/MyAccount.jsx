@@ -18,6 +18,8 @@ import Select from '@mui/material/Select';
 import SettingsVoiceIcon from '@mui/icons-material/SettingsVoice';
 import { styled } from '@mui/system';
 import ModalUnstyled from '@mui/core/ModalUnstyled';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import AddIcon from '@mui/icons-material/Add';
 import Search from './Search';
 import Player from '../Player/Player';
@@ -34,7 +36,8 @@ const MyAccount = (props) => {
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
-  const { value, setValue } = useContext(GlobalContext);
+  const { value, setValue, signUserOut } = useContext(GlobalContext);
+  const [tab, setTab] = useState('My Account');
 
   const history = useHistory();
 
@@ -110,25 +113,7 @@ const MyAccount = (props) => {
 
   useEffect(() => {
     getUserData();
-    // const books = displayBooks.map((book, index) => {
-    //   let currBook = new Epub(book.link);
-    //   currBook.ready.then(() => {
-    //     currBook.coverUrl()
-    //     .then((results) => {
-    //       console.log(`${book.title} cover url: , ${results}`);
-    //       if(results) {
-    //         document.getElementById(book.link).src = results;
-    //         book.coverURL = results;
-    //       } else {
-    //         document.getElementById(book.link).src = '/book-cover.png';
-    //         book.coverURL = '/book-cover.png';
-    //       }
-    //     })
-    //     .catch((err) => console.error(err));
-    //   });
-    // });
-    // setDisplayBooks(books);
-  }, [])
+  }, [value])
 
   useEffect(() => {
     if (sortOption === 'title') {
@@ -211,8 +196,40 @@ const MyAccount = (props) => {
       });
   };
 
+  const handleLogOut = () => {
+    signUserOut()
+    history.push('/login');
+  };
+
   return (
     <div>
+      <div className='banner' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+        <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
+        <Button
+          style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
+          variant='contained'
+          type='button'
+          onClick={handleLogOut}
+        >
+          Sign Out
+        </Button>
+      </div>
+      <Box sx={{ width: '100%' }}>
+        <Tabs
+          value={tab}
+          onChange={(e, newVal) => setTab(newVal)}
+          textColor='inherit'
+          TabIndicatorProps={{ style: {
+            background: 'linear-gradient(61deg, rgba(201,221,148,1) 0%, rgba(143,198,144,1) 25%, rgba(109,184,141,1) 51%, rgba(143,198,144,1) 81%, rgba(201,221,148,1) 100%)',
+            height: '5px'
+          }}}
+          aria-label="secondary tabs example"
+          centered
+        >
+          <Tab label='My Account' value='My Account' sx={{ fontWeight: 'bold', fontSize: '2vh' }} component={Link} to={'/home'}/>
+          <Tab label='Library' value='Library' sx={{ fontWeight: 'bold', fontSize: '2vh' }}  component={Link} to={'/freelibrary'}/>
+        </Tabs>
+      </Box>
       <div style={{display: 'flex', justifyContent: 'center', padding: '2rem', flexWrap: 'wrap' }}>
         <Search handleSearch={handleSearch} />
         <Button
@@ -233,17 +250,18 @@ const MyAccount = (props) => {
         >
           <SettingsVoiceIcon />
         </Button>
-        <p id="transcript">Transcript: {transcript}</p>
+        <p id="transcript" style={{ fontSize: '2vh' }}>Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
-        <h1>Reading Now</h1>
+        <h1 style={{ fontSize: '3vh' }}>Reading Now</h1>
         <FormControl sx={{ width: '10%', minWidth: '7rem', height: '1vw', minheight: '5px', marginRight: '1rem' }}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
             id='sort-select'
             label='Sort'
+            style={{ fontSize: '2vh' }}
             value={sortOption}
             onChange={handleSortOptionChange}
             >
@@ -273,7 +291,7 @@ const MyAccount = (props) => {
           </Card>
         ))}
       </div>
-      <h1 style={{padding: '0 2rem'}}>My Books</h1>
+      <h1 style={{ padding: '0 2rem', fontSize: '3vh' }}>My Books</h1>
       <div style={{ display: 'flex', padding: '2rem 4rem', flexWrap: 'wrap' }}>
         {displayBooks.filter(book => book.remainingText === '').length === 0  ?
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>

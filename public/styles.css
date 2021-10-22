@@ -8,6 +8,7 @@ White: #FFFFFF
 body {
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   margin: 0;
+  height: 100vh;
 }
 
 .banner {
@@ -22,4 +23,5 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100vh;
 }
