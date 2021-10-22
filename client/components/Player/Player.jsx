@@ -69,7 +69,7 @@ const Player = (props) => {
         setParameters({
           onstart: parameters.onstart,
           onend: parameters.onend,
-          volume: Number(input)/100,
+          volume: Number(input) / 100,
           rate: parameters.rate,
           pitch: parameters.pitch,
         });
@@ -84,7 +84,7 @@ const Player = (props) => {
           onstart: parameters.onstart,
           onend: parameters.onend,
           volume: parameters.volume,
-          rate: Number(input)/100,
+          rate: Number(input) / 100,
           pitch: parameters.pitch,
         });
         handleResume();
@@ -99,7 +99,7 @@ const Player = (props) => {
           onend: parameters.onend,
           volume: parameters.volume,
           rate: parameters.rate,
-          pitch: Number(input)/100,
+          pitch: Number(input) / 100,
         });
         handleResume();
       }
@@ -147,15 +147,33 @@ const Player = (props) => {
 
   // page flip doesn't work anymore :(
   function voiceEndCallback() {
-    console.log("Voice ended", responsiveVoice );
-    var audio = document.getElementById('audio');
-    if (window.SpeechSynthesisUtterance.text !== '') {
-      audio.play();
-      setTimeout(() => {
-        if (renditionRef.current) {
-          renditionRef.current.next()
-        }
-      }, 400);
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', remainingText, renditionRef.current)
+    console.log(renditionRef.current.location, 'in onend')
+    if (renditionRef.current.location.atEnd) {
+      console.log(renditionRef.current.location.atEnd, 'in onend')
+      axios.put('/account/bookmark', {
+        email: value,
+        id: props.book['_id'],
+        cfi: '',
+        remainingText: '',
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    } else {
+      console.log("Voice ended", responsiveVoice);
+      var audio = document.getElementById('audio');
+      if (window.SpeechSynthesisUtterance.text !== '') {
+        audio.play();
+        setTimeout(() => {
+          if (renditionRef.current) {
+            renditionRef.current.next()
+          }
+        }, 400);
+      }
     }
   }
 
@@ -175,18 +193,20 @@ const Player = (props) => {
       setPlaying(false);
       //Send cfi
       // console.log(value);
-      axios.put('/account/bookmark', {
-        email: value,
-        id: props.book['_id'],
-        cfi: `${location}`,
-        remainingText: remainingText.current,
-      })
-        .then(response => {
-          console.log(response);
+      if (!renditionRef.current.location.atEnd) {
+        axios.put('/account/bookmark', {
+          email: value,
+          id: props.book['_id'],
+          cfi: `${location}`,
+          remainingText: remainingText.current,
         })
-        .catch(err => {
-          console.log(err);
-        })
+          .then(response => {
+            console.log(response);
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      }
     }
   }
 
@@ -207,12 +227,12 @@ const Player = (props) => {
       if (firstPage && props.book.cfi && props.book.cfi.indexOf('\n') !== -1 && props.book.cfi !== 'null') {
         setFirstPage(false);
         console.log('+=====================================================================', props.book.cfi)
-        setLocation(props.book.cfi.substring(0, props.book.cfi.length -2 ));
+        setLocation(props.book.cfi.substring(0, props.book.cfi.length - 2));
 
       } else if (firstPage && props.book.cfi && props.book.cfi.indexOf('\n') === -1 && props.book.cfi !== 'null') {
         setFirstPage(false);
         setLocation(props.book.cfi);
-      } else  {
+      } else {
         // const thisBugMustDie = 'epubcfi(/6/6[item6]!,/4/2[pgepubid00003]/4[link2H_INTR]/10/1:808,/4/2[pgepubid00003]/4[link2H_INTR]/14/1:1218)';
         // const thisBugMustDie = 'epubcfi(/6/4[item5]!/4/2/1:0)';
         console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~', epubcfi);
@@ -221,7 +241,6 @@ const Player = (props) => {
         setLocation(epubcfi)
       }
       // console.log('----------------------------------------------------------------------------------------', epubcfi)
-
       // console.log('current rendition', renditionRef.current)
       // console.log('current book', renditionRef.current.book)
       // console.log('current book "getRange"', renditionRef.current.book.getRange)
@@ -259,7 +278,6 @@ const Player = (props) => {
         remainingText.current = props.book.remainingText || text;
         console.log('text', text);
         // console.log(text === "\n  ")
-
         axios.put('/account/bookmark', {
           email: value,
           id: props.book['_id'],
@@ -388,9 +406,9 @@ const Player = (props) => {
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div style={{height: '20vh', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
-        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV}/>
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+      <div style={{ height: '20vh', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Button
             variant='contained'
             size='small'
