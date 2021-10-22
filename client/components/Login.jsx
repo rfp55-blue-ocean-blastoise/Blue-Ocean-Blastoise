@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { GlobalContext } from "./GlobalContextProvider";
-import { signInWithEmail } from "../firebase.js";
+import { signInWithEmail, makeNewSession } from "../firebase.js";
 import axios from "axios";
 import { BrowserRouter, Link, useHistory } from "react-router-dom";
 import Box from '@mui/material/Box';
@@ -16,6 +16,8 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import IconButton from '@mui/material/IconButton';
 // import Upload from "./Upload";
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import firebaseApp from "../firebase.js"
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,15 +25,37 @@ const Login = () => {
   const { value, setValue } = useContext(GlobalContext);
   const history = useHistory();
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  console.log(onAuthStateChanged)
+  const auth = getAuth();
+  const user = auth.currentUser;
+  console.log('user', user)
 
-  const loginUser = (e) => {
+  onAuthStateChanged(auth, (user) => {
+    return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
+  });
+
+  console.log('logged in?', isLoggedIn);
+
+  if (isLoggedIn) {
+    setValue(user.email);
+    history.push('/home')
+  }
+
+
+
+
+
+
+  const loginUser = async (e) => {
     e.preventDefault();
-    signInWithEmail(email, password)
-      .then((res) => {
-        setValue(email);
-        history.push('/home');
-      })
-      .catch((err) => console.log(err, "err from firebase"));
+    try {
+      await makeNewSession(email, password)
+      setValue(email);
+      history.push('/home');
+    } catch (err) {
+      console.log(err, "err from firebase");
+    }
   };
 
   return (
@@ -56,7 +80,7 @@ const Login = () => {
                     </InputAdornment>
                   }
                   required
-                  />
+                />
               </FormControl>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: '2em' }}>
@@ -72,13 +96,13 @@ const Login = () => {
                       <IconButton
                         aria-label='toggle password visibility'
                         onClick={() => setShowPassword(!showPassword)}
-                        >
+                      >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   }
                   required
-                  />
+                />
               </FormControl>
             </Box>
             <Button variant='contained' color='primary' type='submit' onSubmit={loginUser}>
@@ -91,7 +115,7 @@ const Login = () => {
             </div>
           </Box>
         </form>
-      {/* <Upload/> */}
+        {/* <Upload/> */}
       </div>
     </div>
   );

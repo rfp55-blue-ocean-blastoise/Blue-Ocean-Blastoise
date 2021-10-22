@@ -24,6 +24,8 @@ import Player from '../Player/Player';
 import Upload from './Upload';
 import Epub from 'epubjs/lib/index';
 
+import { getAuth } from "firebase/auth";
+
 const MyAccount = (props) => {
   // const [books, setBooks] = useState(bookMockData.slice().reverse());
   // const [displayBooks, setDisplayBooks] = useState(bookMockData.slice().reverse());
@@ -34,6 +36,18 @@ const MyAccount = (props) => {
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
   const { value, setValue } = useContext(GlobalContext);
+
+  // console.log('user value', value)
+  // console.log('uid', uid)
+  // console.log('local storage', window.localStorage)
+
+  console.log('context', value)
+
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  console.log('user', user)
 
   const history = useHistory();
 

@@ -22,11 +22,21 @@ import Search from './Search';
 import Upload from './Upload';
 import Epub from 'epubjs/lib/index';
 
+import { getAuth } from "firebase/auth";
+
 const Library = (props) => {
   const [books, setBooks] = useState([]);
   const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
   const { value, setValue } = useContext(GlobalContext);
+
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+  console.log('user', user)
+
+
+
 
   const history = useHistory();
 

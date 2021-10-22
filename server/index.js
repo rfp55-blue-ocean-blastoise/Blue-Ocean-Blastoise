@@ -32,18 +32,18 @@ app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
 
-app.get('/signup', (req, res) => {
-  res.redirect('/');
-});
-app.get('/home', (req, res) => {
-  res.redirect('/');
-});
-app.get('/freelibrary', (req, res) => {
-  res.redirect('/');
-});
-app.get('/player', (req, res) => {
-  res.redirect('/');
-});
+// app.get('/signup', (req, res) => {
+//   res.redirect('/');
+// });
+// app.get('/home', (req, res) => {
+//   res.redirect('/');
+// });
+// app.get('/freelibrary', (req, res) => {
+//   res.redirect('/');
+// });
+// app.get('/player', (req, res) => {
+//   res.redirect('/');
+// });
 
 app.post("/account", async (req, res) => {
   try {
