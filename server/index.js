@@ -8,6 +8,7 @@ const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
 const app = express();
 const PORT = 3001;
+const compression = require('compression');
 
 const upload = multer({ dest: "uploads/" });
 const {
@@ -27,23 +28,18 @@ app.use(express.json({ limit: "50mb" }));
 app.use(
   express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 })
 );
+const shouldCompress = (req, res) => {
+  if(req.headers['x-no-compression']){
+    return false
+  }
+  return compression.filter(req,res)
+}
+app.use(compression({filter: shouldCompress}))
+
 
 app.listen(PORT, () => {
   console.log(`Server listening at localhost:${PORT}!`);
 });
-
-// app.get('/signup', (req, res) => {
-//   res.redirect('/');
-// });
-// app.get('/home', (req, res) => {
-//   res.redirect('/');
-// });
-// app.get('/freelibrary', (req, res) => {
-//   res.redirect('/');
-// });
-// app.get('/player', (req, res) => {
-//   res.redirect('/');
-// });
 
 app.post("/account", async (req, res) => {
   try {
