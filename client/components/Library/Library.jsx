@@ -116,6 +116,7 @@ const Library = (props) => {
           book.id = index;
           return book;
         })
+        console.log(orderedData)
         setBooks(orderedData);
         setDisplayBooks(orderedData);
       })
