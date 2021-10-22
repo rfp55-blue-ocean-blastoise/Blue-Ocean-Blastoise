@@ -43,6 +43,8 @@ const MyAccount = (props) => {
 
   let voiceCommandError = '';
 
+  props.highlightBookRef.current = null;
+
   const commands = [
     {
       command: ['Search *'],
