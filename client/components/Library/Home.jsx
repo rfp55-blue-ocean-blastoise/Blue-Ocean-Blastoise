@@ -42,13 +42,16 @@ const Home = () => {
         <Tabs
           value={tab}
           onChange={(e, newVal) => setTab(newVal)}
-          textColor='secondary'
-          indicatorColor='secondary'
+          textColor='inherit'
+          TabIndicatorProps={{ style: {
+            background: 'linear-gradient(61deg, rgba(201,221,148,1) 0%, rgba(143,198,144,1) 25%, rgba(109,184,141,1) 51%, rgba(143,198,144,1) 81%, rgba(201,221,148,1) 100%)',
+            height: '5px'
+          }}}
           aria-label="secondary tabs example"
           centered
         >
-          <Tab label='My Account' value='My Account' component={Link} to={'/home'}/>
-          <Tab label='Library' value='Library' component={Link} to={'/freelibrary'}/>
+          <Tab label='My Account' value='My Account' sx={{ fontWeight: 'bold', fontSize: '1.5vw' }} component={Link} to={'/home'}/>
+          <Tab label='Library' value='Library' sx={{ fontWeight: 'bold', fontSize: '1.5vw' }}  component={Link} to={'/freelibrary'}/>
         </Tabs>
       </Box>
       <Route path='/home'>

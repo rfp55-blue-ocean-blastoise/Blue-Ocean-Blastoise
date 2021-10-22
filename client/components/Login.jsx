@@ -36,15 +36,15 @@ const Login = () => {
 
   return (
     <div className="login">
-      <h1 style={{ fontSize: '12vw', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
-      <h2 style={{ fontSize: '5vw', width: '80%', textAlign: 'center' }}>The Premier Mobile Audio Experience to Listen to Your Books</h2>
-      <h3 style={{ fontSize: '3vw', width: '80%', textAlign: 'center' }}>
+      <h1 style={{ fontSize: '8vw', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
+      <h2 style={{ fontSize: '3vw', width: '80%', textAlign: 'center' }}>The Premier Mobile Audio Experience to Listen to Your Books</h2>
+      <h3 style={{ fontSize: '1.5vw', width: '80%', textAlign: 'center' }}>
         Don’t have time to read? No problem, just upload your book to the app and start getting knowledge injected into your earbuds.
       </h3>
       <div>
         <form type="submit" onSubmit={loginUser}>
           <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', p: '0', border: '1px solid #212121', padding: '1vw', borderRadius: '5px 5px 5px', boxShadow: '0px 0px 3px 2px rgba(0, 0, 0, 0.2)', mt: '1rem', width: '60vw', maxWidth: '25rem', height: 'fit-content' }}>
-            <h2 style={{ fontSize: '3vw' }} > Sign-in</h2>
+            <h2 style={{ fontSize: '2vw' }} > Sign-in</h2>
             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
               <FormControl sx={{ m: 1, width: '40vw', maxWidth: '20rem' }} variant="standard" required>
                 <InputLabel htmlFor="email" style={{ fontSize: '100%' }}>Email</InputLabel>
