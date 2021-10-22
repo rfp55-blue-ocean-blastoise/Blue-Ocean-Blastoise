@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-const Controls = ({ handleResume, handlePause, parameters, setParameters, showModal, setShowModal, page, book, isPlaying, handleVolumeChange, voiceOptions, voice, setVoice, setSize, backgroundV, setBackgroundV }) => {
+const Controls = ({ handleResume, handlePause, parameters, setParameters, showModal, setShowModal, page, book, isPlaying, handleVolumeChange, voiceOptions, voice, setVoice, setSize, backgroundV, setBackgroundV, selectedSong, setSelectedSong, music }) => {
   const [anchorElFont, setAnchorElFont] = useState(null);
   const openFont = Boolean(anchorElFont);
   const handleClickFontSize = (e) => {
@@ -35,6 +35,14 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
   };
   const handleCloseVoiceOption = () => {
     setAnchorElVoice(null);
+  };
+  const [anchorElMusic, setAnchorElMusic] = useState(null);
+  const openMusic = Boolean(anchorElMusic);
+  const handleClickMusicOption = (e) => {
+    setAnchorElMusic(e.currentTarget);
+  };
+  const handleCloseMusicOption = () => {
+    setAnchorElMusic(null);
   };
 
   return (
@@ -250,6 +258,48 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             {voiceOptions.map((option) => (
               <MenuItem key={option.name} selected={option.name === voice} onClick={() => setVoice(option.name)} sx={{ fontSize: '1.5vh' }}>
                 {option.name}
+              </MenuItem>
+            ))}
+          </Menu>
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0' }}>
+            <h2 style={{ fontSize: '2vh'}} >Music Options</h2>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls="long-menu"
+              aria-expanded={openMusic ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleClickMusicOption}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </div>
+          <Menu
+            id="long-menu"
+            MenuListProps={{
+              'aria-labelledby': 'long-button',
+            }}
+            anchorEl={anchorElMusic}
+            open={openMusic}
+            onClose={handleCloseMusicOption}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            PaperProps={{
+              style: {
+                maxHeight: '8vh',
+                width: '16vh',
+              },
+            }}
+          >
+            {music.map((option) => (
+              <MenuItem key={option} selected={option === selectedSong} onClick={() => setSelectedSong(option)} sx={{ fontSize: '1.5vh' }}>
+                {option}
               </MenuItem>
             ))}
           </Menu>

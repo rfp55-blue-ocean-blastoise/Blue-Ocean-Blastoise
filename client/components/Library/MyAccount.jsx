@@ -297,7 +297,7 @@ const MyAccount = (props) => {
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
             <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
             <CardContent sx={{ height: '4rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', padding: 'auto' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', padding: 'auto', fontSize: '2vh' }}>
                 {book.title}
               </Typography>
             </CardContent>
@@ -316,7 +316,7 @@ const MyAccount = (props) => {
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
             <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
             <CardContent sx={{ height: '4rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto', fontSize: '2vh' }}>
                 {book.title}
               </Typography>
             </CardContent>

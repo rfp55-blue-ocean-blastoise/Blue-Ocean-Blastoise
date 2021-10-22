@@ -14,6 +14,7 @@ import { useHistory } from 'react-router-dom';
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
 const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
+const music = ['fire', 'hulk', 'animal'];
 
 console.log(responsiveVoice.getVoices());
 
@@ -40,8 +41,8 @@ const Player = (props) => {
   const [backgroundV, setBackgroundV] = useState(0);
   const [voiceBackgroundV, setVoiceBackgroundV] = useState(0);
   const [firstPage, setFirstPage] = useState(true);
+  const [selectedSong, setSelectedSong] = useState('fire');
   const backgroundS = document.getElementById('fire');
-
 
   const { value, setValue } = useContext(GlobalContext);
 
@@ -441,7 +442,7 @@ const Player = (props) => {
         />
       </div>
       <div style={{ height: '20vh', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
-        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} />
+        <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice} backgroundV={backgroundV} setBackgroundV={setBackgroundV} selectedSong={selectedSong} setSelectedSong={setSelectedSong} music={music} />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Button
             variant='contained'
