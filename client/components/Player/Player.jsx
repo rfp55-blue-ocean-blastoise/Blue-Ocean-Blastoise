@@ -137,6 +137,137 @@ const Player = (props) => {
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
 
+  const rangeRef = useRef(null)
+  const _cfiRangeRef = useRef(null)
+  const highlightedRef = useRef(false)
+  const rangeRefValidChildrenRef = useRef(null)
+
+  props.highlightBookRef.current = props.book.link;
+
+  // Text highlighting loop
+  function loop() {
+    if (props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Man Who Died Twice by Richard Osman.epub"
+      || props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Assassin_s Legacy by D. Lieber.epub") {
+        console.log('props.book.link', props.book.link)
+        console.log('props.highlightBookRef.current', props.highlightBookRef.current)
+        if (responsiveVoice) {
+        if (responsiveVoice.currentMsg) {
+          // Put additional contraint that text must be over 5 letters long
+          if (responsiveVoice.currentMsg.text && responsiveVoice.currentMsg.text.trim().length > 5) {
+            let responsiveVoiceCurrentMsgText = responsiveVoice.currentMsg.text.trim();
+            // Remove quote if there's a quote as 1st character, then trim
+            if (responsiveVoiceCurrentMsgText[0] === "'" || responsiveVoiceCurrentMsgText[0] === '"') {
+              responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.substring(1);
+              responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.trim();
+            }
+            // Remove punctuation from the end if there's punctuation, then trim
+            if (responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === ","
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "."
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === ";"
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "!"
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "?"
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === "'"
+              || responsiveVoiceCurrentMsgText[responsiveVoiceCurrentMsgText.length - 1] === '"'
+              ) {
+              responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.substring(0, responsiveVoiceCurrentMsgText.length);
+              responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.trim();
+              if (responsiveVoiceCurrentMsgText.length > 0) { responsiveVoiceCurrentMsgText = responsiveVoiceCurrentMsgText.substring(1) };
+            }
+
+            if (rangeRef.current && renditionRef.current) {
+              if (renditionRef.current.location) {
+                // Ignore the cover page
+                if (!renditionRef.current.location.atStart) {
+                  // Make sure querySelectorAll function exists for the ref
+                  // console.log('rangeRefValidChildren', rangeRefValidChildrenRef.current)
+                  if (rangeRefValidChildrenRef.current && rangeRefValidChildrenRef.current.length > 0) {
+                    rangeRefValidChildrenRef.current.forEach((child, index) => {
+                      if (child) {
+                        if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                          // console.log('inner text of child element (child.innerText)', child.innerText)
+                          // console.log('current message text', responsiveVoiceCurrentMsgText)
+                          var foundChild = child;
+                          var foundChildNext = rangeRefValidChildrenRef.current[index + 1]
+
+                          // console.log('foundChild', foundChild)
+                          // console.log('foundChild.childNodes', foundChild.childNodes)
+
+                          var foundChildNodeArray = Array.prototype.slice.call(foundChild.childNodes);
+                          // console.log('foundChildNodeArray.indexOf(foundChildNext)', foundChildNodeArray.indexOf(foundChildNext));
+                          // console.log('foundChildNext', foundChildNext)
+
+                          if (foundChildNodeArray.indexOf(foundChildNext) !== -1) {
+                            foundChildNext = rangeRefValidChildrenRef.current[index + 2]
+                          }
+
+                          // if (foundChildNext) { console.log('foundChildNext.outerHTML', foundChildNext.outerHTML) }
+                          var renditionRefContents = renditionRef.current.getContents();
+                          var foundChildCFI = renditionRefContents[0].cfiFromNode(foundChild)
+                          var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
+                          // console.log('renditionRef.current.location', renditionRef.current.location)
+                          // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
+
+                          const _breakpoint = foundChildCFI.indexOf('!') + 1;
+                          const _base = foundChildCFI.substring(0, _breakpoint);
+                          const _startRange = foundChildCFI.substring(_breakpoint, foundChildCFI.length - 1);
+                          const _endRange = foundChildNextCFI.substring(_breakpoint, foundChildNextCFI.length);
+                          const _cfiRange = `${_base},${_startRange},${_endRange}`;
+
+                          // console.log('_base', _base);
+                          // console.log('_startRange', _startRange);
+                          // console.log('_endRange', _endRange);
+                          // console.log('_cfiRange', _cfiRange);
+                          // console.log('renditionRef.current', renditionRef.current);
+
+                          renditionRef.current.book.getRange(_cfiRange).then(function (range) {
+                            if (_cfiRange !== _cfiRangeRef.current) {
+                              renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                              _cfiRangeRef.current = _cfiRange;
+                              // console.log(_cfiRangeRef.current)
+                              highlightedRef.current = false;
+                              // console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                            }
+                            if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
+                              if (!highlightedRef.current) {
+                                renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "yellow", "fill-opacity": "0.5", "mix-blend-mode": "color" })
+                              }
+                            }
+                            highlightedRef.current = true;
+                          })
+                            .catch((error) => {
+                              // console.log(error)
+                            }
+                            );
+                        }
+
+
+                      }
+                    })
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    setTimeout(function () {
+      loop()
+    }, 1000);
+
+    // timeoutID = setTimeout(function () {
+    //   loop()
+    // }, 1000);
+
+    // const intervalLoop = setInterval(loop, 1000);
+  };
+
+  if (props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Man Who Died Twice by Richard Osman.epub"
+    || props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Assassin_s Legacy by D. Lieber.epub") {
+    loop();
+  }
+
   // Callback stuff
   function voiceStartCallback() {
     console.log("Voice started");
@@ -291,6 +422,44 @@ const Player = (props) => {
             console.log(err);
           })
 
+        if (props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Man Who Died Twice by Richard Osman.epub"
+          || props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Assassin_s Legacy by D. Lieber.epub") {
+          rangeRef.current = range.commonAncestorContainer;
+
+          if (rangeRef.current && renditionRef.current) {
+            if (renditionRef.current.location) {
+              console.log('renditionRef.current.location.atStart', renditionRef.current.location.atStart)
+              // Ignore the cover page
+              if (!renditionRef.current.location.atStart) {
+                // Make sure querySelectorAll function exists for the ref
+                if (rangeRef.current.querySelectorAll) {
+                  var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+                  var rangeRefValidChildren = [];
+                  // console.log('rangeRefCurrentChildren', rangeRefCurrentChildren[0])
+                  rangeRefCurrentChildren.forEach((child, index) => {
+                    if (child) {
+                      // Only push valid children to our array
+                      // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
+                      if (child.innerText.length > 0) {
+                        // Remove italic, emphasized, bold, break tags; prevent "nextChild" from being a styled subset of "currentChild".
+                        if (
+                          child.outerHTML.substring(0, 3) !== '<i>'
+                          && child.outerHTML.substring(0, 3) !== '<b>'
+                          && child.outerHTML.substring(0, 3) !== '<br'
+                          && child.outerHTML.substring(0, 3) !== '<em') {
+                          rangeRefValidChildren.push(child)
+                        }
+                      }
+                      if (rangeRefValidChildren && rangeRefValidChildren.length > 0) {
+                        rangeRefValidChildrenRef.current = rangeRefValidChildren;
+                      }
+                    }
+                  })
+                }
+              }
+            }
+          }
+        }
         console.log('on render', remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n") {
           // currentRenditionText.current = text;
@@ -357,32 +526,33 @@ const Player = (props) => {
     }
   }, [size])
 
-  useEffect(() => {
-    if (renditionRef.current) {
-      function setRenderSelection(cfiRange, contents) {
-        console.log('cfiRange', cfiRange)
-        console.log('contents', contents)
-        setSelections(selections.concat({
-          text: renditionRef.current.getRange(cfiRange).toString(),
-          cfiRange
-        }))
-        // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
-        renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
-        contents.window.getSelection().removeAllRanges()
-      }
-      renditionRef.current.on("selected", setRenderSelection)
+  // useEffect(() => {
+  //   if (renditionRef.current) {
+  //     function setRenderSelection(cfiRange, contents) {
+  //       console.log('cfiRange', cfiRange)
+  //       console.log('contents', contents)
+  //       setSelections(selections.concat({
+  //         text: renditionRef.current.getRange(cfiRange).toString(),
+  //         cfiRange
+  //       }))
+  //       // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
+  //       renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
+  //       contents.window.getSelection().removeAllRanges()
+  //     }
+  //     renditionRef.current.on("selected", setRenderSelection)
 
-      return () => {
-        renditionRef.current.off("selected", setRenderSelection)
-      }
-    }
-  }, [setSelections, selections])
+  //     return () => {
+  //       renditionRef.current.off("selected", setRenderSelection)
+  //     }
+  //   }
+  // }, [setSelections, selections])
 
   // go back button
   const history = useHistory();
 
   const handleBackToAccount = () => {
     handlePause();
+    // clearTimeout(timeoutID);
     history.push('/home');
   };
 
