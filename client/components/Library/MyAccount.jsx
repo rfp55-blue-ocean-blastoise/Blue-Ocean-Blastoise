@@ -201,6 +201,23 @@ const MyAccount = (props) => {
     history.push('/login');
   };
 
+  const handleMoveToMyBooks = (e) => {
+    e.preventDefault();
+    console.log('book id', e.target.value);
+    axios.put('/account/bookmark', {
+      email: value,
+      id: e.target.value,
+      cfi: ``,
+      remainingText: '',
+    })
+      .then(response => {
+        getUserData();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  };
+
   return (
     <div>
       <div className='banner' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
@@ -286,10 +303,7 @@ const MyAccount = (props) => {
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-              <Button size='medium' value={book} color='warning' onClick={() => {
-                setRemoveBook(book);
-                setOpenRemove(true);
-              }}>Remove</Button>
+              <Button size='medium' value={book['_id']} color='warning' onClick={handleMoveToMyBooks}>Remove</Button>
             </CardActions>
           </Card>
         ))}
