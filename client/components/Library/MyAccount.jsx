@@ -33,8 +33,7 @@ const MyAccount = (props) => {
   const [openRemove, setOpenRemove] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
-  const { value, setValue } = useContext(GlobalContext);
-
+  const { value, setValue, signUserOut } = useContext(GlobalContext);
   const history = useHistory();
 
   let voiceCommandError = '';
@@ -210,7 +209,8 @@ const MyAccount = (props) => {
 
   const handleLogOut = () => {
     setValue('');
-    history.push('/');
+    signUserOut()
+    history.push('/login');
   };
 
   return (

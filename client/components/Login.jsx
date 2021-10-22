@@ -24,29 +24,16 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { value, setValue } = useContext(GlobalContext);
   const history = useHistory();
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  console.log(onAuthStateChanged)
   const auth = getAuth();
   const user = auth.currentUser;
-  console.log('user', user)
-
   onAuthStateChanged(auth, (user) => {
     return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
   });
-
-  console.log('logged in?', isLoggedIn);
-
   if (isLoggedIn) {
     setValue(user.email);
     history.push('/home')
   }
-
-
-
-
-
-
   const loginUser = async (e) => {
     e.preventDefault();
     try {

@@ -15,33 +15,17 @@ import Player from './Player/Player';
 const App = () => {
   const { value, setValue } = useContext(GlobalContext);
   const [name, setName] = useState("BROTHER");
-  // const { value, setValue } = useContext(GlobalContext);
-
-
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const auth = getAuth();
   const user = auth.currentUser;
-  console.log('user', user)
 
-  // useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log('triggered')
-      return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
-    });
-    if (isLoggedIn) {
-      console.log('islogged in ')
-      setValue(user.email);
-      // history.push('/home')
-    }
+  onAuthStateChanged(auth, (user) => {
+    return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
+  });
+  if (isLoggedIn) {
+    setValue(user.email);
+  }
 
-  // }, [])
-
-  // const handleReadBook = (book) => {
-  //   props.handleReadBook(book);
-  //   history.push('/player');
-  // };
 
 
   return (
@@ -61,12 +45,12 @@ const App = () => {
         <Route path='/player'>
           <Player /> {/* this needs book={book} */}
         </Route>
-        <Route exact path='/'>
+        {/* <Route exact path='/'>
           <Login />
-        </Route>
-
+        </Route> */}
 
         <Route exact path="/" component={Login} />
+        <Route exact path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         {/* <Route path="/home" component={Home} /> */}
       </HashRouter>
