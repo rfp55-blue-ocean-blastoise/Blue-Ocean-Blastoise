@@ -47,6 +47,7 @@ import { ReactReader } from "react-reader"
 const accessible = "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub";
 const moby = "https://s3.amazonaws.com/moby-dick/OPS/package.opf";
 const alice = "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf";
+const another = "https://blueocean.s3.us-west-1.amazonaws.com/Hulk%20Hogan%20-%20My%20Life%20Outside%20the%20Ring%20%20-Hodder%20%26%20Stoughton%20Ltd%20%282010%29.epub";
 
 console.log(responsiveVoice.enableEstimationTimeout);
 responsiveVoice.enableEstimationTimeout = false;
@@ -61,8 +62,8 @@ const App = () => {
   const [selections, setSelections] = useState([])
   // const [currentRenditionText, setCurrentRenditionText] = useState('');
   // const [remainingRenditionText, setRemainingRenditionText] = useState('');
-  // const currentRenditionText = useRef('');
-  // const remainingRenditionText = useRef('');
+  const currentRenditionText = useRef('');
+  const remainingRenditionText = useRef('');
 
   /**************************************************************************************************************
   NOTE: We need to keep track of a 'playing' state/ref which gets updated when whenever we click on the pause/resume buttons.
@@ -75,9 +76,11 @@ const App = () => {
 
   const renditionRef = useRef(null)
   const tocRef = useRef(null)
-  const rangeRef = useRef('')
+  const rangeRef = useRef(null)
+  const rangeRefPrior = useRef(null)
   const _cfiRangeRef = useRef(null)
   const highlightedRef = useRef(false)
+  const rangeRefValidChildrenRef = useRef(null)
 
 
 
@@ -115,125 +118,103 @@ const App = () => {
           if (rangeRef.current && renditionRef.current) {
             if (renditionRef.current.location) {
               console.log('renditionRef.current.location.atStart', renditionRef.current.location.atStart)
+              // Ignore the cover page
               if (!renditionRef.current.location.atStart) {
+                // Make sure querySelectorAll function exists for the ref
                 // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
                 // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
                 // console.log('rangeRef.current.childNodes', rangeRef.current.childNodes)
 
-                var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
-                var rangeRefValidChildren = [];
-                // console.log('rangeRefCurrentChildren', rangeRefCurrentChildren)
-                rangeRefCurrentChildren.forEach((child, index) => {
-                  if (child) {
-                    // console.log(child, index);
-                    // console.log('child.length', child.length);
+                console.log('rangeRefValidChildren', rangeRefValidChildrenRef.current)
+                if (rangeRefValidChildrenRef.current && rangeRefValidChildrenRef.current.length > 0) {
+                  rangeRefValidChildrenRef.current.forEach((child, index) => {
+                    // rangeRefCurrentChildren.forEach((child, index) => {
+                    if (child) {
+                      // console.log(child, index);
+                      // console.log('child.length', child.length);
 
-                    // console.log('child.value', child.value);
-                    // console.log('child.nodeValue', child.nodeValue);
-                    // console.log('child.innerHTML', child.innerHTML, index);
-                    // console.log('child.innerText', child.innerText, index);
+                      // console.log('child.value', child.value);
+                      // console.log('child.nodeValue', child.nodeValue);
+                      // console.log('child.innerHTML', child.innerHTML);
+                      // if (child.innerHTML.indexOf("is") !== -1) {
+                      // if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                      if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
+                        // alert(child.innerHTML)
+                        // console.log(child.innerHTML)
+                        console.log('inner text of child element (child.innerText)', child.innerText)
+                        console.log('current message text', responsiveVoiceCurrentMsgText)
+                        var foundChild = child;
+                        var foundChildNext = rangeRefValidChildrenRef.current[index + 1]
 
-                    // // Only push valid children to our array
-                    // console.log('--------------------------------------------------------child.childNodes', child.childNodes, index)
-                    // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
-                    //   rangeRefValidChildren.push(child)
-                    // }
+                        console.log('foundChild', foundChild)
+                        console.log('foundChild.childNodes', foundChild.childNodes)
 
-                    // Only push valid children to our array
-                    // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
-                    if (child.innerText.length > 0) {
-                      // console.log(child.innerHTML, index)
-                      // // Remove italic, emphasized, bold tags; prevent "nextChild" from being a styled subset of "currentChild".
-                      // if (child.outerHTML.substring(0, 2) !== '<i' && child.outerHTML.substring(0, 3) !== '<br') {
-                      //   rangeRefValidChildren.push(child)
-                      // }
-                      // Instead of removing italic, emphasized, bold tags; add only <p> and <header> and <img> and <figure> tags
-                      if (child.outerHTML.substring(0, 2) === '<p'
-                        || child.outerHTML.substring(0, 2) === '<h'
-                        || child.outerHTML.substring(0, 4) === '<img'
-                        || child.outerHTML.substring(0, 7) === '<figure'
-                        || child.outerHTML.substring(0, 2) === '<a') {
-                        rangeRefValidChildren.push(child)
-                      }
-                    }
-                  }
-                })
-                // console.log('rangeRefValidChildren', rangeRefValidChildren)
-                rangeRefValidChildren.forEach((child, index) => {
-                  // rangeRefCurrentChildren.forEach((child, index) => {
-                  if (child) {
-                    // console.log(child, index);
-                    // console.log('child.length', child.length);
+                        var foundChildNodeArray = Array.prototype.slice.call(foundChild.childNodes);
+                        console.log('foundChildNodeArray.indexOf(foundChildNext)', foundChildNodeArray.indexOf(foundChildNext));
+                        console.log('foundChildNext', foundChildNext)
 
-                    // console.log('child.value', child.value);
-                    // console.log('child.nodeValue', child.nodeValue);
-                    // console.log('child.innerHTML', child.innerHTML);
-                    // if (child.innerHTML.indexOf("is") !== -1) {
-                    // if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
-                    if (child.innerHTML.indexOf(responsiveVoiceCurrentMsgText) !== -1) {
-                      // alert(child.innerHTML)
-                      // console.log(child.innerHTML)
-                      console.log('inner text of child element (child.innerText)', child.innerText)
-                      console.log('current message text', responsiveVoiceCurrentMsgText)
-                      var foundChild = child;
-                      var foundChildNext = rangeRefValidChildren[index + 1]
-                      console.log('foundChild', foundChild)
-                      console.log('foundChildNext', foundChildNext)
-                      if (foundChildNext) { console.log('foundChildNext.outerHTML', foundChildNext.outerHTML) }
-                      // console.log('foundChild.innerHTML', foundChild.innerHTML)
-                      // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
-                      // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
-                      // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
-                      var renditionRefContents = renditionRef.current.getContents();
-                      var foundChildCFI = renditionRefContents[0].cfiFromNode(foundChild)
-                      var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
-                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents', renditionRefContents)
-                      // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildCFI)
-                      console.log('renditionRef.current.location', renditionRef.current.location)
-                      console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
-
-                      const _breakpoint = foundChildCFI.indexOf('!') + 1;
-                      const _base = foundChildCFI.substring(0, _breakpoint);
-                      const _startRange = foundChildCFI.substring(_breakpoint, foundChildCFI.length - 1);
-                      const _endRange = foundChildNextCFI.substring(_breakpoint, foundChildNextCFI.length);
-                      const _cfiRange = `${_base},${_startRange},${_endRange}`;
-
-                      // console.log('_base', _base);
-                      // console.log('_startRange', _startRange);
-                      // console.log('_endRange', _endRange);
-                      console.log('_cfiRange', _cfiRange);
-
-                      // console.log(_cfiRange !== _cfiRangeRef.current)
-
-                      // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
-
-                      renditionRef.current.book.getRange(_cfiRange).then(function (range) {
-                        // console.log('_cfiRange', _cfiRange)
-                        if (_cfiRange !== _cfiRangeRef.current) {
-                          // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
-                          renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
-                          _cfiRangeRef.current = _cfiRange;
-                          console.log(_cfiRangeRef.current)
-                          highlightedRef.current = false;
-                          console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
+                        if (foundChildNodeArray.indexOf(foundChildNext) !== -1) {
+                          foundChildNext = rangeRefValidChildrenRef.current[index + 2]
                         }
-                        // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
-                        if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
-                          if (!highlightedRef.current) {
-                            renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+
+                        if (foundChildNext) { console.log('foundChildNext.outerHTML', foundChildNext.outerHTML) }
+                        // console.log('foundChild.innerHTML', foundChild.innerHTML)
+                        // if (foundChildNext) { console.log('foundChildNext.innerHTML', foundChildNext.innerHTML) }
+                        // var selectedChildRange = renditionRef.current.book.spine.spineItems[4].cfiFromElement(child);
+                        // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement(child)', selectedChildRange)
+                        var renditionRefContents = renditionRef.current.getContents();
+                        var foundChildCFI = renditionRefContents[0].cfiFromNode(foundChild)
+                        var foundChildNextCFI = foundChildNext ? renditionRefContents[0].cfiFromNode(foundChildNext) : renditionRef.current.location.end.cfi;
+                        // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents', renditionRefContents)
+                        // console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildCFI)
+                        console.log('renditionRef.current.location', renditionRef.current.location)
+                        console.log('--------------------------------------------------------------------------------------------------------------------------------------------renditionRefContents[0].cfiFromNode(child)', foundChildNextCFI)
+
+                        const _breakpoint = foundChildCFI.indexOf('!') + 1;
+                        const _base = foundChildCFI.substring(0, _breakpoint);
+                        const _startRange = foundChildCFI.substring(_breakpoint, foundChildCFI.length - 1);
+                        const _endRange = foundChildNextCFI.substring(_breakpoint, foundChildNextCFI.length);
+                        const _cfiRange = `${_base},${_startRange},${_endRange}`;
+
+                        // console.log('_base', _base);
+                        // console.log('_startRange', _startRange);
+                        // console.log('_endRange', _endRange);
+                        console.log('_cfiRange', _cfiRange);
+                        console.log('renditionRef.current', renditionRef.current);
+
+                        // console.log(_cfiRange !== _cfiRangeRef.current)
+
+                        // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
+
+                        renditionRef.current.book.getRange(_cfiRange).then(function (range) {
+                          // console.log('_cfiRange', _cfiRange)
+                          if (_cfiRange !== _cfiRangeRef.current) {
+                            // console.log('renditionRef.current.annotations', renditionRef.current.annotations)
+                            renditionRef.current.annotations.remove(_cfiRangeRef.current, 'highlight');
+                            _cfiRangeRef.current = _cfiRange;
+                            console.log(_cfiRangeRef.current)
+                            highlightedRef.current = false;
+                            console.log('responsiveVoice.currentMsg.text.trim()', responsiveVoice.currentMsg.text.trim())
                           }
-                        }
-                        highlightedRef.current = true;
-                      })
-                        .catch((error) => {
-                          console.log(error)
-                        }
-                        );
+                          // const memoizedAnnotation = useMemo( () => {renditionRef.current.annotations.add("highlight", _cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.1", "mix-blend-mode": "difference" })})
+                          if (highlightedRef.current !== null && highlightedRef.current !== undefined) {
+                            if (!highlightedRef.current) {
+                              renditionRef.current.annotations.add("highlight", _cfiRangeRef.current, {}, null, "hl", { "fill": "green", "fill-opacity": "0.1", "mix-blend-mode": "color" })
+                            }
+                          }
+                          highlightedRef.current = true;
+                        })
+                          .catch((error) => {
+                            console.log(error)
+                          }
+                          );
+                      }
+
+
                     }
+                  })
+                }
 
-
-                  }
-                })
 
                 // console.log('renditionRef.current', renditionRef.current)
 
@@ -244,6 +225,7 @@ const App = () => {
                 // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
 
                 // console.log(renditionRef.current.book.cfiFromElement)
+
               }
 
             }
@@ -370,7 +352,7 @@ const App = () => {
       setPage(`Page ${displayed.page} of ${displayed.total} in chapter ${chapter ? chapter.label : 'n/a'}`)
       setLocation(epubcifi)
 
-      // console.log('current rendition', renditionRef.current)
+      console.log('current rendition', renditionRef.current)
       // console.log('current book', renditionRef.current.book)
       // console.log('current book "getRange"', renditionRef.current.book.getRange)
 
@@ -431,6 +413,7 @@ const App = () => {
       // }
 
       renditionRef.current.book.getRange(cfiRange).then(function (range) {
+        rangeRefPrior.current = rangeRef.current;
         rangeRef.current = range.commonAncestorContainer;
         // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
         // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
@@ -480,6 +463,81 @@ const App = () => {
         //     console.log('item.nodeValue', item.nodeValue);
         // }
 
+        // console.log('current message text', responsiveVoiceCurrentMsgText)
+        // console.log('rangeRef.current', rangeRef.current)
+        if (rangeRef.current && renditionRef.current) {
+          if (renditionRef.current.location) {
+            console.log('renditionRef.current.location.atStart', renditionRef.current.location.atStart)
+            // Ignore the cover page
+            if (!renditionRef.current.location.atStart) {
+              // Make sure querySelectorAll function exists for the ref
+              if (rangeRef.current.querySelectorAll) {
+                // console.log('rangeRef.current, based on commonAncestorContainer', rangeRef.current)
+                // console.log('rangeRef.current all children', rangeRef.current.querySelectorAll("*"));
+                // console.log('rangeRef.current.childNodes', rangeRef.current.childNodes)
+
+                var rangeRefCurrentChildren = rangeRef.current.querySelectorAll("*");
+                var rangeRefValidChildren = [];
+                console.log('rangeRefCurrentChildren', rangeRefCurrentChildren[0])
+                rangeRefCurrentChildren.forEach((child, index) => {
+                  if (child) {
+                    // console.log(child, index);
+                    // console.log('child.length', child.length);
+
+                    // console.log('child.value', child.value);
+                    // console.log('child.nodeValue', child.nodeValue);
+                    // console.log('child.innerHTML', child.innerHTML, index);
+                    // console.log('child.innerText', child.innerText, index);
+
+                    // // Only push valid children to our array
+                    // console.log('--------------------------------------------------------child.childNodes', child.childNodes, index)
+                    // if (child.innerHTML.indexOf("<") === -1 && child.innerHTML.indexOf(">") === -1) {
+                    //   rangeRefValidChildren.push(child)
+                    // }
+
+                    // Only push valid children to our array
+                    // Inner text must exist; this is to filter out nodes with only other child nodes but no text.
+                    if (child.innerText.length > 0) {
+                      // console.log(child.innerHTML, index)
+                      // Remove italic, emphasized, bold, break tags; prevent "nextChild" from being a styled subset of "currentChild".
+                      if (
+                        child.outerHTML.substring(0, 2) !== '<i'
+                        && child.outerHTML.substring(0, 2) !== '<b'
+                        && child.outerHTML.substring(0, 3) !== '<em') {
+                        rangeRefValidChildren.push(child)
+                      }
+                      // Instead of removing italic, emphasized, bold tags; add only <p> and <header> and <img> and <figure> tags
+                      // if (child.outerHTML.substring(0, 2) === '<p'
+                      //   || child.outerHTML.substring(0, 2) === '<h'
+                      //   || child.outerHTML.substring(0, 4) === '<img'
+                      //   || child.outerHTML.substring(0, 7) === '<figure'
+                      //   || child.outerHTML.substring(0, 2) === '<a'
+                      //   || child.outerHTML.substring(0, 5) === '<span') {
+                      //   rangeRefValidChildren.push(child)
+                      // }
+                    }
+                    if (rangeRefValidChildren && rangeRefValidChildren.length > 0) {
+                      rangeRefValidChildrenRef.current = rangeRefValidChildren;
+                    }
+                  }
+                })
+                // console.log('renditionRef.current', renditionRef.current)
+
+                // console.log('renditionRef.current.book', renditionRef.current.book)
+                // console.log('renditionRef.current.book.spine.spineItems', renditionRef.current.book.spine.spineItems)
+                // console.log('renditionRef.current.book.spine.spineItems[4]', renditionRef.current.book.spine.spineItems[4])
+                // console.log('renditionRef.current.book.spine.spineItems[4].cfiFromElement', renditionRef.current.book.spine.spineItems[4].cfiFromElement)
+                // console.log('renditionRef.current.book.spine.spineItems[4].contents', renditionRef.current.book.spine.spineItems[4].contents)
+
+                // console.log(renditionRef.current.book.cfiFromElement)
+              }
+
+            }
+
+          }
+
+        }
+
 
         console.log('range', range);
         let text = range.toString()
@@ -487,9 +545,9 @@ const App = () => {
         console.log('text', text);
         // console.log(text === "\n  ")
         if (remainingText.current && remainingText.current.length > 0 && remainingText.current !== "\n  ") {
-          // currentRenditionText.current = text;
-          // responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
-          // setPlaying(true);
+          currentRenditionText.current = text;
+          responsiveVoice.speak(remainingText.current, "UK English Female", parameters);
+          setPlaying(true);
         }
       })
     }
@@ -553,7 +611,7 @@ const App = () => {
         <ReactReader
           location={location}
           locationChanged={locationChanged}
-          url={accessible}
+          url={another}
           getRendition={(rendition) => {
             renditionRef.current = rendition
             renditionRef.current.themes.default({
