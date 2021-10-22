@@ -5,23 +5,26 @@
     <li>
       <a href="#Usage">Server Routes</a>
       <ul>
-        <li><a href="#post">Post Users</a></li>
+        <li><a href="#post">Post New User</a></li>
       </ul>
        <ul>
-        <li><a href="#get">Get Library</a></li>
+        <li><a href="#get">Get User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#upload">Upload EPUB</a></li>
+        <li><a href="#upload">Upload EPUB to User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#put">Update Bookmark</a></li>
+        <li><a href="#put">Update User's Bookmark</a></li>
       </ul>
       <ul>
-        <li><a href="#remove">Delete Book</a></li>
+        <li><a href="#remove">Delete Book From User's Library</a></li>
       </ul>
       <ul>
-        <li><a href="#s3">Get All s3 Objects</a></li>
-      </ul>   
+        <li><a href="#s3">Get s3 Library</a></li>
+      </ul>
+      <ul>
+        <li><a href="#suggested">Add Book From Library</a></li>
+      </ul>
     </li>
   </ol>
 
@@ -32,21 +35,22 @@
 
 ### Server Routes
 
-Post User: 
- - POST "/users" 
+Post New User:
+ - POST "/account"
  - Send request through JSON Object Body
- - Body Parameters: 
+ - Body Parameters:
     - email: String
 
 
-Get Library:
-  - GET "/library"
+Get User's Library:
+  - GET "/account/library"
   - Send request through Query Parameters
   - Query Parameters:
     - email: String
 
-Upload EPUB:
-  - POST "/upload"
+
+Upload EPUB to User's Library:
+  - POST "/account/upload"
   - Send EPUB through File Parameters
   - Send request through JSON Object Body
   - File Parameters:
@@ -54,31 +58,33 @@ Upload EPUB:
   - Body Parameters:
     - email: String
 
-Update Bookmark
-  - PUT "/library"
+
+Update User's Bookmark
+  - PUT "/account/bookmark"
   - Send request through JSON Object Body
   - Body Parameters:
     - email: String
-    - title: String
+    - id: String
     - cfi: String
     - remainingText: String
   - Returns a string response with:
-    ```javacsript
-    User:"test@test.com", 
-    Book:"alice.epub", 
-    UpdatedCFI: "epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])", 
-    remainingText:“These,are...words"
+    ```javascript
+    Email: "test@test.com",
+    Book: "alice.epub",
+    UpdatedCFI: "epubcfi(/6/14[chap05ref]!/4[body01]/10/2/1:3[2^[1^]])",
+    remainingText: "These,are...words"
     ```
-    
-Delete Book
-  - DELETE "/library"
+
+Delete Book From User's Library
+  - DELETE "/account/library"
   - Send request through JSON Object Body
   - Body Parameters:
-    - Email: String
-    - Body: String
+    - email: String
+    - id: String
 
-Get All s3 Objects
-  - GET "/listObjects"
+
+Get s3 Library
+  - GET "/library"
   - Send request through Query Paramters
   - Query Parameters:
     - Bucket: "s3-bucket-name"
@@ -92,7 +98,14 @@ Get All s3 Objects
     }]
     ```
 
-  
+Add Book From Library
+  - POST "/account/library"
+  - Send request through JSON Object Body
+  - Body Parameters:
+    - email: String
+    - link: String
+    - title: String
+
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

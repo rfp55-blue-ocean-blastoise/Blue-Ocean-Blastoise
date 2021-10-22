@@ -20,6 +20,21 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
+export const makeNewSession = (email, password) => {
+  console.log('session', browserSessionPersistence)
+  setPersistence(auth, browserSessionPersistence)
+    .then(()=> {
+      console.log('then block of make newSession')
+      return signInWithEmailAndPassword(auth, email, password)
+    })
+    .catch((err)=>{
+      console.log(err, 'err from make new session')
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log({errorCode, errorMessage})
+    })
+};
+
 export const signInWithEmail = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
 

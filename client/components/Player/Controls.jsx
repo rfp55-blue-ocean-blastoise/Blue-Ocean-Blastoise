@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-const Controls = ({ handleResume, handlePause, parameters, setParameters, showModal, setShowModal, page, book, isPlaying, handleVolumeChange, voiceOptions, voice, setVoice, setSize }) => {
+const Controls = ({ handleResume, handlePause, parameters, setParameters, showModal, setShowModal, page, book, isPlaying, handleVolumeChange, voiceOptions, voice, setVoice, setSize, backgroundV, setBackgroundV }) => {
   const [anchorElFont, setAnchorElFont] = useState(null);
   const openFont = Boolean(anchorElFont);
   const handleClickFontSize = (e) => {
@@ -41,13 +41,13 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
     <div>
       <div style={{ textAlign: 'center', padding: '2rem' }}>
         {page}
-        <h1>{book.title}</h1>
+        <h1 style={{ fontSize: '2vw'}}>{book.title}</h1>
         <div id="audio-controls">
           <Button
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
             variant='contained'
             type='button'
-            onClick={() => setShowModal(true)}
+            onClick={() => {setShowModal(true); handlePause()}}
           >
             <SettingsIcon />
           </Button>
@@ -97,15 +97,15 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
               horizontal: 'left',
             }}
           >
-          {fontSizeOptions.map(item => (
-            <MenuItem style={{ fontSize: '1rem'}} onClick={() => {
-              console.log('THIS IS SELECTED FONT SIZE: ', item);
-              setSize(item);
-              handlePause();
-            }}>
-              {`${item}%`}
-            </MenuItem>
-          ))}
+            {fontSizeOptions.map(item => (
+              <MenuItem style={{ fontSize: '1rem' }} onClick={() => {
+                console.log('THIS IS SELECTED FONT SIZE: ', item);
+                setSize(item);
+                handlePause();
+              }}>
+                {`${item}%`}
+              </MenuItem>
+            ))}
           </Menu>
         </div>
       </div>
@@ -113,17 +113,17 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
         aria-labelledby="unstyled-modal-title"
         aria-describedby="unstyled-modal-description"
         open={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => {setShowModal(false); handlePause()}}
         BackdropComponent={Backdrop}
       >
         <Box sx={style}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
-            <h2 style={{ textAlign: 'center' }}>Volume&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
+            <h2 style={{ textAlign: 'center' }}>Voice Volume&nbsp;</h2>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
               <VolumeDown />
               <Slider
-                style={{ color: '#11A797', margin: '0 0.5rem'}}
-                aria-label="Volume"
+                style={{ color: '#11A797', margin: '0 0.5rem' }}
+                aria-label="Voice Volume"
                 min={0}
                 max={1}
                 step={0.1}
@@ -136,7 +136,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
-            <h2 style={{ textAlign: 'center' }}>Rate&nbsp;</h2>
+            <h2 style={{ textAlign: 'center' }}>Speed&nbsp;</h2>
             <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
               <RemoveIcon />
               <Slider
@@ -155,15 +155,15 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
                   });
                   handlePause();
                 }}
-                style={{ color: '#11A797', margin: '0 0.5rem'}}
+                style={{ color: '#11A797', margin: '0 0.5rem' }}
                 aria-label="Volume"
               />
               <AddIcon />
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0'}}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
             <h2 style={{ textAlign: 'center' }}>Pitch&nbsp;</h2>
-            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem'}}>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
               <RemoveIcon />
               <Slider
                 min={0.1}
@@ -181,14 +181,34 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
                   });
                   handlePause();
                 }}
-                style={{ color: '#11A797', margin: '0 0.5rem'}}
+                style={{ color: '#11A797', margin: '0 0.5rem' }}
                 aria-label="Volume"
               />
               <AddIcon />
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0'}}>
-          <h2 >Voice Options</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1rem 1rem 1rem 0' }}>
+            <h2 style={{ textAlign: 'center' }}>Background Volume&nbsp;</h2>
+            <div style={{ width: '15rem', display: 'flex', justfyContent: 'center', alignItems: 'center', marginTop: '0.3rem' }}>
+              <VolumeDown />
+              <Slider
+                style={{ color: '#11A797', margin: '0 0.5rem' }}
+                aria-label="Background Volume"
+                min={0}
+                max={1}
+                step={0.1}
+                value={backgroundV}
+                onChange={(e) => {
+                  console.log(e.target.value, 'bgv')
+                  setBackgroundV(e.target.value);
+                  handlePause();
+                }}
+              />
+              <VolumeUp />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 1rem 1rem 0' }}>
+            <h2 >Voice Options</h2>
             <IconButton
               aria-label="more"
               id="long-button"
@@ -199,36 +219,36 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
             >
               <MoreVertIcon />
             </IconButton>
-            </div>
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                'aria-labelledby': 'long-button',
-              }}
-              anchorEl={anchorElVoice}
-              open={openVoice}
-              onClose={handleCloseVoiceOption}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              PaperProps={{
-                style: {
-                  maxHeight: '5rem',
-                  width: '13rem',
-                },
-              }}
-            >
-              {voiceOptions.map((option) => (
-                <MenuItem key={option.name} selected={option.name === voice} onClick={() => setVoice(option.name)}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Menu>
+          </div>
+          <Menu
+            id="long-menu"
+            MenuListProps={{
+              'aria-labelledby': 'long-button',
+            }}
+            anchorEl={anchorElVoice}
+            open={openVoice}
+            onClose={handleCloseVoiceOption}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            PaperProps={{
+              style: {
+                maxHeight: '5rem',
+                width: '13rem',
+              },
+            }}
+          >
+            {voiceOptions.map((option) => (
+              <MenuItem key={option.name} selected={option.name === voice} onClick={() => setVoice(option.name)}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </StyledModal>
     </div>

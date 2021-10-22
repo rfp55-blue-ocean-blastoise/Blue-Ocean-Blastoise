@@ -12,7 +12,7 @@ const Search = (props) => {
   };
 
   return (
-    <div style={{ width: '70%', marginRight: '2rem' }}>
+    <div style={{ width: '70%', marginRight: '5%' }}>
       <TextField sx={{width: '100%'}} id="search" label="Search" type="search" value={searchValue} onChange={handleChange} InputProps={{
           startAdornment: (
             <InputAdornment position="start">
