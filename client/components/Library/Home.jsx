@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { HashRouter, Route, Link } from 'react-router-dom';
 import Library from './Library';
 import MyAccount from './MyAccount';
 import Player from '../Player/Player';
@@ -12,8 +12,11 @@ const Home = () => {
     setBook(book);
   };
 
+
+
+
   return (
-    <BrowserRouter>
+    <HashRouter>
         <div id="links">
           <Link to='/home'>My Account</Link>
           <Link to='/freelibrary'>Library</Link>
@@ -30,7 +33,7 @@ const Home = () => {
         <Route exact path='/'>
           <Login />
         </Route>
-    </BrowserRouter>
+    </HashRouter>
   )
 };
 

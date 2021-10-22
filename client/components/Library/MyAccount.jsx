@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
+import { HashRouter, Route, Link, useHistory } from 'react-router-dom';
 import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
