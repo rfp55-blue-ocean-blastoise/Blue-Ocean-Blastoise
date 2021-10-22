@@ -7,7 +7,7 @@ export const GlobalContext = React.createContext({
 });
 
 const GlobalContextProvider = (props) => {
-  const [value, setValue] = useState("tesla@tesla.com");
+  const [value, setValue] = useState("");
 
   return (
     <GlobalContext.Provider

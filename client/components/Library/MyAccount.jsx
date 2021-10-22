@@ -127,7 +127,7 @@ const MyAccount = (props) => {
     //   });
     // });
     // setDisplayBooks(books);
-  }, [])
+  }, [value])
 
   useEffect(() => {
     if (sortOption === 'title') {

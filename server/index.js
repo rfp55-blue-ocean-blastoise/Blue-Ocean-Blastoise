@@ -45,6 +45,14 @@ app.listen(PORT, () => {
 //   res.redirect('/');
 // });
 
+app.get("/home", async (req, res) => {
+  // try {
+    // const result = await createUser(req.body);
+    // res.status(201).send(result);
+  // } catch (err) {
+    res.send('hello');
+  // }
+});
 app.post("/account", async (req, res) => {
   try {
     const result = await createUser(req.body);

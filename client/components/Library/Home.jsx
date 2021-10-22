@@ -25,7 +25,7 @@ const Home = () => {
           <Library />
         </Route>
         <Route path='/player'>
-          <Player book={book}/>
+          {/* <Player book={book}/> */}
         </Route>
         <Route exact path='/'>
           <Login />
