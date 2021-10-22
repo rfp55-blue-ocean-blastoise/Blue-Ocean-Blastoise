@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import Button from '@mui/material/Button';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { GlobalContext } from "../GlobalContextProvider";
 
 const Upload = (props) => {
@@ -34,14 +32,8 @@ const Upload = (props) => {
           onChange={(e) => setFiles(e.target.files[0])}
         />
         <input
-          // style={{ backgroundColor: '#0c6057' }}
-          // variant='contained'
-          // component='label'
           type='submit'
-          // onClick={handleUpload}
         >
-          {/* Upload&nbsp; */}
-          {/* <FileUploadIcon /> */}
         </input>
       </form>
     </div>

@@ -145,7 +145,7 @@ const Library = (props) => {
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
         <Button
           variant='contained'
-          style={{ backgroundColor: '#11A797' }}
+          sx={{ backgroundColor: '#11A797' }}
           type='button'
           onClick={SpeechRecognition.startListening}
         >
@@ -154,9 +154,9 @@ const Library = (props) => {
         <p id="transcript">Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
         <h1>Library</h1>
-        <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
+        <FormControl sx={{ width: '10%', minWidth: '7rem', height: '1vw', minheight: '5px', marginRight: '1rem' }}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
@@ -175,8 +175,8 @@ const Library = (props) => {
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
           : displayBooks.filter(book => book.remainingText !== '').map(book => (
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
-            <img id={book.URL} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
-            <CardContent sx={{ height: '2.5rem' }}>
+            <img id={book.URL} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
+            <CardContent sx={{ height: '4rem' }}>
               <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
                 {book.title}
               </Typography>

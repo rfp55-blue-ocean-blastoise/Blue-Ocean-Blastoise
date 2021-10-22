@@ -7,7 +7,7 @@ import Home from './Library/Home';
 const App = () => {
   const [name, setName] = useState("BROTHER");
   return (
-    <div className="app">
+    <div>
       <BrowserRouter>
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={Signup} />

@@ -23,6 +23,7 @@ import Search from './Search';
 import Player from '../Player/Player';
 import Upload from './Upload';
 import Epub from 'epubjs/lib/index';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 const MyAccount = (props) => {
   // const [books, setBooks] = useState(bookMockData.slice().reverse());
@@ -212,23 +213,21 @@ const MyAccount = (props) => {
 
   return (
     <div>
-      <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+      <div style={{display: 'flex', justifyContent: 'center', padding: '2rem', flexWrap: 'wrap' }}>
         <Search handleSearch={handleSearch} />
         <Button
-          style={{ marginRight: '1rem', backgroundColor: '#11A797' }}
+          sx={{ backgroundColor: '#11A797' }}
           variant='contained'
           type='button'
           onClick={() => setOpenUpload(true)}
         >
-          <AddIcon />
-          &nbsp;
-          new ebook
+          <FileUploadIcon />
         </Button>
       </div>
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
         <Button
           variant='contained'
-          style={{ backgroundColor: '#11A797' }}
+          sx={{ backgroundColor: '#11A797' }}
           type='button'
           onClick={SpeechRecognition.startListening}
         >
@@ -237,10 +236,9 @@ const MyAccount = (props) => {
         <p id="transcript">Transcript: {transcript}</p>
       </div>
       {voiceCommandError}
-      <h1>{JSON.stringify(displayBooks)}</h1>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
         <h1>Reading Now</h1>
-        <FormControl sx={{ width: '10%', maxheight: '1rem'}}>
+        <FormControl sx={{ width: '10%', minWidth: '7rem', height: '1vw', minheight: '5px', marginRight: '1rem' }}>
           <InputLabel id='sort'>Sort</InputLabel>
           <Select
             labelId='sort'
@@ -259,9 +257,9 @@ const MyAccount = (props) => {
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
           : displayBooks.filter(book => book.remainingText !== '').map(book => (
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
-            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
-            <CardContent sx={{ height: '2.5rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
+            <CardContent sx={{ height: '4rem' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', padding: 'auto' }}>
                 {book.title}
               </Typography>
             </CardContent>
@@ -281,8 +279,8 @@ const MyAccount = (props) => {
           <p style={{margin: '1rem', fontSize: '1.2rem'}}>No Books</p>
           : displayBooks.filter(book => book.remainingText === '').map(book => (
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
-            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '70%'}} />
-            <CardContent sx={{ height: '2.5rem' }}>
+            <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
+            <CardContent sx={{ height: '4rem' }}>
               <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
                 {book.title}
               </Typography>
@@ -433,7 +431,7 @@ const Backdrop = styled('div')`
 
 const style = {
   width: 400,
-  bgcolor: '#FFFDD0',
+  bgcolor: 'rgba(201,221,148,1)',
   border: '2px solid #000',
   p: 2,
   px: 4,

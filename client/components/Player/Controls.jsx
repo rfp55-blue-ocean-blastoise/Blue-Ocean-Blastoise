@@ -41,7 +41,7 @@ const Controls = ({ handleResume, handlePause, parameters, setParameters, showMo
     <div>
       <div style={{ textAlign: 'center', padding: '2rem' }}>
         {page}
-        <h1>{book.title}</h1>
+        <h1 style={{ fontSize: '2vw'}}>{book.title}</h1>
         <div id="audio-controls">
           <Button
             style={{ marginRight: '1rem', backgroundColor: '#11A797' }}

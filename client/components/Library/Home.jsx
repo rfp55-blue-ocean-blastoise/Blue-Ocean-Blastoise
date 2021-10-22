@@ -27,10 +27,10 @@ const Home = () => {
 
   return (
     <BrowserRouter>
-      <div className='banner' style={{ display: 'flex', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '4rem', marginRight: '60%' }} > BookBrother</h1>
+      <div className='banner' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+        <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
         <Button
-          style={{ height: '2rem', backgroundColor: '#0c6057' }}
+          style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
           variant='contained'
           type='button'
           onClick={handleLogOut}

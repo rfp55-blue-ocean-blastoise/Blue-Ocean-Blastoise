@@ -303,8 +303,8 @@ const Player = (props) => {
   };
 
   return (
-    <>
-      <div style={{ height: "80vh" }}>
+    <div>
+      <div style={{ zIndex: 20, position: 'absolute', top: '0%', left: '0%', width: '100%', height: "80%" }}>
         <ReactReader
           location={location}
           locationChanged={locationChanged}
@@ -322,7 +322,7 @@ const Player = (props) => {
           tocChanged={toc => tocRef.current = toc}
         />
       </div>
-      <div style={{height: '20vh', width: '100%', backgroundColor: '#FFFDD0', zIndex: 10}}>
+      <div style={{height: '20%', position: 'absolute', top: '80%', left: '0%', width: '100%', zIndex: 20 }}>
         <Controls isPlaying={isPlaying} showModal={showModal} setShowModal={setShowModal} handleResume={handleResume} handlePause={handlePause} handleVolumeChange={handleVolumeChange} setSize={setSize} parameters={parameters} setParameters={setParameters} page={page} book={props.book} voiceOptions={voiceOptions} voice={voice} setVoice={setVoice}/>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
           <Button
@@ -337,17 +337,17 @@ const Player = (props) => {
             <SettingsVoiceIcon />
           </Button>
           <p id="transcript">Transcript: {transcript}</p>
-          <Button
-            style={{ height: '2rem', backgroundColor: '#0c6057' }}
-            variant='contained'
-            type='button'
-            onClick={handleBackToAccount}
-          >
-          Back to Account
-        </Button>
         </div>
       </div>
-    </>
+      <Button
+        style={{ backgroundColor: '#0c6057', position: 'absolute', top: '2%', left: '40vw', zIndex: 30, fontSize: '70%', padding: '0.5vw 2vw' }}
+        variant='contained'
+        type='button'
+        onClick={handleBackToAccount}
+      >
+        Back to Account
+      </Button>
+    </div>
   )
 };
 
