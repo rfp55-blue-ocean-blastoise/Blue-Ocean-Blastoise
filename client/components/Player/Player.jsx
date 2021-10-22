@@ -49,7 +49,7 @@ const Player = (props) => {
   let voiceCommandError = '';
   const commands = [
     {
-      command: ['Text size *'],
+      command: ['Text *'],
       callback: (input) => {
         if (fontSizeOptions.indexOf(Number(input)) !== -1) {
           setSize(Number(input));
