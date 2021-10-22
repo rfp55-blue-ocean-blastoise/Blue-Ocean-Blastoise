@@ -148,15 +148,26 @@ const Login = () => {
             >
               Sign In
             </Button>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "#0c6057", fontSize: "2vh" }}
+              type="submit"
+              onSubmit={handleLoginForGoogle}
+            >
+              <img
+                src="https://img.icons8.com/external-justicon-lineal-color-justicon/48/000000/external-google-social-media-justicon-lineal-color-justicon.png"
+                alt="google icon"
+              />
+            </Button>
             <div className="login-buttons">
               <button
                 className="login-provider-button"
                 onClick={handleLoginForGoogle}
               >
                 <img
-                  src="https://img.icons8.com/ios-filled/50/000000/google-logo.png"
+                  src="https://img.icons8.com/fluency/48/000000/google-logo.png"
                   alt="google icon"
-                />
+                />{" "}<br/>
                 <span> Continue with Google</span>
               </button>
             </div>
