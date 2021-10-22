@@ -60,6 +60,7 @@ const Player = (props) => {
       command: ['Open settings'],
       callback: () => {
         setShowModal(true);
+        handlePause();
       }
     },
     {
