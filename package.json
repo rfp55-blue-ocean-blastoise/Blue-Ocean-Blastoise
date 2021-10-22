@@ -6,7 +6,9 @@
   "scripts": {
     "server": "npx nodemon server/index.js",
     "test": "jest --coverage",
-    "react-dev": "npx webpack --config webpack.config.js -w"
+    "react-dev": "npx webpack --config webpack.config.js -w",
+    "build": "webpack --mode=production",
+    "start": "node ./server/index.js"
   },
   "repository": {
     "type": "git",
