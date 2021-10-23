@@ -37,7 +37,6 @@ const Library = (props) => {
   const history = useHistory();
   const [tab, setTab] = useState('Library');
 
-  const history = useHistory();
 
   let voiceCommandError = '';
 
