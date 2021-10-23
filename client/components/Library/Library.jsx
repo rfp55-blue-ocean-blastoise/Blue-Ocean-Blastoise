@@ -37,6 +37,8 @@ const Library = (props) => {
   const history = useHistory();
   const [tab, setTab] = useState('Library');
 
+  const history = useHistory();
+
   let voiceCommandError = '';
 
   const commands = [
@@ -148,7 +150,7 @@ const Library = (props) => {
   };
 
   const handleLogOut = () => {
-    signUserOut()
+    signUserOut();
     history.push('/login');
   };
 
