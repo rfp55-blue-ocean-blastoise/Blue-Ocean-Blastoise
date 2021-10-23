@@ -116,7 +116,16 @@ const Login = () => {
             <Button variant='contained' style={{ backgroundColor: '#0c6057', fontSize: '1.5vh', margin: "0 0 1em 0" }} type='submit' onSubmit={loginUser}>
               Sign In
             </Button>
-            <div className="login-buttons">
+            <Button variant='contained' style={{ backgroundColor: '#fff', fontSize: '1.5vh', margin: "0 0 1em 0", color: '#000' }} type='submit' onClick={handleLoginForGoogle}>
+              <img
+                src="https://img.icons8.com/fluency/48/000000/google-logo.png"
+                alt="google icon"
+                height="30em"
+              />
+              &nbsp;
+              Sign in with Google
+            </Button>
+            {/* <div className="login-buttons">
               <button
                 className="login-provider-button"
                 onClick={handleLoginForGoogle}
@@ -127,7 +136,7 @@ const Login = () => {
                 />{" "}<br/>
                 <span> Continue with Google</span>
               </button>
-            </div>
+            </div> */}
             <div style={{ margin: "2em 0 1em 0", fontSize: "2vh" }}>
               Need to create an account? &nbsp;
               <Link to="/signup">Sign-Up</Link>

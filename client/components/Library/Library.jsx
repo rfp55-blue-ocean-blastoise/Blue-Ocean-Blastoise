@@ -32,7 +32,6 @@ const Library = (props) => {
   const [openUpload, setOpenUpload] = useState(false);
   const [removeBook, setRemoveBook] = useState({});
   const { value, setValue, signUserOut } = useContext(GlobalContext);
-  let urls = ["https://s3.amazonaws.com/moby-dick/OPS/package.opf", "https://blueocean.s3.us-west-1.amazonaws.com/accessible_epub_3+(1).epub"];
 
   const history = useHistory();
   const [tab, setTab] = useState('Library');
@@ -198,8 +197,6 @@ const Library = (props) => {
         </Button>
         <p id="transcript" style={{ fontSize: '2vh' }}>Transcript: {transcript}</p>
       </div>
-      <img id={urls[0]} src="" style={{ width: '10%' }} />
-      <img id={urls[1]} src="" style={{ width: '10%' }} />
       {voiceCommandError}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2rem', flexWrap: 'wrap' }}>
         <h1 style={{ fontSize: '3vh' }} >Library</h1>
