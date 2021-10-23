@@ -158,6 +158,7 @@ const Library = (props) => {
         <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
         <Button
           style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
+          size='small'
           variant='contained'
           type='button'
           onClick={handleLogOut}
@@ -181,13 +182,14 @@ const Library = (props) => {
           <Tab label='Library' value='Library' sx={{ fontWeight: 'bold', fontSize: '2vh' }}  component={Link} to={'/freelibrary'}/>
         </Tabs>
       </Box>
-      <div style={{display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+      <div style={{display: 'flex', justifyContent: 'center', padding: '2rem' }}>
         <Search handleSearch={handleSearch} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Button
           variant='contained'
           sx={{ backgroundColor: '#11A797' }}
+          size='small'
           type='button'
           onClick={SpeechRecognition.startListening}
         >
@@ -222,7 +224,7 @@ const Library = (props) => {
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
             <img id={book.URL} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
             <CardContent sx={{ height: '4rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto', fontSize: '2vh' }}>
                 {book.title}
               </Typography>
             </CardContent>

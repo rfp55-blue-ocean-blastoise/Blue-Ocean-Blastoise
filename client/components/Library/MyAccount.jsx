@@ -43,6 +43,8 @@ const MyAccount = (props) => {
 
   let voiceCommandError = '';
 
+  props.highlightBookRef.current = null;
+
   const commands = [
     {
       command: ['Search *'],
@@ -201,12 +203,30 @@ const MyAccount = (props) => {
     history.push('/login');
   };
 
+  const handleMoveToMyBooks = (e) => {
+    e.preventDefault();
+    console.log('book id', e.target.value);
+    axios.put('/account/bookmark', {
+      email: value,
+      id: e.target.value,
+      cfi: ``,
+      remainingText: '',
+    })
+      .then(response => {
+        getUserData();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  };
+
   return (
     <div>
       <div className='banner' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
         <h1 style={{ fontSize: '7vw', marginLeft: '5%' }} > BookBrother</h1>
         <Button
           style={{ height: '2rem', backgroundColor: '#0c6057', marginRight: '5%', fontSize: '80%', width: 'fit-content', padding: 'auto' }}
+          size='small'
           variant='contained'
           type='button'
           onClick={handleLogOut}
@@ -234,6 +254,7 @@ const MyAccount = (props) => {
         <Search handleSearch={handleSearch} />
         <Button
           sx={{ backgroundColor: '#11A797' }}
+          size='small'
           variant='contained'
           type='button'
           onClick={() => setOpenUpload(true)}
@@ -245,6 +266,7 @@ const MyAccount = (props) => {
         <Button
           variant='contained'
           sx={{ backgroundColor: '#11A797' }}
+          size='small'
           type='button'
           onClick={SpeechRecognition.startListening}
         >
@@ -277,16 +299,13 @@ const MyAccount = (props) => {
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
             <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
             <CardContent sx={{ height: '4rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', padding: 'auto' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', padding: 'auto', fontSize: '2vh' }}>
                 {book.title}
               </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button size='medium' style={{ color:'#0c6057' }} value={JSON.stringify(book)} onClick={e => handleReadBook(JSON.parse(e.target.value))}>Resume</Button>
-              <Button size='medium' value={book} color='warning' onClick={() => {
-                setRemoveBook(book);
-                setOpenRemove(true);
-              }}>Remove</Button>
+              <Button size='medium' value={book['_id']} color='warning' onClick={handleMoveToMyBooks}>Remove</Button>
             </CardActions>
           </Card>
         ))}
@@ -299,7 +318,7 @@ const MyAccount = (props) => {
           <Card sx={{ width: '15rem', margin: '1rem', height: '25rem' }}>
             <img id={book.link} src={book.coverURL} style={{ width: '100%', height: '65%'}} />
             <CardContent sx={{ height: '4rem' }}>
-              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto' }}>
+              <Typography gutterBottom variant='subtitle1' component='div' sx={{ textAlign: 'center', verticalAlign: 'middle', padding: 'auto', fontSize: '2vh' }}>
                 {book.title}
               </Typography>
             </CardContent>
@@ -321,10 +340,10 @@ const MyAccount = (props) => {
         BackdropComponent={Backdrop}
       >
         <Box sx={style}>
-          <h2 id="unstyled-modal-title" style={{textAlign: 'center'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
+          <h2 id="unstyled-modal-title" style={{textAlign: 'center', fontSize: '2vh'}} >{`Are you sure you want to remove ${removeBook.title}?`}</h2>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button size='large' color='warning' value={removeBook['_id']} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
-            <Button size='large' style={{ color: '#0c6057' }} onClick={() => {
+            <Button size='small' color='warning' value={removeBook['_id']} onClick={(e) => handleRemoveBook(e.target.value)}>Yes</Button>
+            <Button size='small' style={{ color: '#0c6057' }} onClick={() => {
               setRemoveBook({});
               setOpenRemove(false);
             }}>No</Button>
@@ -448,12 +467,14 @@ const Backdrop = styled('div')`
 `;
 
 const style = {
-  width: 400,
-  bgcolor: 'rgba(201,221,148,1)',
-  border: '2px solid #000',
-  p: 2,
-  px: 4,
-  pb: 3,
+  width: '45vh',
+  bgcolor: '#eaf4d2',
+  border: '1px solid #000',
+  p: 1,
+  px: 1,
+  pb: 1,
+  'box-shadow': '0px 0px 3px 2px rgba(0, 0, 0, 0.5)',
+  'border-radius': '5px 5px 5px',
 };
 
 export default MyAccount;

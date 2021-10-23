@@ -7,8 +7,8 @@
     "server": "npx nodemon server/index.js",
     "test": "jest --coverage",
     "react-dev": "npx webpack --config webpack.config.js -w",
-    "build:prod": "webpack --config webpack.prod.config.js",
-    "start:prod": "node server/index.js"
+    "build": "webpack --mode=production",
+    "start": "node ./server/index.js"
   },
   "repository": {
     "type": "git",
