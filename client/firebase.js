@@ -4,6 +4,10 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  browserSessionPersistence,
+  setPersistence,
 } from "firebase/auth";
 import config from "../config.js";
 
@@ -20,19 +24,30 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-export const makeNewSession = (email, password) => {
-  console.log('session', browserSessionPersistence)
-  setPersistence(auth, browserSessionPersistence)
-    .then(()=> {
-      console.log('then block of make newSession')
-      return signInWithEmailAndPassword(auth, email, password)
-    })
-    .catch((err)=>{
-      console.log(err, 'err from make new session')
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log({errorCode, errorMessage})
-    })
+export const googleSignIn = async () => {
+  try {
+    setPersistence(auth, browserSessionPersistence);
+    const provider = new GoogleAuthProvider();
+    const res = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(res);
+    const token = credential.accessToken;
+    const email = res.user.email;
+    return email;
+  } catch (error) {
+    const { errorCode, errorMessage, email } = error;
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    return errorMessage;
+  }
+};
+
+export const makeNewSession = async (email, password) => {
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    return signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    const {code, message} = error;
+    return message
+  }
 };
 
 export const signInWithEmail = (email, password) =>
@@ -40,5 +55,4 @@ export const signInWithEmail = (email, password) =>
 
 export const signUpWithEmail = (email, password) =>
   createUserWithEmailAndPassword(auth, email, password);
-
 export default firebaseApp;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
 import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -28,8 +28,14 @@ const Library = (props) => {
   const [books, setBooks] = useState([]);
   const [displayBooks, setDisplayBooks] = useState([]);
   const [sortOption, setSortOption] = useState('recent');
+  const [openRemove, setOpenRemove] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false);
+  const [removeBook, setRemoveBook] = useState({});
   const { value, setValue, signUserOut } = useContext(GlobalContext);
+
+  const history = useHistory();
   const [tab, setTab] = useState('Library');
+
 
   let voiceCommandError = '';
 
@@ -81,7 +87,7 @@ const Library = (props) => {
       setBooks(sortedBooks);
       setDisplayBooks(sortedDisplayBooks);
     }
-  },[sortOption])
+  }, [sortOption])
 
   const handleSearch = (searchedStr) => {
     const searchBooks = books.filter(book => book.title.toLowerCase().indexOf(searchedStr) !== -1);
@@ -142,7 +148,7 @@ const Library = (props) => {
   };
 
   const handleLogOut = () => {
-    signUserOut()
+    signUserOut();
     history.push('/login');
   };
 
@@ -179,7 +185,7 @@ const Library = (props) => {
       <div style={{display: 'flex', justifyContent: 'center', padding: '2rem' }}>
         <Search handleSearch={handleSearch} />
       </div>
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Button
           variant='contained'
           sx={{ backgroundColor: '#11A797' }}
