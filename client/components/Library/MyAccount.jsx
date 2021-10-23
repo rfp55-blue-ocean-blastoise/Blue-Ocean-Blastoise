@@ -199,7 +199,7 @@ const MyAccount = (props) => {
   };
 
   const handleLogOut = () => {
-    signUserOut()
+    signUserOut();
     history.push('/login');
   };
 

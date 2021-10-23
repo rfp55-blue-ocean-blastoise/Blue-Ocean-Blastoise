@@ -36,14 +36,14 @@ const Login = () => {
 
   return (
     <div className="login">
-      <h1 style={{ fontSize: '9vh', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
+      <h1 style={{ fontSize: '7vh', marginBottom: 0, color: '#212121' }}> BookBrother</h1>
       <h2 style={{ fontSize: '3vh', width: '70%', textAlign: 'center' }}>The Premier Mobile Audio Experience to Listen to Your Books</h2>
       <h3 style={{ fontSize: '2vh', width: '70%', textAlign: 'center' }}>
         Don’t have time to read? No problem, just upload your book to the app and start getting knowledge injected into your earbuds.
       </h3>
       <div>
         <form type="submit" onSubmit={loginUser}>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', p: '0', border: '1px solid #212121', padding: '2vh', borderRadius: '5px 5px 5px', boxShadow: '0px 0px 3px 2px rgba(0, 0, 0, 0.2)', mt: '1rem', width: '40vh', mixWidth: '10px', height: 'fit-content' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', p: '0', border: '1px solid #212121', padding: '2vh', borderRadius: '5px 5px 5px', boxShadow: '0px 0px 3px 2px rgba(0, 0, 0, 0.2)', mt: '1rem', width: '35vh', mixWidth: '10px', height: 'fit-content' }}>
             <h2 style={{ fontSize: '3vh' }} > Sign-in</h2>
             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
               <FormControl sx={{ m: 1, width: '35vh', mixWidth: '8px' }} variant="standard" required>
@@ -83,7 +83,7 @@ const Login = () => {
                   />
               </FormControl>
             </Box>
-            <Button variant='contained' style={{ backgroundColor: '#0c6057', fontSize: '2vh' }} type='submit' onSubmit={loginUser}>
+            <Button variant='contained' style={{ backgroundColor: '#0c6057', fontSize: '1.5vh' }} type='submit' onSubmit={loginUser}>
               Sign In
             </Button>
             <div style={{ margin: '2em 0 1em 0', fontSize: '2vh' }}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link, useHistory } from 'react-router-dom';
 import { GlobalContext } from "../GlobalContextProvider";
 import regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -30,6 +30,8 @@ const Library = (props) => {
   const [sortOption, setSortOption] = useState('recent');
   const { value, setValue, signUserOut } = useContext(GlobalContext);
   const [tab, setTab] = useState('Library');
+
+  const history = useHistory();
 
   let voiceCommandError = '';
 
@@ -142,7 +144,7 @@ const Library = (props) => {
   };
 
   const handleLogOut = () => {
-    signUserOut()
+    signUserOut();
     history.push('/login');
   };
 
