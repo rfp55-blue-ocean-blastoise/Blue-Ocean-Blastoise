@@ -5,7 +5,7 @@
 <br />
 <div align="center">
 
-  <h3 align="center">![book]</h3>
+  ![book]
 
   <p align="center">
     Book Brother
