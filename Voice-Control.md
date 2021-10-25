@@ -30,6 +30,7 @@ Users can click on the microphone button and speak commands to interact with the
 | To change pitch of narrator voice***                   | Pitch <number>            |
 | To change volume of background music**                 | Background music <number> |
 
+
 * Text size options: 25, 50, 100, 125, 150, 175, 200
   
 ** Volume options: 0 to 100
