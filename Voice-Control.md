@@ -21,14 +21,14 @@ Users can click on the microphone button and speak commands to interact with the
   
 ### Player
 
-| Action                                                 | Command                   |
-| -------------------------------------------------------| --------------------------|
+| Action                                                 | Command                    |
+| -------------------------------------------------------| ---------------------------|
 | To change text size*                                   | Text \<number>             |
-| To open settings for narrator voice & background music | Open settings             | 
-| To change volume of narrator voice**                   | Volume <number>           |
-| To change speed of narrator voice***                   | Speed <option>            |
-| To change pitch of narrator voice***                   | Pitch <option>            |
-| To change volume of background music**                 | Background music <option> |
+| To open settings for narrator voice & background music | Open settings              | 
+| To change volume of narrator voice**                   | Volume \<number>           |
+| To change speed of narrator voice***                   | Speed \<number>            |
+| To change pitch of narrator voice***                   | Pitch \<number>            |
+| To change volume of background music**                 | Background music \<number> |
 
 \* Text size options: 25, 50, 100, 125, 150, 175, 200
  
