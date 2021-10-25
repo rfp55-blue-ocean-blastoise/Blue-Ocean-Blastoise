@@ -70,7 +70,7 @@ Perhaps a demo?
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Blue-Ocean-Blastoise.git
+   git clone https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoise.git
    ```
 2. Install NPM packages
    ```sh
