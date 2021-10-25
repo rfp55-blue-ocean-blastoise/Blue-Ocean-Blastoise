@@ -1,5 +1,4 @@
-## General Use
-Users can click on the microphone button and speak commands to interact with the libray and player.
+## Voice Command List
 
 ### Library
 
