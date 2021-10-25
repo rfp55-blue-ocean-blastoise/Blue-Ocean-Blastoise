@@ -23,9 +23,9 @@ Users can click on the microphone button and speak commands to interact with the
 
 | Action                                                 | Command                   |
 | -------------------------------------------------------| --------------------------|
-| To change text size*                                   | Text <option>             |
+| To change text size*                                   | Text \<number>             |
 | To open settings for narrator voice & background music | Open settings             | 
-| To change volume of narrator voice**                   | Volume <option>           |
+| To change volume of narrator voice**                   | Volume <number>           |
 | To change speed of narrator voice***                   | Speed <option>            |
 | To change pitch of narrator voice***                   | Pitch <option>            |
 | To change volume of background music**                 | Background music <option> |
