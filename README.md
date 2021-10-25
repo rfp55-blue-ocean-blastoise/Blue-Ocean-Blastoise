@@ -4,7 +4,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  
+
   <h3 align="center">![book]</h3>
 
   <p align="center">
@@ -118,7 +118,7 @@ Refer to [this](https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoi
 ### [Book Viewer and Narrator](client/components/player)
 
 - Developed by [Justin Beere](https://www.linkedin.com/in/justin-beere/), [Kevin Gao](https://www.linkedin.com/in/kevinzhugao/), [Lenora Esquenazi](https://www.linkedin.com/in/lenora-esquenazi/), [Matthew Boyle](https://www.linkedin.com/in/matthewboyle1989/)
-- Allows users to read an EPUB book along with a narration of the text. Users can change text size, speed, pitch, voice and choose to listen to a fireplace background if they so choose. 
+- Allows users to read an EPUB book along with a narration of the text. Users can change text size, speed, pitch, voice and choose to listen to a fireplace background if they so choose.
 
 ### [Book Player Research Engineer](client/components/player)
 
@@ -158,7 +158,4 @@ Project Link: [https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastois
 
 <!-- Images -->
 
-[single]: images/single.png
-[randomized]: images/randomized.png
-[structured]: images/structured.png
-
+[book]: images/title.png
