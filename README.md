@@ -120,10 +120,12 @@ Refer to [this](https://github.com/rfp55-blue-ocean-blastoise/Blue-Ocean-Blastoi
 - Developed by [Justin Beere](https://www.linkedin.com/in/justin-beere/), [Kevin Gao](https://www.linkedin.com/in/kevinzhugao/), [Lenora Esquenazi](https://www.linkedin.com/in/lenora-esquenazi/), [Matthew Boyle](https://www.linkedin.com/in/matthewboyle1989/)
 - Allows users to read an EPUB book along with a narration of the text. Users can change text size, speed, pitch, voice and choose to listen to a fireplace background if they so choose.
 
-### [Book Player Research Engineer](client/components/player)
+### [Text-to-Speech and eBook Renderer Engineer](client/components/player)
 
 - Developed by [Daniel Ho](https://www.linkedin.com/in/dho1994/)
-- Researched and managed which technology to use and implemented those tools within the Book Viewer.
+- Managed the eBook rendering and text-to-speech functionality for the Book Viewer and Narrator component, enabling real-time narration of rendered eBook display for the user.
+- When the user opens an eBook, narration will be initiated automatically. User is able to read and listen continuously, with the viewer automatically flipping to the next page once the current page has finished being narrated.
+- User may pause the narration for any amount of time and resume where he or she left off.
 
 ### [Library and Voice Recognition](client/components/library)
 
