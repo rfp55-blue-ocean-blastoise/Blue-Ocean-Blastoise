@@ -15,7 +15,7 @@ db.once("open", () => {
   console.log("mongoose connected successfully");
 });
 
-let Brothers = mongoose.Schema({
+const Brothers = mongoose.Schema({
   email: {
     type: String,
     unique: true,
@@ -30,9 +30,9 @@ let Brothers = mongoose.Schema({
   ],
 });
 
-let Brother = mongoose.model("Brother", Brothers);
+const Brother = mongoose.model("Brother", Brothers);
 
-let createUser = async (body) => {
+const createUser = async (body) => {
   try {
     const { email, books } = body;
     const result = await Brother.create({ email, books });
@@ -42,7 +42,7 @@ let createUser = async (body) => {
   }
 };
 
-let retrieveUserDocument = async (email) => {
+const retrieveUserDocument = async (email) => {
   try {
     const result = await Brother.find({ email });
     return result;
@@ -51,10 +51,9 @@ let retrieveUserDocument = async (email) => {
   }
 };
 
-let addBookForUser = async (email, book) => {
+const addBookForUser = async (email, book) => {
   try {
     const { link, title, cfi, remainingText } = book;
-    // TODO : DOUBLE CHECK THE FUNCTION BELOW
     const result = await Brother.find({ email, "books.title": title });
     if (result.length === 0) {
       const books = await Brother.findOneAndUpdate(
@@ -71,7 +70,7 @@ let addBookForUser = async (email, book) => {
   }
 };
 
-let updateBookmark = async ({ email, id, cfi, remainingText }) => {
+const updateBookmark = async ({ email, id, cfi, remainingText }) => {
   try {
     const result = await Brother.findOneAndUpdate(
       { email: email, "books._id": id },
@@ -91,7 +90,7 @@ let updateBookmark = async ({ email, id, cfi, remainingText }) => {
   }
 };
 
-let deleteBook = async ({email, id}) => {
+const deleteBook = async ({email, id}) => {
   try {
     // const { email, id } = body;
     const results = await Brother.updateOne(
