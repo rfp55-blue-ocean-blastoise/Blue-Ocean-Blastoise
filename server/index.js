@@ -11,7 +11,6 @@ const compression = require('compression');
 
 const upload = multer({ dest: 'uploads/' });
 const {
-  db,
   createUser,
   retrieveUserDocument,
   deleteBook,
