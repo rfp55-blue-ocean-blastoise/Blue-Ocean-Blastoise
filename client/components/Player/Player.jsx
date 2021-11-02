@@ -33,7 +33,6 @@ const Player = (props) => {
   //   currentCFI = null;
   // }
   const [location, setLocation] = useState(null);
-  const [selections, setSelections] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const voiceOptions = responsiveVoice.getVoices();
   const [voice, setVoice] = useState(voiceOptions[0].name);
@@ -148,8 +147,8 @@ const Player = (props) => {
   function loop() {
     if (props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Man Who Died Twice by Richard Osman.epub"
       || props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Assassin_s Legacy by D. Lieber.epub") {
-        console.log('props.book.link', props.book.link)
-        console.log('props.highlightBookRef.current', props.highlightBookRef.current)
+        // console.log('props.book.link', props.book.link)
+        // console.log('props.highlightBookRef.current', props.highlightBookRef.current)
         if (responsiveVoice) {
         if (responsiveVoice.currentMsg) {
           // Put additional contraint that text must be over 5 letters long
@@ -255,12 +254,6 @@ const Player = (props) => {
     setTimeout(function () {
       loop()
     }, 1000);
-
-    // timeoutID = setTimeout(function () {
-    //   loop()
-    // }, 1000);
-
-    // const intervalLoop = setInterval(loop, 1000);
   };
 
   if (props.highlightBookRef.current === "https://blueocean.s3.us-west-1.amazonaws.com/The Man Who Died Twice by Richard Osman.epub"
@@ -526,27 +519,6 @@ const Player = (props) => {
     }
   }, [size])
 
-  // useEffect(() => {
-  //   if (renditionRef.current) {
-  //     function setRenderSelection(cfiRange, contents) {
-  //       console.log('cfiRange', cfiRange)
-  //       console.log('contents', contents)
-  //       setSelections(selections.concat({
-  //         text: renditionRef.current.getRange(cfiRange).toString(),
-  //         cfiRange
-  //       }))
-  //       // renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5", "mix-blend-mode": "multiply" })
-  //       renditionRef.current.annotations.add("highlight", cfiRange, {}, null, "hl", { "fill": "red", "fill-opacity": "0.5" })
-  //       contents.window.getSelection().removeAllRanges()
-  //     }
-  //     renditionRef.current.on("selected", setRenderSelection)
-
-  //     return () => {
-  //       renditionRef.current.off("selected", setRenderSelection)
-  //     }
-  //   }
-  // }, [setSelections, selections])
-
   // go back button
   const history = useHistory();
 
@@ -571,7 +543,6 @@ const Player = (props) => {
               }
             })
             renditionRef.current.themes.fontSize(`${size}%`)
-            setSelections([])
           }}
           tocChanged={toc => tocRef.current = toc}
         />
